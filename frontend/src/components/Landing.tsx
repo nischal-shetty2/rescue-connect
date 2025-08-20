@@ -16,14 +16,23 @@ const Landing = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       {/* Hero Section */}
-      <section className="pt-20 pb-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
+      <section className="pt-20 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        {/* Background decorative elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-40 -right-32 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-purple-600/20 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-40 -left-32 w-80 h-80 bg-gradient-to-tr from-indigo-400/20 to-pink-600/20 rounded-full blur-3xl"></div>
+        </div>
+
+        <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+            <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
               Connecting Hearts to
-              <span className="text-blue-600"> Rescue Animals</span>
+              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                {" "}
+                Rescue Animals
+              </span>
             </h1>
             <p className="text-xl text-gray-600 mb-8 leading-relaxed">
               Advanced AI-powered platform for animal rescue, disease detection,
@@ -32,14 +41,16 @@ const Landing = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
-                className="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 flex items-center justify-center group"
-                onClick={() => navigate("/adopt")}>
+                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-2xl text-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl flex items-center justify-center group shadow-lg"
+                onClick={() => navigate("/adopt")}
+              >
                 Start Rescuing
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </button>
               <button
                 onClick={() => navigate("/disease")}
-                className="border-2 border-gray-300 text-gray-700 px-8 py-3 rounded-lg text-lg font-semibold hover:border-blue-600 hover:text-blue-600 transition-colors">
+                className="bg-white/80 backdrop-blur-sm border-2 border-indigo-200 text-indigo-700 px-8 py-4 rounded-2xl text-lg font-semibold hover:bg-white hover:border-indigo-400 hover:text-indigo-800 transition-all duration-300 hover:shadow-xl"
+              >
                 Detect Disease
               </button>
             </div>
@@ -47,27 +58,31 @@ const Landing = () => {
 
           {/* Hero Image/Stats */}
           <div className="mt-16 relative">
-            <div className="bg-blue-50 rounded-2xl p-8 md:p-12">
+            <div className="bg-white/70 backdrop-blur-lg rounded-3xl p-8 md:p-12 shadow-2xl border border-white/20">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
                 <div className="group cursor-pointer">
-                  <div className="text-3xl font-bold text-blue-600 group-hover:scale-110 transition-transform">
+                  <div className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300">
                     500+
                   </div>
-                  <div className="text-gray-600 mt-2">Animals Rescued</div>
+                  <div className="text-gray-600 mt-2 font-medium">
+                    Animals Rescued
+                  </div>
                 </div>
                 <div className="group cursor-pointer">
-                  <div className="text-3xl font-bold text-blue-600 group-hover:scale-110 transition-transform">
+                  <div className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-pink-600 bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300">
                     95%
                   </div>
-                  <div className="text-gray-600 mt-2">
+                  <div className="text-gray-600 mt-2 font-medium">
                     Disease Detection Accuracy
                   </div>
                 </div>
                 <div className="group cursor-pointer">
-                  <div className="text-3xl font-bold text-blue-600 group-hover:scale-110 transition-transform">
+                  <div className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300">
                     1000+
                   </div>
-                  <div className="text-gray-600 mt-2">Happy Adopters</div>
+                  <div className="text-gray-600 mt-2 font-medium">
+                    Happy Adopters
+                  </div>
                 </div>
               </div>
             </div>
@@ -76,10 +91,13 @@ const Landing = () => {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="features" className="py-20 bg-white relative">
+        {/* Background decoration */}
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-50/50 to-white"></div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-5xl font-bold text-gray-900 mb-6">
               Comprehensive Care Platform
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
@@ -93,19 +111,20 @@ const Landing = () => {
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="bg-white p-6 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 group cursor-pointer">
-                <div className="text-blue-600 mb-4 group-hover:scale-110 transition-transform">
+                className="bg-white/80 backdrop-blur-sm p-8 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 group cursor-pointer border border-gray-100 hover:border-indigo-200"
+              >
+                <div className="text-indigo-600 mb-6 group-hover:scale-110 transition-transform duration-300">
                   {feature.icon}
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">
                   {feature.title}
                 </h3>
-                <p className="text-gray-600 leading-relaxed">
+                <p className="text-gray-600 leading-relaxed mb-6">
                   {feature.description}
                 </p>
-                <div className="mt-4 flex items-center text-blue-600 font-medium group-hover:translate-x-2 transition-transform">
+                <div className="flex items-center text-indigo-600 font-semibold group-hover:translate-x-2 transition-transform duration-300">
                   Learn more
-                  <ChevronRight className="w-4 h-4 ml-1" />
+                  <ChevronRight className="w-5 h-5 ml-1" />
                 </div>
               </div>
             ))}
@@ -114,10 +133,13 @@ const Landing = () => {
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="py-16">
+      <section
+        id="how-it-works"
+        className="py-20 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-5xl font-bold text-gray-900 mb-6">
               How Rescue Connect Works
             </h2>
             <p className="text-xl text-gray-600">
@@ -127,46 +149,40 @@ const Landing = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="text-center group">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                <span className="text-2xl font-bold">1</span>
+              <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-all duration-300 shadow-lg">
+                <span className="text-3xl font-bold text-white">1</span>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Sign Up
-              </h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Sign Up</h3>
               <p className="text-gray-600">
                 Create your profile as a rescuer, adopter, or service provider
               </p>
             </div>
 
             <div className="text-center group">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                <span className="text-2xl font-bold">2</span>
+              <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-all duration-300 shadow-lg">
+                <span className="text-3xl font-bold text-white">2</span>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Connect
-              </h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Connect</h3>
               <p className="text-gray-600">
                 Get matched with nearby rescuers, adopters, or animals in need
               </p>
             </div>
 
             <div className="text-center group">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                <span className="text-2xl font-bold">3</span>
+              <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-all duration-300 shadow-lg">
+                <span className="text-3xl font-bold text-white">3</span>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Care</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Care</h3>
               <p className="text-gray-600">
                 Use AI diagnosis, find vets, or access boarding services
               </p>
             </div>
 
             <div className="text-center group">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                <span className="text-2xl font-bold">4</span>
+              <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-all duration-300 shadow-lg">
+                <span className="text-3xl font-bold text-white">4</span>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Impact
-              </h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Impact</h3>
               <p className="text-gray-600">
                 Make a lasting difference in animal welfare and community
               </p>
@@ -176,10 +192,10 @@ const Landing = () => {
       </section>
 
       {/* Testimonials */}
-      <section id="testimonials" className="py-16 bg-blue-50">
+      <section id="testimonials" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-5xl font-bold text-gray-900 mb-6">
               Trusted by Animal Lovers
             </h2>
             <p className="text-xl text-gray-600">
@@ -191,23 +207,24 @@ const Landing = () => {
             {testimonials.map((testimonial, index) => (
               <div
                 key={index}
-                className="bg-white p-6 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-                <div className="flex items-center mb-4">
+                className="bg-gradient-to-br from-white to-gray-50 p-8 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100"
+              >
+                <div className="flex items-center mb-6">
                   {[...Array(testimonial.rating)].map((_, i) => (
                     <Star
                       key={i}
-                      className="w-5 h-5 text-yellow-400 fill-current"
+                      className="w-6 h-6 text-yellow-400 fill-current"
                     />
                   ))}
                 </div>
-                <p className="text-gray-600 mb-4 leading-relaxed">
+                <p className="text-gray-600 mb-6 leading-relaxed text-lg">
                   "{testimonial.content}"
                 </p>
                 <div>
-                  <div className="font-semibold text-gray-900">
+                  <div className="font-bold text-gray-900 text-lg">
                     {testimonial.name}
                   </div>
-                  <div className="text-sm text-gray-500">
+                  <div className="text-indigo-600 font-medium">
                     {testimonial.role}
                   </div>
                 </div>
@@ -218,20 +235,24 @@ const Landing = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-blue-600">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-bold text-white mb-4">
+      <section className="py-20 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 relative overflow-hidden">
+        {/* Background pattern */}
+        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/5 to-transparent"></div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
+          <h2 className="text-5xl font-bold text-white mb-6">
             Ready to Make a Difference?
           </h2>
-          <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
             Join thousands of animal lovers who are already using Rescue Connect
             to save lives and build stronger communities.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-white text-blue-600 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-gray-50 transition-all duration-300 transform hover:scale-105">
+            <button className="bg-white text-indigo-600 px-10 py-4 rounded-2xl text-lg font-bold hover:bg-gray-50 transition-all duration-300 transform hover:scale-105 shadow-2xl">
               Start Your Journey
             </button>
-            <button className="border-2 border-white text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
+            <button className="border-2 border-white text-white px-10 py-4 rounded-2xl text-lg font-bold hover:bg-white hover:text-indigo-600 transition-all duration-300 backdrop-blur-sm">
               Contact Support
             </button>
           </div>

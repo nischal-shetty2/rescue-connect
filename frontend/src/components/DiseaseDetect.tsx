@@ -236,17 +236,21 @@ const DetectDiseasePage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-16 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-12">
-          <div className="flex justify-center mb-4">
-            <div className="p-3 bg-blue-100 rounded-2xl">
-              <Stethoscope className="w-8 h-8 text-blue-600" />
+        <div className="text-center mb-16">
+          <div className="flex justify-center mb-6">
+            <div className="p-4 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-3xl shadow-2xl">
+              <Stethoscope className="w-10 h-10 text-white" />
             </div>
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            AI-Powered Disease Detection
+          <h1 className="text-5xl font-bold text-gray-900 mb-6">
+            AI-Powered
+            <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              {" "}
+              Disease Detection
+            </span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Get instant, accurate diagnosis for skin diseases in dogs, cats, and
@@ -256,45 +260,52 @@ const DetectDiseasePage: React.FC = () => {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <div className="bg-white rounded-xl p-6 shadow-sm text-center">
-            <div className="text-3xl font-bold text-blue-600 mb-2">95%</div>
-            <div className="text-gray-600">Accuracy Rate</div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+          <div className="bg-white/80 backdrop-blur-lg rounded-3xl p-8 shadow-xl text-center border border-white/20 hover:shadow-2xl transition-all duration-300">
+            <div className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-3">
+              95%
+            </div>
+            <div className="text-gray-600 font-medium">Accuracy Rate</div>
           </div>
-          <div className="bg-white rounded-xl p-6 shadow-sm text-center">
-            <div className="text-3xl font-bold text-blue-600 mb-2">&lt;30s</div>
-            <div className="text-gray-600">Analysis Time</div>
+          <div className="bg-white/80 backdrop-blur-lg rounded-3xl p-8 shadow-xl text-center border border-white/20 hover:shadow-2xl transition-all duration-300">
+            <div className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-3">
+              &lt;30s
+            </div>
+            <div className="text-gray-600 font-medium">Analysis Time</div>
           </div>
-          <div className="bg-white rounded-xl p-6 shadow-sm text-center">
-            <div className="text-3xl font-bold text-blue-600 mb-2">50+</div>
-            <div className="text-gray-600">Disease Types</div>
+          <div className="bg-white/80 backdrop-blur-lg rounded-3xl p-8 shadow-xl text-center border border-white/20 hover:shadow-2xl transition-all duration-300">
+            <div className="text-4xl font-bold bg-gradient-to-r from-pink-600 to-indigo-600 bg-clip-text text-transparent mb-3">
+              50+
+            </div>
+            <div className="text-gray-600 font-medium">Disease Types</div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Upload Section */}
-          <div className="bg-white rounded-2xl shadow-sm p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+          <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl p-10 border border-white/20">
+            <h2 className="text-3xl font-bold text-gray-900 mb-8">
               Upload Image for Analysis
             </h2>
 
             {/* Animal Selection */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-3">
+            <div className="mb-8">
+              <label className="block text-sm font-bold text-gray-700 mb-4">
                 Select Animal Type
               </label>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-3 gap-4">
                 {animalTypes.map((animal) => (
                   <button
                     key={animal.id}
                     onClick={() => handleAnimalSelect(animal.id)}
-                    className={`p-4 rounded-xl border-2 transition-all ${
+                    className={`p-6 rounded-2xl border-2 transition-all duration-300 transform hover:scale-105 ${
                       selectedAnimal === animal.id
-                        ? "border-blue-600 bg-blue-50 text-blue-600"
-                        : "border-gray-200 hover:border-gray-300"
-                    }`}>
-                    <div className="text-2xl mb-2">{animal.icon}</div>
-                    <div className="font-medium">{animal.name}</div>
+                        ? "border-indigo-600 bg-indigo-50 text-indigo-600 shadow-lg"
+                        : "border-gray-200 hover:border-indigo-300 hover:bg-gray-50"
+                    }`}
+                  >
+                    <div className="text-3xl mb-3">{animal.icon}</div>
+                    <div className="font-bold">{animal.name}</div>
                   </button>
                 ))}
               </div>
@@ -309,7 +320,8 @@ const DetectDiseasePage: React.FC = () => {
               {!uploadedImage ? (
                 <div
                   onClick={handleFileInputClick}
-                  className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors">
+                  className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors"
+                >
                   <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                   <p className="text-gray-600 mb-2">Click to upload an image</p>
                   <p className="text-sm text-gray-500">
@@ -325,7 +337,8 @@ const DetectDiseasePage: React.FC = () => {
                   />
                   <button
                     onClick={handleRemoveImage}
-                    className="absolute top-3 right-3 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors">
+                    className="absolute top-3 right-3 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
+                  >
                     <X className="w-4 h-4" />
                   </button>
                 </div>
@@ -348,7 +361,8 @@ const DetectDiseasePage: React.FC = () => {
                 </label>
                 <button
                   onClick={toggleSymptomForm}
-                  className="text-blue-600 text-sm hover:text-blue-700">
+                  className="text-blue-600 text-sm hover:text-blue-700"
+                >
                   {showSymptomForm ? "Hide" : "Add Symptoms"}
                 </button>
               </div>
@@ -363,7 +377,8 @@ const DetectDiseasePage: React.FC = () => {
                         symptoms.includes(symptom)
                           ? "border-blue-600 bg-blue-50 text-blue-600"
                           : "border-gray-200 hover:border-gray-300"
-                      }`}>
+                      }`}
+                    >
                       {symptom}
                     </button>
                   ))}
@@ -375,7 +390,8 @@ const DetectDiseasePage: React.FC = () => {
             <button
               onClick={handleAnalyze}
               disabled={!uploadedImage || isAnalyzing}
-              className="w-full bg-blue-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center">
+              className="w-full bg-blue-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+            >
               {isAnalyzing ? (
                 <>
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
@@ -435,7 +451,8 @@ const DetectDiseasePage: React.FC = () => {
                     <div
                       className={`px-3 py-1 rounded-full text-sm border ${getSeverityColor(
                         analysisResult.severity
-                      )}`}>
+                      )}`}
+                    >
                       {analysisResult.severity.charAt(0).toUpperCase() +
                         analysisResult.severity.slice(1)}{" "}
                       Severity
@@ -452,7 +469,8 @@ const DetectDiseasePage: React.FC = () => {
                     {analysisResult.symptoms.map((symptom, idx) => (
                       <li
                         key={idx}
-                        className="flex items-center text-sm text-gray-600">
+                        className="flex items-center text-sm text-gray-600"
+                      >
                         <div className="w-2 h-2 bg-blue-600 rounded-full mr-2"></div>
                         {symptom}
                       </li>
