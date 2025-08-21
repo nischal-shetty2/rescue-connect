@@ -2,47 +2,31 @@ import React, { useState, useRef, type ChangeEvent } from "react";
 import {
   Upload,
   Zap,
-  AlertTriangle,
   CheckCircle,
   X,
   Stethoscope,
   Clock,
-  Shield,
   ArrowRight,
   Eye,
   FileText,
 } from "lucide-react";
 
-// Types
-interface AnimalType {
-  id: "dog" | "cat" | "cow";
-  name: string;
-  icon: string;
-}
+import {
+  mockDiseases,
+  commonSymptoms,
+  getSeverityColor,
+} from "./DiseaseDetect.utils";
+import { Disclaimer, Stats } from "./DisclaimerAndStats";
+import type { AnalysisResult, AnimalType } from "../DiseaseDetect.types";
 
-interface Treatment {
-  medication: string;
-  dosage: string;
-  topical: string;
-  additional: string[];
-}
+export type AnimalId = "dog" | "cat" | "cow";
+export type SeverityLevel = "high" | "medium" | "low";
 
-interface DiseaseInfo {
-  confidence: number;
-  severity: "high" | "medium" | "low";
-  description: string;
-  symptoms: string[];
-  treatment: Treatment;
-  urgency: string;
-}
-
-interface AnalysisResult extends DiseaseInfo {
-  disease: string;
-  analysisTime: string;
-}
-
-type AnimalId = "dog" | "cat" | "cow";
-type SeverityLevel = "high" | "medium" | "low";
+const animalTypes: AnimalType[] = [
+  { id: "dog", name: "Dog", icon: "🐕" },
+  { id: "cat", name: "Cat", icon: "🐱" },
+  { id: "cow", name: "Cow", icon: "🐄" },
+];
 
 const DetectDiseasePage: React.FC = () => {
   const [selectedAnimal, setSelectedAnimal] = useState<AnimalId>("dog");
@@ -54,114 +38,6 @@ const DetectDiseasePage: React.FC = () => {
   const [showSymptomForm, setShowSymptomForm] = useState<boolean>(false);
   const [symptoms, setSymptoms] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const animalTypes: AnimalType[] = [
-    { id: "dog", name: "Dog", icon: "🐕" },
-    { id: "cat", name: "Cat", icon: "🐱" },
-    { id: "cow", name: "Cow", icon: "🐄" },
-  ];
-
-  const commonSymptoms: Record<AnimalId, string[]> = {
-    dog: [
-      "Itching/Scratching",
-      "Hair Loss",
-      "Red/Inflamed Skin",
-      "Scabs/Crusts",
-      "Bad Odor",
-      "Excessive Licking",
-    ],
-    cat: [
-      "Excessive Grooming",
-      "Hair Loss",
-      "Scabs",
-      "Red Patches",
-      "Flaky Skin",
-      "Behavioral Changes",
-    ],
-    cow: [
-      "Skin Lesions",
-      "Hair Loss",
-      "Thickened Skin",
-      "Scabs",
-      "Swelling",
-      "Discoloration",
-    ],
-  };
-
-  // Mock disease database with treatments
-  const mockDiseases: Record<AnimalId, Record<string, DiseaseInfo>> = {
-    dog: {
-      "Bacterial Dermatitis": {
-        confidence: 87,
-        severity: "medium",
-        description:
-          "Bacterial skin infection causing inflammation and pustules",
-        symptoms: [
-          "Red, inflamed skin",
-          "Pustules or bumps",
-          "Hair loss",
-          "Itching",
-        ],
-        treatment: {
-          medication: "Cephalexin 500mg",
-          dosage: "2 times daily for 10-14 days",
-          topical: "Chlorhexidine shampoo twice weekly",
-          additional: [
-            "Keep affected area clean and dry",
-            "Prevent licking with E-collar if needed",
-          ],
-        },
-        urgency: "Moderate - Start treatment within 2-3 days",
-      },
-    },
-    cat: {
-      "Feline Dermatitis": {
-        confidence: 92,
-        severity: "low",
-        description: "Allergic skin reaction causing itching and inflammation",
-        symptoms: [
-          "Excessive scratching",
-          "Red, irritated skin",
-          "Small scabs",
-          "Hair thinning",
-        ],
-        treatment: {
-          medication: "Prednisolone 5mg",
-          dosage: "1 tablet daily for 5 days, then every other day",
-          topical: "Hydrocortisone cream (pet-safe) twice daily",
-          additional: [
-            "Identify and remove allergen",
-            "Use hypoallergenic diet trial",
-          ],
-        },
-        urgency: "Low - Monitor and treat within a week",
-      },
-    },
-    cow: {
-      "Ringworm (Dermatophytosis)": {
-        confidence: 94,
-        severity: "high",
-        description: "Fungal infection causing circular patches of hair loss",
-        symptoms: [
-          "Circular bald patches",
-          "Scaly, crusty skin",
-          "Mild itching",
-          "Spreading lesions",
-        ],
-        treatment: {
-          medication: "Griseofulvin powder",
-          dosage: "Mix in feed as per veterinary guidance",
-          topical: "Miconazole/Chlorhexidine wash weekly",
-          additional: [
-            "Isolate affected animals",
-            "Disinfect equipment and housing",
-            "High contagion risk",
-          ],
-        },
-        urgency: "High - Immediate treatment required (contagious)",
-      },
-    },
-  };
 
   const handleImageUpload = (event: ChangeEvent<HTMLInputElement>): void => {
     const file = event.target.files?.[0];
@@ -206,19 +82,6 @@ const DetectDiseasePage: React.FC = () => {
     );
   };
 
-  const getSeverityColor = (severity: SeverityLevel): string => {
-    switch (severity) {
-      case "high":
-        return "text-red-600 bg-red-50 border-red-200";
-      case "medium":
-        return "text-yellow-600 bg-yellow-50 border-yellow-200";
-      case "low":
-        return "text-green-600 bg-green-50 border-green-200";
-      default:
-        return "text-gray-600 bg-gray-50 border-gray-200";
-    }
-  };
-
   const handleFileInputClick = (): void => {
     fileInputRef.current?.click();
   };
@@ -259,27 +122,7 @@ const DetectDiseasePage: React.FC = () => {
           </p>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-          <div className="bg-white/80 backdrop-blur-lg rounded-3xl p-8 shadow-xl text-center border border-white/20 hover:shadow-2xl transition-all duration-300">
-            <div className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-3">
-              95%
-            </div>
-            <div className="text-gray-600 font-medium">Accuracy Rate</div>
-          </div>
-          <div className="bg-white/80 backdrop-blur-lg rounded-3xl p-8 shadow-xl text-center border border-white/20 hover:shadow-2xl transition-all duration-300">
-            <div className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-3">
-              &lt;30s
-            </div>
-            <div className="text-gray-600 font-medium">Analysis Time</div>
-          </div>
-          <div className="bg-white/80 backdrop-blur-lg rounded-3xl p-8 shadow-xl text-center border border-white/20 hover:shadow-2xl transition-all duration-300">
-            <div className="text-4xl font-bold bg-gradient-to-r from-pink-600 to-indigo-600 bg-clip-text text-transparent mb-3">
-              50+
-            </div>
-            <div className="text-gray-600 font-medium">Disease Types</div>
-          </div>
-        </div>
+        <Stats />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Upload Section */}
@@ -302,8 +145,7 @@ const DetectDiseasePage: React.FC = () => {
                       selectedAnimal === animal.id
                         ? "border-indigo-600 bg-indigo-50 text-indigo-600 shadow-lg"
                         : "border-gray-200 hover:border-indigo-300 hover:bg-gray-50"
-                    }`}
-                  >
+                    }`}>
                     <div className="text-3xl mb-3">{animal.icon}</div>
                     <div className="font-bold">{animal.name}</div>
                   </button>
@@ -320,8 +162,7 @@ const DetectDiseasePage: React.FC = () => {
               {!uploadedImage ? (
                 <div
                   onClick={handleFileInputClick}
-                  className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors"
-                >
+                  className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors">
                   <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                   <p className="text-gray-600 mb-2">Click to upload an image</p>
                   <p className="text-sm text-gray-500">
@@ -337,8 +178,7 @@ const DetectDiseasePage: React.FC = () => {
                   />
                   <button
                     onClick={handleRemoveImage}
-                    className="absolute top-3 right-3 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
-                  >
+                    className="absolute top-3 right-3 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors">
                     <X className="w-4 h-4" />
                   </button>
                 </div>
@@ -361,8 +201,7 @@ const DetectDiseasePage: React.FC = () => {
                 </label>
                 <button
                   onClick={toggleSymptomForm}
-                  className="text-blue-600 text-sm hover:text-blue-700"
-                >
+                  className="text-blue-600 text-sm hover:text-blue-700">
                   {showSymptomForm ? "Hide" : "Add Symptoms"}
                 </button>
               </div>
@@ -377,8 +216,7 @@ const DetectDiseasePage: React.FC = () => {
                         symptoms.includes(symptom)
                           ? "border-blue-600 bg-blue-50 text-blue-600"
                           : "border-gray-200 hover:border-gray-300"
-                      }`}
-                    >
+                      }`}>
                       {symptom}
                     </button>
                   ))}
@@ -390,8 +228,7 @@ const DetectDiseasePage: React.FC = () => {
             <button
               onClick={handleAnalyze}
               disabled={!uploadedImage || isAnalyzing}
-              className="w-full bg-blue-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
-            >
+              className="w-full bg-blue-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center">
               {isAnalyzing ? (
                 <>
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
@@ -451,8 +288,7 @@ const DetectDiseasePage: React.FC = () => {
                     <div
                       className={`px-3 py-1 rounded-full text-sm border ${getSeverityColor(
                         analysisResult.severity
-                      )}`}
-                    >
+                      )}`}>
                       {analysisResult.severity.charAt(0).toUpperCase() +
                         analysisResult.severity.slice(1)}{" "}
                       Severity
@@ -469,8 +305,7 @@ const DetectDiseasePage: React.FC = () => {
                     {analysisResult.symptoms.map((symptom, idx) => (
                       <li
                         key={idx}
-                        className="flex items-center text-sm text-gray-600"
-                      >
+                        className="flex items-center text-sm text-gray-600">
                         <div className="w-2 h-2 bg-blue-600 rounded-full mr-2"></div>
                         {symptom}
                       </li>
@@ -551,83 +386,7 @@ const DetectDiseasePage: React.FC = () => {
             )}
           </div>
         </div>
-
-        {/* Disclaimer */}
-        <div className="mt-12 bg-amber-50 border border-amber-200 rounded-xl p-6">
-          <div className="flex items-start">
-            <AlertTriangle className="w-6 h-6 text-amber-600 mr-3 mt-1 flex-shrink-0" />
-            <div>
-              <h3 className="font-semibold text-amber-900 mb-2">
-                Important Medical Disclaimer
-              </h3>
-              <p className="text-amber-800 text-sm leading-relaxed">
-                This AI diagnosis tool is designed to assist with preliminary
-                assessment only. It should not replace professional veterinary
-                consultation. For serious conditions, persistent symptoms, or
-                emergency situations, please consult a qualified veterinarian
-                immediately. The accuracy of results depends on image quality
-                and may vary based on individual cases.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* How it Works */}
-        <div className="mt-16 bg-white rounded-2xl shadow-sm p-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">
-            How Our AI Detection Works
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Upload className="w-8 h-8 text-blue-600" />
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2">
-                1. Upload Image
-              </h3>
-              <p className="text-gray-600 text-sm">
-                Take a clear photo of the affected skin area
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Zap className="w-8 h-8 text-blue-600" />
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2">
-                2. AI Analysis
-              </h3>
-              <p className="text-gray-600 text-sm">
-                Advanced algorithms analyze visual patterns and symptoms
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Shield className="w-8 h-8 text-blue-600" />
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2">
-                3. Disease Identification
-              </h3>
-              <p className="text-gray-600 text-sm">
-                Get confident diagnosis with severity assessment
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FileText className="w-8 h-8 text-blue-600" />
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2">
-                4. Treatment Plan
-              </h3>
-              <p className="text-gray-600 text-sm">
-                Receive detailed medication and care recommendations
-              </p>
-            </div>
-          </div>
-        </div>
+        <Disclaimer />
       </div>
     </div>
   );

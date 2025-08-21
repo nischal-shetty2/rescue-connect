@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import StartRescuingPage from "./components/Rescue/Rescue";
 import Landing from "./components/Landing";
-import DetectDiseasePage from "./components/DiseaseDetect";
+import DetectDiseasePage from "./components/Disease/DiseaseDetect";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Navbar from "./components/Navbar";
