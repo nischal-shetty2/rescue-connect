@@ -270,6 +270,20 @@ const DetectDiseasePage: React.FC = () => {
 
             {analysisResult && (
               <div className="space-y-6">
+                {/* Medical Disclaimer */}
+                <div className="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-lg">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0">
+                      <FileText className="h-5 w-5 text-amber-400" />
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm text-amber-800">
+                        <strong>Important Notice:</strong> The prediction you see here is meant to give an early indication. It should not be taken as medical advice. For accurate diagnosis and care, a qualified vet must be consulted.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Diagnosis */}
                 <div className="border-l-4 border-blue-600 pl-4">
                   <h3 className="text-xl font-bold text-gray-900 mb-2">

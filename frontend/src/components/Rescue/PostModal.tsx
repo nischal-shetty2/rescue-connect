@@ -32,7 +32,6 @@ interface PostData {
   age?: string;
   gender?: string;
   condition: string;
-  urgency: string;
   description: string;
   images: string[];
   contactNumber: string;
@@ -50,7 +49,6 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
   const [age, setAge] = useState<string>("");
   const [gender, setGender] = useState<string>("");
   const [condition, setCondition] = useState<string>("");
-  const [urgency, setUrgency] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [vaccinated, setVaccinated] = useState<boolean>(false);
   const [showMap, setShowMap] = useState<boolean>(false);
@@ -257,7 +255,6 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
     setAge("");
     setGender("");
     setCondition("");
-    setUrgency("");
     setDescription("");
     setVaccinated(false);
     setSelectedLocation(null);
@@ -280,11 +277,6 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
 
     if (!condition) {
       alert("Please select the animal's condition.");
-      return false;
-    }
-
-    if (!urgency) {
-      alert("Please select the urgency level.");
       return false;
     }
 
@@ -318,7 +310,6 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
       age: age || undefined,
       gender: gender || undefined,
       condition,
-      urgency,
       description,
       images: uploadedImages,
       contactNumber,
@@ -500,42 +491,24 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
             </div>
           </div>
 
-          {/* Condition & Urgency */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">
-                Condition *
-              </label>
-              <select
-                value={condition}
-                onChange={(e) => setCondition(e.target.value)}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-indigo-500 focus:outline-none transition-colors"
-                required
-              >
-                <option value="">Select condition</option>
-                <option value="Good">Good</option>
-                <option value="Injured">Injured</option>
-                <option value="Sick">Sick</option>
-                <option value="Pregnant">Pregnant</option>
-                <option value="Malnourished">Malnourished</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">
-                Urgency *
-              </label>
-              <select
-                value={urgency}
-                onChange={(e) => setUrgency(e.target.value)}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-indigo-500 focus:outline-none transition-colors"
-                required
-              >
-                <option value="">Select urgency</option>
-                <option value="high">High Priority</option>
-                <option value="medium">Medium Priority</option>
-                <option value="low">Low Priority</option>
-              </select>
-            </div>
+          {/* Condition */}
+          <div>
+            <label className="block text-sm font-bold text-gray-700 mb-2">
+              Condition *
+            </label>
+            <select
+              value={condition}
+              onChange={(e) => setCondition(e.target.value)}
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-indigo-500 focus:outline-none transition-colors"
+              required
+            >
+              <option value="">Select condition</option>
+              <option value="Good">Good</option>
+              <option value="Injured">Injured</option>
+              <option value="Sick">Sick</option>
+              <option value="Pregnant">Pregnant</option>
+              <option value="Malnourished">Malnourished</option>
+            </select>
           </div>
 
           {/* Description */}

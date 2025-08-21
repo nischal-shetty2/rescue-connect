@@ -25,7 +25,6 @@ const dummyAnimals = [
     location: "MG Road, Bengaluru",
     distance: "2.1 km",
     info: "Healthy, friendly, needs shelter. Vaccinated.",
-    urgency: "medium",
     age: "2 years",
     gender: "Male",
     rescuer: "Sarah Kumar",
@@ -33,6 +32,7 @@ const dummyAnimals = [
     condition: "Good",
     vaccinated: true,
     contact: "+91 98765 43210",
+    isUserCreated: false,
   },
   {
     id: 2,
@@ -43,7 +43,6 @@ const dummyAnimals = [
     location: "Indiranagar, Bengaluru",
     distance: "3.5 km",
     info: "Injured leg, needs medical attention. Docile.",
-    urgency: "high",
     age: "Adult",
     gender: "Female",
     rescuer: "Ramesh Patel",
@@ -51,6 +50,7 @@ const dummyAnimals = [
     condition: "Injured",
     vaccinated: false,
     contact: "+91 87654 32109",
+    isUserCreated: false,
   },
   {
     id: 3,
@@ -61,7 +61,6 @@ const dummyAnimals = [
     location: "Koramangala, Bengaluru",
     distance: "1.2 km",
     info: "Young, scared, needs food and care.",
-    urgency: "medium",
     age: "6 months",
     gender: "Female",
     rescuer: "Priya Singh",
@@ -69,6 +68,7 @@ const dummyAnimals = [
     condition: "Fair",
     vaccinated: true,
     contact: "+91 76543 21098",
+    isUserCreated: false,
   },
   {
     id: 4,
@@ -79,7 +79,6 @@ const dummyAnimals = [
     location: "Whitefield, Bengaluru",
     distance: "5.8 km",
     info: "Abandoned puppy, very playful and energetic.",
-    urgency: "low",
     age: "4 months",
     gender: "Male",
     rescuer: "John Matthew",
@@ -87,6 +86,7 @@ const dummyAnimals = [
     condition: "Good",
     vaccinated: false,
     contact: "+91 65432 10987",
+    isUserCreated: false,
   },
   {
     id: 5,
@@ -97,7 +97,6 @@ const dummyAnimals = [
     location: "HSR Layout, Bengaluru",
     distance: "4.2 km",
     info: "Pregnant cat, needs immediate shelter and care.",
-    urgency: "high",
     age: "1.5 years",
     gender: "Female",
     rescuer: "Anjali Mehta",
@@ -105,6 +104,7 @@ const dummyAnimals = [
     condition: "Pregnant",
     vaccinated: true,
     contact: "+91 54321 09876",
+    isUserCreated: false,
   },
 ];
 
@@ -120,7 +120,6 @@ const StartRescuingPage = () => {
     images?: string[];
     location?: { address?: string };
     description?: string;
-    urgency?: string;
     age?: string;
     gender?: string;
     posterName?: string;
@@ -137,7 +136,6 @@ const StartRescuingPage = () => {
     location: string;
     distance: string;
     info: string;
-    urgency: string;
     age: string;
     gender: string;
     rescuer: string;
@@ -145,6 +143,7 @@ const StartRescuingPage = () => {
     condition: string;
     vaccinated: boolean;
     contact: string;
+    isUserCreated?: boolean;
   };
   const [storedPosts, setStoredPosts] = useState<AnimalPost[]>([]);
   const [selectedAnimal, setSelectedAnimal] = useState<Animal | null>(null);
@@ -181,35 +180,90 @@ const StartRescuingPage = () => {
 
     window.addEventListener("storage", handleStorageChange);
     window.addEventListener("postAdded", handleStorageChange);
+    window.addEventListener("postDeleted", handleStorageChange);
 
     return () => {
       window.removeEventListener("storage", handleStorageChange);
       window.removeEventListener("postAdded", handleStorageChange);
+      window.removeEventListener("postDeleted", handleStorageChange);
     };
   }, []);
 
+  const handleDeletePost = (postId: string | number) => {
+    console.log("=== DELETE POST FUNCTION CALLED ===");
+    console.log("Post ID to delete:", postId, "Type:", typeof postId);
+    
+    // Add immediate visual feedback
+    alert(`Delete function called for post ID: ${postId}`);
+    
+    if (window.confirm("Are you sure you want to delete this post?")) {
+      try {
+        const existingPosts = JSON.parse(
+          localStorage.getItem("animalPosts") || "[]"
+        );
+        
+        console.log("All existing posts:", existingPosts);
+        
+        // Find the post to delete
+        const postToDelete = existingPosts.find((post: AnimalPost) => 
+          String(post.id) === String(postId) || Number(post.id) === Number(postId)
+        );
+        
+        console.log("Post found for deletion:", postToDelete);
+        
+        if (!postToDelete) {
+          alert(`Post with ID ${postId} not found in localStorage!`);
+          return;
+        }
+        
+        const updatedPosts = existingPosts.filter((post: AnimalPost) => 
+          String(post.id) !== String(postId) && Number(post.id) !== Number(postId)
+        );
+        
+        console.log("Posts after deletion:", updatedPosts);
+        console.log("Number of posts removed:", existingPosts.length - updatedPosts.length);
+        
+        localStorage.setItem("animalPosts", JSON.stringify(updatedPosts));
+        setStoredPosts(updatedPosts);
+        window.dispatchEvent(new CustomEvent("postDeleted"));
+        
+        alert("Post deleted successfully!");
+      } catch (error) {
+        console.error("Error deleting post:", error);
+        alert("Error deleting post. Please try again.");
+      }
+    }
+  };
+
   // Convert stored posts to the format expected by the UI
   const convertStoredPostsToAnimals = (posts: AnimalPost[]): Animal[] => {
-    return posts.map((post) => ({
-      id: parseInt(String(post.id)) || Date.now(),
-      type: post.animalType || "Unknown",
-      name: post.animalName || "Unknown",
-      image:
-        post.images && post.images.length > 0
-          ? post.images[0]
-          : "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=400&q=80",
-      location: post.location?.address || "Unknown Location",
-      distance: "0 km away",
-      info: post.description || "No description available",
-      urgency: post.urgency || "medium",
-      age: post.age || "Unknown",
-      gender: post.gender || "Unknown",
-      rescuer: post.posterName || "Anonymous",
-      postedTime: getTimeAgo(post.timestamp),
-      condition: post.condition || "Unknown",
-      vaccinated: post.vaccinated || false,
-      contact: post.contactNumber || "No contact",
-    }));
+    console.log("Converting stored posts to animals:", posts);
+    const converted = posts.map((post) => {
+      const animal = {
+        id: post.id ? (typeof post.id === 'string' ? parseInt(post.id) : post.id) : Date.now(),
+        type: post.animalType || "Unknown",
+        name: post.animalName || "Unknown",
+        image:
+          post.images && post.images.length > 0
+            ? post.images[0]
+            : "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=400&q=80",
+        location: post.location?.address || "Unknown Location",
+        distance: "0 km away",
+        info: post.description || "No description available",
+        age: post.age || "Unknown",
+        gender: post.gender || "Unknown",
+        rescuer: post.posterName || "Anonymous",
+        postedTime: getTimeAgo(post.timestamp),
+        condition: post.condition || "Unknown",
+        vaccinated: post.vaccinated || false,
+        contact: post.contactNumber || "No contact",
+        isUserCreated: true,
+      };
+      console.log(`Converted post ${post.id} to animal:`, animal);
+      return animal;
+    });
+    console.log("All converted animals:", converted);
+    return converted;
   };
 
   // Helper function to calculate time ago
@@ -295,19 +349,6 @@ const StartRescuingPage = () => {
     }
   };
 
-  const getUrgencyColor = (urgency: string) => {
-    switch (urgency) {
-      case "high":
-        return "bg-red-100 text-red-800 border-red-200";
-      case "medium":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200";
-      case "low":
-        return "bg-green-100 text-green-800 border-green-200";
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
-    }
-  };
-
   const getConditionIcon = (condition: string) => {
     switch (condition.toLowerCase()) {
       case "injured":
@@ -363,18 +404,25 @@ const StartRescuingPage = () => {
               alt={animal.name}
               className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500"
             />
-            <div className="absolute top-4 right-4">
-              <span
-                className={`px-3 py-2 rounded-full text-sm font-bold border backdrop-blur-sm ${getUrgencyColor(
-                  animal.urgency
-                )}`}>
-                {animal.urgency} priority
-              </span>
-            </div>
             <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-sm text-white px-3 py-2 rounded-xl text-sm font-medium">
               <Camera className="w-4 h-4 inline mr-1" />
               {animal.postedTime}
             </div>
+            {animal.isUserCreated && (
+              <button
+                onClick={(e) => {
+                  console.log(`Delete button clicked for ${animal.name} with ID: ${animal.id}, isUserCreated: ${animal.isUserCreated}`);
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleDeletePost(animal.id);
+                }}
+                className="absolute top-2 right-2 bg-red-500 hover:bg-red-700 text-white p-2 rounded-full z-10 cursor-pointer"
+                title="Delete this post"
+                style={{ pointerEvents: 'auto' }}
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </div>
 
@@ -460,14 +508,6 @@ const StartRescuingPage = () => {
                 alt={animal.name}
                 className="w-32 h-32 object-cover rounded-xl group-hover:scale-105 transition-transform duration-300"
               />
-              <div className="absolute top-2 right-2">
-                <span
-                  className={`px-2 py-1 rounded-full text-xs font-medium border ${getUrgencyColor(
-                    animal.urgency
-                  )}`}>
-                  {animal.urgency}
-                </span>
-              </div>
             </div>
 
             <div className="flex-1">
@@ -488,9 +528,26 @@ const StartRescuingPage = () => {
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="flex items-center text-gray-500 mb-1">
-                    <Clock className="w-4 h-4 mr-1" />
-                    <span className="text-sm">{animal.postedTime}</span>
+                  <div className="flex items-center justify-end gap-2">
+                    {animal.isUserCreated && (
+                      <button
+                        onClick={(e) => {
+                          console.log(`ListView delete button clicked for ${animal.name} with ID: ${animal.id}, isUserCreated: ${animal.isUserCreated}`);
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleDeletePost(animal.id);
+                        }}
+                        className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-full z-10 cursor-pointer"
+                        title="Delete this post"
+                        style={{ pointerEvents: 'auto' }}
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    )}
+                    <div className="flex items-center text-gray-500">
+                      <Clock className="w-4 h-4 mr-1" />
+                      <span className="text-sm">{animal.postedTime}</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -615,13 +672,7 @@ const StartRescuingPage = () => {
 
           {showFilters && (
             <div className="mt-8 pt-8 border-t border-gray-200">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <select className="border-2 border-gray-200 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/80 backdrop-blur-sm">
-                  <option>All Urgency</option>
-                  <option>High Priority</option>
-                  <option>Medium Priority</option>
-                  <option>Low Priority</option>
-                </select>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <select className="border-2 border-gray-200 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/80 backdrop-blur-sm">
                   <option>All Conditions</option>
                   <option>Good</option>
