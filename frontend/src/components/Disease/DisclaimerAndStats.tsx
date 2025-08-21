@@ -83,7 +83,7 @@ export const Disclaimer = () => {
 
 export const Stats = () => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
       <div className="bg-white/80 backdrop-blur-lg rounded-3xl p-8 shadow-xl text-center border border-white/20 hover:shadow-2xl transition-all duration-300">
         <div className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-3">
           95%

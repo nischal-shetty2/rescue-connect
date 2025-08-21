@@ -1,5 +1,9 @@
-import type { DiseaseInfo } from "../DiseaseDetect.types";
-import type { AnimalId, SeverityLevel } from "./DiseaseDetect";
+import type {
+  AnimalId,
+  AnimalType,
+  DiseaseInfo,
+  SeverityLevel,
+} from "../DiseaseDetect.types";
 
 export const commonSymptoms: Record<AnimalId, string[]> = {
   dog: [
@@ -113,3 +117,38 @@ export function getSeverityColor(severity: SeverityLevel): string {
       return "text-gray-600 bg-gray-50 border-gray-200";
   }
 }
+
+export const prompt = ({
+  selectedAnimal,
+  symptoms,
+}: {
+  selectedAnimal: string;
+  symptoms: string[];
+}) => `You are a veterinary AI assistant. Given an image of a ${selectedAnimal}, analyze and respond ONLY in JSON format. Your response MUST include ALL of the following fields, with NO extra fields, NO markdown, NO explanation, and NO code block:
+
+{
+  "disease": string, // Name of the disease or condition detected. REQUIRED. Example: "Ring worm"
+  "description": string, // Detailed description of the findings. REQUIRED.
+  "symptoms": string[], // Array of symptoms. REQUIRED. Example: ["Redness", "Inflammation", "Skin lesion"]
+  "severity": string, // REQUIRED. One of: "high", "medium", "low" ONLY. Example: "medium"
+  "confidence": number, // REQUIRED. Confidence score between 0 and 1. Example: 0.85
+  "treatment": {
+    "medication": string, // REQUIRED. Name of medication(s) recommended.
+    "dosage": string, // REQUIRED. Dosage instructions.
+    "topical": string, // REQUIRED. Topical treatment instructions.
+    "additional": string[] // REQUIRED. Array of additional care instructions.
+  },
+  "urgency": string // REQUIRED. Urgency of treatment or vet visit.
+}
+
+REPEAT: You MUST return ALL fields above, even if you are unsure. Do NOT omit any field. Do NOT add any extra field. Do NOT return markdown, code block, or explanation. ONLY return the JSON object above, with all fields present and filled. If a value is unknown, use an empty string or empty array, but the field MUST be present. Example for symptoms: "symptoms": ["Redness", "Inflammation"].
+
+Also, consider these observed symptoms: ${symptoms.join(", ") || "none"}.
+
+REPEAT: Return ONLY the JSON object, with ALL required fields, NO extra fields, NO markdown, NO explanation, NO code block.`;
+
+export const animalTypes: AnimalType[] = [
+  { id: "dog", name: "Dog", icon: "🐕" },
+  { id: "cat", name: "Cat", icon: "🐱" },
+  { id: "cow", name: "Cow", icon: "🐄" },
+];

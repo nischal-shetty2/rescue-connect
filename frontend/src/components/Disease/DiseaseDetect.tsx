@@ -4,7 +4,6 @@ import {
   Zap,
   CheckCircle,
   X,
-  Stethoscope,
   Clock,
   ArrowRight,
   Eye,
@@ -12,21 +11,13 @@ import {
 } from "lucide-react";
 
 import {
-  mockDiseases,
+  animalTypes,
   commonSymptoms,
   getSeverityColor,
+  prompt,
 } from "./DiseaseDetect.utils";
 import { Disclaimer, Stats } from "./DisclaimerAndStats";
-import type { AnalysisResult, AnimalType } from "../DiseaseDetect.types";
-
-export type AnimalId = "dog" | "cat" | "cow";
-export type SeverityLevel = "high" | "medium" | "low";
-
-const animalTypes: AnimalType[] = [
-  { id: "dog", name: "Dog", icon: "🐕" },
-  { id: "cat", name: "Cat", icon: "🐱" },
-  { id: "cow", name: "Cow", icon: "🐄" },
-];
+import type { AnalysisResult, AnimalId } from "../DiseaseDetect.types";
 
 const DetectDiseasePage: React.FC = () => {
   const [selectedAnimal, setSelectedAnimal] = useState<AnimalId>("dog");
@@ -54,23 +45,50 @@ const DetectDiseasePage: React.FC = () => {
   };
 
   const handleAnalyze = async (): Promise<void> => {
-    if (!uploadedImage) return;
+    if (
+      !uploadedImage ||
+      !fileInputRef.current ||
+      !fileInputRef.current.files?.[0]
+    )
+      return;
 
     setIsAnalyzing(true);
 
-    // Simulate AI analysis delay
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    // Prepare form data
+    const formData = new FormData();
+    formData.append("prompt", prompt({ selectedAnimal, symptoms }));
+    formData.append("image", fileInputRef.current.files[0]);
 
-    // Mock analysis result
-    const diseaseKey = Object.keys(mockDiseases[selectedAnimal])[0];
-    const result = mockDiseases[selectedAnimal][diseaseKey];
+    try {
+      const response = await fetch("http://localhost:3000/api/gemini-analyze", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
 
-    setAnalysisResult({
-      disease: diseaseKey,
-      ...result,
-      analysisTime: new Date().toLocaleTimeString(),
-    });
-
+      // Backend now returns clean JSON directly
+      setAnalysisResult({
+        ...data,
+        analysisTime: new Date().toLocaleTimeString(),
+      });
+    } catch (err) {
+      console.log(err);
+      setAnalysisResult({
+        disease: "Error",
+        description: "Failed to analyze image. Please try again.",
+        symptoms: [],
+        severity: "low",
+        confidence: 0,
+        treatment: {
+          medication: "",
+          dosage: "",
+          topical: "",
+          additional: [],
+        },
+        urgency: "",
+        analysisTime: new Date().toLocaleTimeString(),
+      });
+    }
     setIsAnalyzing(false);
   };
 
@@ -82,48 +100,13 @@ const DetectDiseasePage: React.FC = () => {
     );
   };
 
-  const handleFileInputClick = (): void => {
-    fileInputRef.current?.click();
-  };
-
-  const handleRemoveImage = (): void => {
-    setUploadedImage(null);
-  };
-
   const handleAnimalSelect = (animalId: AnimalId): void => {
     setSelectedAnimal(animalId);
   };
 
-  const toggleSymptomForm = (): void => {
-    setShowSymptomForm(!showSymptomForm);
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-20 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <div className="flex justify-center mb-6">
-            <div className="p-4 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-3xl shadow-2xl">
-              <Stethoscope className="w-10 h-10 text-white" />
-            </div>
-          </div>
-          <h1 className="text-5xl font-bold text-gray-900 mb-6">
-            AI-Powered
-            <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              {" "}
-              Disease Detection
-            </span>
-          </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Get instant, accurate diagnosis for skin diseases in dogs, cats, and
-            cows. Our advanced AI analyzes images and symptoms to provide
-            treatment recommendations.
-          </p>
-        </div>
-
-        <Stats />
-
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Upload Section */}
           <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl p-10 border border-white/20">
@@ -161,7 +144,9 @@ const DetectDiseasePage: React.FC = () => {
 
               {!uploadedImage ? (
                 <div
-                  onClick={handleFileInputClick}
+                  onClick={() => {
+                    fileInputRef.current?.click();
+                  }}
                   className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors">
                   <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                   <p className="text-gray-600 mb-2">Click to upload an image</p>
@@ -177,7 +162,9 @@ const DetectDiseasePage: React.FC = () => {
                     className="w-full h-64 object-cover rounded-xl"
                   />
                   <button
-                    onClick={handleRemoveImage}
+                    onClick={() => {
+                      setUploadedImage(null);
+                    }}
                     className="absolute top-3 right-3 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors">
                     <X className="w-4 h-4" />
                   </button>
@@ -200,7 +187,9 @@ const DetectDiseasePage: React.FC = () => {
                   Additional Symptoms (Optional)
                 </label>
                 <button
-                  onClick={toggleSymptomForm}
+                  onClick={() => {
+                    setShowSymptomForm(!showSymptomForm);
+                  }}
                   className="text-blue-600 text-sm hover:text-blue-700">
                   {showSymptomForm ? "Hide" : "Add Symptoms"}
                 </button>
@@ -278,7 +267,10 @@ const DetectDiseasePage: React.FC = () => {
                     </div>
                     <div className="ml-3">
                       <p className="text-sm text-amber-800">
-                        <strong>Important Notice:</strong> The prediction you see here is meant to give an early indication. It should not be taken as medical advice. For accurate diagnosis and care, a qualified vet must be consulted.
+                        <strong>Important Notice:</strong> The prediction you
+                        see here is meant to give an early indication. It should
+                        not be taken as medical advice. For accurate diagnosis
+                        and care, a qualified vet must be consulted.
                       </p>
                     </div>
                   </div>
@@ -301,10 +293,12 @@ const DetectDiseasePage: React.FC = () => {
                     </div>
                     <div
                       className={`px-3 py-1 rounded-full text-sm border ${getSeverityColor(
-                        analysisResult.severity
+                        analysisResult.severity || "low"
                       )}`}>
-                      {analysisResult.severity.charAt(0).toUpperCase() +
-                        analysisResult.severity.slice(1)}{" "}
+                      {analysisResult.severity
+                        ? analysisResult.severity.charAt(0).toUpperCase() +
+                          analysisResult.severity.slice(1)
+                        : "Low"}{" "}
                       Severity
                     </div>
                   </div>
@@ -316,14 +310,21 @@ const DetectDiseasePage: React.FC = () => {
                     Common Symptoms:
                   </h4>
                   <ul className="grid grid-cols-2 gap-2">
-                    {analysisResult.symptoms.map((symptom, idx) => (
-                      <li
-                        key={idx}
-                        className="flex items-center text-sm text-gray-600">
-                        <div className="w-2 h-2 bg-blue-600 rounded-full mr-2"></div>
-                        {symptom}
+                    {Array.isArray(analysisResult.symptoms) &&
+                    analysisResult.symptoms.length > 0 ? (
+                      analysisResult.symptoms.map((symptom, idx) => (
+                        <li
+                          key={idx}
+                          className="flex items-center text-sm text-gray-600">
+                          <div className="w-2 h-2 bg-blue-600 rounded-full mr-2"></div>
+                          {symptom}
+                        </li>
+                      ))
+                    ) : (
+                      <li className="text-sm text-gray-500">
+                        No symptoms listed.
                       </li>
-                    ))}
+                    )}
                   </ul>
                 </div>
 
@@ -340,10 +341,13 @@ const DetectDiseasePage: React.FC = () => {
                         Medication:
                       </span>
                       <p className="text-gray-600">
-                        {analysisResult.treatment.medication}
+                        {analysisResult.treatment?.medication ||
+                          "No medication listed."}
                       </p>
                       <p className="text-sm text-gray-500">
-                        Dosage: {analysisResult.treatment.dosage}
+                        Dosage:{" "}
+                        {analysisResult.treatment?.dosage ||
+                          "No dosage listed."}
                       </p>
                     </div>
 
@@ -352,7 +356,8 @@ const DetectDiseasePage: React.FC = () => {
                         Topical Treatment:
                       </span>
                       <p className="text-gray-600">
-                        {analysisResult.treatment.topical}
+                        {analysisResult.treatment?.topical ||
+                          "No topical treatment listed."}
                       </p>
                     </div>
 
@@ -361,10 +366,15 @@ const DetectDiseasePage: React.FC = () => {
                         Additional Care:
                       </span>
                       <ul className="list-disc list-inside text-gray-600 text-sm mt-1">
-                        {analysisResult.treatment.additional.map(
-                          (care, idx) => (
-                            <li key={idx}>{care}</li>
+                        {Array.isArray(analysisResult.treatment?.additional) &&
+                        analysisResult.treatment.additional.length > 0 ? (
+                          analysisResult.treatment.additional.map(
+                            (care, idx) => <li key={idx}>{care}</li>
                           )
+                        ) : (
+                          <li className="text-sm text-gray-500">
+                            No additional care listed.
+                          </li>
                         )}
                       </ul>
                     </div>
@@ -401,6 +411,7 @@ const DetectDiseasePage: React.FC = () => {
           </div>
         </div>
         <Disclaimer />
+        <Stats />
       </div>
     </div>
   );

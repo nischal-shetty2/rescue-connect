@@ -25,3 +25,6 @@ export interface AnalysisResult extends DiseaseInfo {
   disease: string;
   analysisTime: string;
 }
+
+export type AnimalId = "dog" | "cat" | "cow";
+export type SeverityLevel = "high" | "medium" | "low";
