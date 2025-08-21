@@ -338,6 +338,9 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
       ];
       localStorage.setItem("animalPosts", JSON.stringify(updatedPosts));
 
+      // Dispatch custom event to notify other components
+      window.dispatchEvent(new CustomEvent("postAdded"));
+
       console.log("Post saved to localStorage:", postData);
       alert("Post created successfully!");
       handleCloseModal();
@@ -356,7 +359,8 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
           </h2>
           <button
             onClick={handleCloseModal}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          >
             <X className="w-6 h-6" />
           </button>
         </div>
@@ -377,7 +381,8 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
                     selectedAnimalType === type
                       ? "border-indigo-500 bg-indigo-50 text-indigo-600"
                       : "border-gray-200 hover:border-indigo-300 hover:bg-indigo-50"
-                  }`}>
+                  }`}
+                >
                   {type === "Dog" && "🐕"}
                   {type === "Cat" && "🐱"}
                   {type === "Cow" && "🐄"}
@@ -422,14 +427,16 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
                   type="button"
                   onClick={handleAutoDetectLocation}
                   disabled={isDetectingLocation}
-                  className="px-4 py-3 bg-blue-500 text-white rounded-2xl hover:bg-blue-600 disabled:bg-blue-300 transition-colors flex items-center gap-2">
+                  className="px-4 py-3 bg-blue-500 text-white rounded-2xl hover:bg-blue-600 disabled:bg-blue-300 transition-colors flex items-center gap-2"
+                >
                   <Crosshair className="w-5 h-5" />
                   {isDetectingLocation ? "Detecting..." : "Auto-detect"}
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowMap(!showMap)}
-                  className="px-4 py-3 bg-green-500 text-white rounded-2xl hover:bg-green-600 transition-colors flex items-center gap-2">
+                  className="px-4 py-3 bg-green-500 text-white rounded-2xl hover:bg-green-600 transition-colors flex items-center gap-2"
+                >
                   <MapPin className="w-5 h-5" />
                   {showMap ? "Hide Map" : "Select on Map"}
                 </button>
@@ -468,7 +475,8 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
               <select
                 value={age}
                 onChange={(e) => setAge(e.target.value)}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-indigo-500 focus:outline-none transition-colors">
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-indigo-500 focus:outline-none transition-colors"
+              >
                 <option value="">Select age</option>
                 <option value="Young (0-1 year)">Young (0-1 year)</option>
                 <option value="Adult (1-7 years)">Adult (1-7 years)</option>
@@ -482,7 +490,8 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
               <select
                 value={gender}
                 onChange={(e) => setGender(e.target.value)}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-indigo-500 focus:outline-none transition-colors">
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-indigo-500 focus:outline-none transition-colors"
+              >
                 <option value="">Select if known</option>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
@@ -501,7 +510,8 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
                 value={condition}
                 onChange={(e) => setCondition(e.target.value)}
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-indigo-500 focus:outline-none transition-colors"
-                required>
+                required
+              >
                 <option value="">Select condition</option>
                 <option value="Good">Good</option>
                 <option value="Injured">Injured</option>
@@ -518,7 +528,8 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
                 value={urgency}
                 onChange={(e) => setUrgency(e.target.value)}
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-indigo-500 focus:outline-none transition-colors"
-                required>
+                required
+              >
                 <option value="">Select urgency</option>
                 <option value="high">High Priority</option>
                 <option value="medium">Medium Priority</option>
@@ -551,7 +562,8 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
             {/* Upload Area */}
             <div
               className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center hover:border-indigo-400 hover:bg-indigo-50 transition-colors cursor-pointer"
-              onClick={() => document.getElementById("imageUpload")?.click()}>
+              onClick={() => document.getElementById("imageUpload")?.click()}
+            >
               <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <p className="text-gray-600 mb-2">Click to upload photos</p>
               <p className="text-sm text-gray-500">
@@ -586,7 +598,8 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
                       <button
                         type="button"
                         onClick={() => removeImage(index)}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors">
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                      >
                         <X className="w-4 h-4" />
                       </button>
                     </div>
@@ -649,13 +662,15 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
             <button
               type="button"
               onClick={handleCloseModal}
-              className="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-2xl font-bold hover:bg-gray-50 transition-colors">
+              className="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-2xl font-bold hover:bg-gray-50 transition-colors"
+            >
               Cancel
             </button>
             <button
               type="button"
               onClick={handleSubmit}
-              className="flex-1 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-2xl font-bold hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg">
+              className="flex-1 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-2xl font-bold hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg"
+            >
               Post Animal
             </button>
           </div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   MapPin,
   Clock,
@@ -112,6 +112,78 @@ const StartRescuingPage = () => {
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
   const [showPostModal, setShowPostModal] = useState(false);
+  const [storedPosts, setStoredPosts] = useState<any[]>([]);
+
+  // Load posts from localStorage on component mount
+  useEffect(() => {
+    const loadStoredPosts = () => {
+      try {
+        const posts = JSON.parse(localStorage.getItem("animalPosts") || "[]");
+        setStoredPosts(posts);
+      } catch (error) {
+        console.error("Error loading posts from localStorage:", error);
+        setStoredPosts([]);
+      }
+    };
+
+    loadStoredPosts();
+
+    // Listen for storage changes and custom events
+    const handleStorageChange = () => {
+      loadStoredPosts();
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("postAdded", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("postAdded", handleStorageChange);
+    };
+  }, []);
+
+  // Convert stored posts to the format expected by the UI
+  const convertStoredPostsToAnimals = (posts: any[]) => {
+    return posts.map((post) => ({
+      id: parseInt(post.id) || Date.now(),
+      type: post.animalType || "Unknown",
+      name: post.animalName || "Unknown",
+      image: post.images && post.images.length > 0 ? post.images[0] : 
+        "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=400&q=80",
+      location: post.location?.address || "Unknown Location",
+      distance: "0 km away",
+      info: post.description || "No description available",
+      urgency: post.urgency || "medium",
+      age: post.age || "Unknown",
+      gender: post.gender || "Unknown",
+      rescuer: post.posterName || "Anonymous",
+      postedTime: getTimeAgo(post.timestamp),
+      condition: post.condition || "Unknown",
+      vaccinated: post.vaccinated || false,
+      contact: post.contactNumber || "No contact",
+    }));
+  };
+
+  // Helper function to calculate time ago
+  const getTimeAgo = (timestamp: string): string => {
+    if (!timestamp) return "Recently";
+    
+    const now = new Date();
+    const posted = new Date(timestamp);
+    const diffInMinutes = Math.floor((now.getTime() - posted.getTime()) / (1000 * 60));
+    
+    if (diffInMinutes < 1) {
+      return "Just now";
+    } else if (diffInMinutes < 60) {
+      return `${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''} ago`;
+    } else if (diffInMinutes < 1440) {
+      const hours = Math.floor(diffInMinutes / 60);
+      return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    } else {
+      const days = Math.floor(diffInMinutes / 1440);
+      return `${days} day${days > 1 ? 's' : ''} ago`;
+    }
+  };
 
   const getUrgencyColor = (urgency: string) => {
     switch (urgency) {
@@ -137,15 +209,36 @@ const StartRescuingPage = () => {
     }
   };
 
+  // Combine dummy animals with stored posts
+  const allAnimals = [
+    ...dummyAnimals,
+    ...convertStoredPostsToAnimals(storedPosts)
+  ];
+
   const filteredAnimals =
     selectedFilter === "all"
-      ? dummyAnimals
-      : dummyAnimals.filter(
+      ? allAnimals
+      : allAnimals.filter(
           (animal) => animal.type.toLowerCase() === selectedFilter
         );
 
   const handleOpenModal = () => {
     setShowPostModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowPostModal(false);
+    // Refresh posts when modal closes (in case a new post was added)
+    const loadStoredPosts = () => {
+      try {
+        const posts = JSON.parse(localStorage.getItem("animalPosts") || "[]");
+        setStoredPosts(posts);
+      } catch (error) {
+        console.error("Error loading posts from localStorage:", error);
+        setStoredPosts([]);
+      }
+    };
+    loadStoredPosts();
   };
 
   const GridView = () => (
@@ -463,7 +556,7 @@ const StartRescuingPage = () => {
         </div>
 
         {/* Post Animal Modal */}
-        {showPostModal && <PostModal setShowPostModal={setShowPostModal} />}
+        {showPostModal && <PostModal setShowPostModal={handleCloseModal} />}
       </div>
     </div>
   );
