@@ -8,12 +8,14 @@ import {
   ArrowRight,
   ChevronRight,
   Star,
-  Heart,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Landing = () => {
   const navigate = useNavigate();
+
+  // Helper to check if user is logged in
+  const isLoggedIn = !!localStorage.getItem("currentUser");
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
@@ -42,15 +44,25 @@ const Landing = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
                 className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-2xl text-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl flex items-center justify-center group shadow-lg"
-                onClick={() => navigate("/adopt")}
-              >
+                onClick={() => {
+                  if (isLoggedIn) {
+                    navigate("/adopt");
+                  } else {
+                    navigate("/login");
+                  }
+                }}>
                 Start Rescuing
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </button>
               <button
-                onClick={() => navigate("/disease")}
-                className="bg-white/80 backdrop-blur-sm border-2 border-indigo-200 text-indigo-700 px-8 py-4 rounded-2xl text-lg font-semibold hover:bg-white hover:border-indigo-400 hover:text-indigo-800 transition-all duration-300 hover:shadow-xl"
-              >
+                onClick={() => {
+                  if (isLoggedIn) {
+                    navigate("/disease");
+                  } else {
+                    navigate("/login");
+                  }
+                }}
+                className="bg-white/80 backdrop-blur-sm border-2 border-indigo-200 text-indigo-700 px-8 py-4 rounded-2xl text-lg font-semibold hover:bg-white hover:border-indigo-400 hover:text-indigo-800 transition-all duration-300 hover:shadow-xl">
                 Detect Disease
               </button>
             </div>
@@ -111,8 +123,7 @@ const Landing = () => {
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="bg-white/80 backdrop-blur-sm p-8 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 group cursor-pointer border border-gray-100 hover:border-indigo-200"
-              >
+                className="bg-white/80 backdrop-blur-sm p-8 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 group cursor-pointer border border-gray-100 hover:border-indigo-200">
                 <div className="text-indigo-600 mb-6 group-hover:scale-110 transition-transform duration-300">
                   {feature.icon}
                 </div>
@@ -135,8 +146,7 @@ const Landing = () => {
       {/* How It Works */}
       <section
         id="how-it-works"
-        className="py-20 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50"
-      >
+        className="py-20 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-5xl font-bold text-gray-900 mb-6">
@@ -207,8 +217,7 @@ const Landing = () => {
             {testimonials.map((testimonial, index) => (
               <div
                 key={index}
-                className="bg-gradient-to-br from-white to-gray-50 p-8 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100"
-              >
+                className="bg-gradient-to-br from-white to-gray-50 p-8 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100">
                 <div className="flex items-center mb-6">
                   {[...Array(testimonial.rating)].map((_, i) => (
                     <Star
@@ -258,111 +267,6 @@ const Landing = () => {
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <Heart className="w-5 h-5 text-white" />
-                </div>
-                <span className="text-lg font-bold">Rescue Connect</span>
-              </div>
-              <p className="text-gray-400 leading-relaxed">
-                Connecting communities to rescue and care for animals in need
-                through technology and compassion.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="font-semibold mb-4">Platform</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    AI Disease Detection
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Match Finder
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Veterinary Services
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Boarding Houses
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="font-semibold mb-4">Community</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    For Rescuers
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    For Adopters
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    For Breeders
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Success Stories
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="font-semibold mb-4">Support</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Help Center
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Contact Us
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Privacy Policy
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Terms of Service
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>
-              &copy; 2025 Rescue Connect. All rights reserved. Made with ❤️ for
-              animals in need.
-            </p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };

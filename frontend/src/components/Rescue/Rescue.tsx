@@ -13,7 +13,7 @@ import {
   Plus,
   X,
 } from "lucide-react";
-import PostModal from "./Rescue/Post";
+import PostModal from "./PostModal";
 
 const dummyAnimals = [
   {
@@ -113,18 +113,51 @@ const StartRescuingPage = () => {
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
   const [showPostModal, setShowPostModal] = useState(false);
-  const [storedPosts, setStoredPosts] = useState<any[]>([]);
-  const [selectedAnimal, setSelectedAnimal] = useState<any>(null);
+  type AnimalPost = {
+    id: string | number;
+    animalType?: string;
+    animalName?: string;
+    images?: string[];
+    location?: { address?: string };
+    description?: string;
+    urgency?: string;
+    age?: string;
+    gender?: string;
+    posterName?: string;
+    timestamp?: string;
+    condition?: string;
+    vaccinated?: boolean;
+    contactNumber?: string;
+  };
+  type Animal = {
+    id: number;
+    type: string;
+    name: string;
+    image: string;
+    location: string;
+    distance: string;
+    info: string;
+    urgency: string;
+    age: string;
+    gender: string;
+    rescuer: string;
+    postedTime: string;
+    condition: string;
+    vaccinated: boolean;
+    contact: string;
+  };
+  const [storedPosts, setStoredPosts] = useState<AnimalPost[]>([]);
+  const [selectedAnimal, setSelectedAnimal] = useState<Animal | null>(null);
   const [showAdoptionModal, setShowAdoptionModal] = useState(false);
   const [adoptionForm, setAdoptionForm] = useState({
-    adopterName: '',
-    email: '',
-    phone: '',
-    address: '',
-    experience: '',
-    housing: '',
-    reason: '',
-    availability: '',
+    adopterName: "",
+    email: "",
+    phone: "",
+    address: "",
+    experience: "",
+    housing: "",
+    reason: "",
+    availability: "",
   });
 
   // Load posts from localStorage on component mount
@@ -156,9 +189,9 @@ const StartRescuingPage = () => {
   }, []);
 
   // Convert stored posts to the format expected by the UI
-  const convertStoredPostsToAnimals = (posts: any[]) => {
+  const convertStoredPostsToAnimals = (posts: AnimalPost[]): Animal[] => {
     return posts.map((post) => ({
-      id: parseInt(post.id) || Date.now(),
+      id: parseInt(String(post.id)) || Date.now(),
       type: post.animalType || "Unknown",
       name: post.animalName || "Unknown",
       image:
@@ -180,7 +213,7 @@ const StartRescuingPage = () => {
   };
 
   // Helper function to calculate time ago
-  const getTimeAgo = (timestamp: string): string => {
+  const getTimeAgo = (timestamp?: string): string => {
     if (!timestamp) return "Recently";
 
     const now = new Date();
@@ -203,14 +236,19 @@ const StartRescuingPage = () => {
   };
 
   // Adoption handlers
-  const handleRescueClick = (animal: any) => {
+  const handleRescueClick = (animal: Animal) => {
     setSelectedAnimal(animal);
     setShowAdoptionModal(true);
   };
 
   const handleAdoptionSubmit = () => {
-    if (!selectedAnimal || !adoptionForm.adopterName || !adoptionForm.email || !adoptionForm.phone) {
-      alert('Please fill in all required fields');
+    if (
+      !selectedAnimal ||
+      !adoptionForm.adopterName ||
+      !adoptionForm.email ||
+      !adoptionForm.phone
+    ) {
+      alert("Please fill in all required fields");
       return;
     }
 
@@ -224,32 +262,36 @@ const StartRescuingPage = () => {
       rescuerName: selectedAnimal.rescuer,
       rescuerContact: selectedAnimal.contact,
       adopterInfo: { ...adoptionForm },
-      status: 'pending',
+      status: "pending",
       timestamp: new Date().toISOString(),
     };
 
     // Save to localStorage
     try {
-      const existingRequests = JSON.parse(localStorage.getItem('adoptionRequests') || '[]');
+      const existingRequests = JSON.parse(
+        localStorage.getItem("adoptionRequests") || "[]"
+      );
       const updatedRequests = [...existingRequests, adoptionRequest];
-      localStorage.setItem('adoptionRequests', JSON.stringify(updatedRequests));
-      
-      alert(`Your adoption request for ${selectedAnimal.name} has been submitted! The rescuer will be notified.`);
+      localStorage.setItem("adoptionRequests", JSON.stringify(updatedRequests));
+
+      alert(
+        `Your adoption request for ${selectedAnimal.name} has been submitted! The rescuer will be notified.`
+      );
       setShowAdoptionModal(false);
       setSelectedAnimal(null);
       setAdoptionForm({
-        adopterName: '',
-        email: '',
-        phone: '',
-        address: '',
-        experience: '',
-        housing: '',
-        reason: '',
-        availability: '',
+        adopterName: "",
+        email: "",
+        phone: "",
+        address: "",
+        experience: "",
+        housing: "",
+        reason: "",
+        availability: "",
       });
     } catch (error) {
-      console.error('Error saving adoption request:', error);
-      alert('Error submitting request. Please try again.');
+      console.error("Error saving adoption request:", error);
+      alert("Error submitting request. Please try again.");
     }
   };
 
@@ -314,8 +356,7 @@ const StartRescuingPage = () => {
       {filteredAnimals.map((animal) => (
         <div
           key={animal.id}
-          className="bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden group border border-gray-100"
-        >
+          className="bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden group border border-gray-100">
           <div className="relative">
             <img
               src={animal.image}
@@ -326,8 +367,7 @@ const StartRescuingPage = () => {
               <span
                 className={`px-3 py-2 rounded-full text-sm font-bold border backdrop-blur-sm ${getUrgencyColor(
                   animal.urgency
-                )}`}
-              >
+                )}`}>
                 {animal.urgency} priority
               </span>
             </div>
@@ -384,7 +424,7 @@ const StartRescuingPage = () => {
             </div>
 
             <div className="flex gap-3">
-              <button 
+              <button
                 onClick={() => handleRescueClick(animal)}
                 className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-3 rounded-2xl text-sm font-bold hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 flex items-center justify-center group shadow-lg">
                 <Heart className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
@@ -412,8 +452,7 @@ const StartRescuingPage = () => {
       {filteredAnimals.map((animal) => (
         <div
           key={animal.id}
-          className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 p-6 group"
-        >
+          className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 p-6 group">
           <div className="flex gap-6">
             <div className="relative flex-shrink-0">
               <img
@@ -425,8 +464,7 @@ const StartRescuingPage = () => {
                 <span
                   className={`px-2 py-1 rounded-full text-xs font-medium border ${getUrgencyColor(
                     animal.urgency
-                  )}`}
-                >
+                  )}`}>
                   {animal.urgency}
                 </span>
               </div>
@@ -490,7 +528,7 @@ const StartRescuingPage = () => {
                     <Phone className="w-4 h-4 mr-2" />
                     Contact
                   </button>
-                  <button 
+                  <button
                     onClick={() => handleRescueClick(animal)}
                     className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center group">
                     <Heart className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
@@ -520,8 +558,7 @@ const StartRescuingPage = () => {
             </h1>
             <button
               onClick={handleOpenModal}
-              className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-2xl font-bold hover:from-green-600 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center gap-2"
-            >
+              className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-2xl font-bold hover:from-green-600 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center gap-2">
               <Plus className="w-5 h-5" />
               Post Animal
             </button>
@@ -538,8 +575,7 @@ const StartRescuingPage = () => {
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-2xl transition-all duration-300 hover:from-indigo-600 hover:to-purple-700 shadow-lg"
-              >
+                className="flex items-center gap-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-2xl transition-all duration-300 hover:from-indigo-600 hover:to-purple-700 shadow-lg">
                 <Filter className="w-5 h-5" />
                 Filters
               </button>
@@ -547,8 +583,7 @@ const StartRescuingPage = () => {
               <select
                 value={selectedFilter}
                 onChange={(e) => setSelectedFilter(e.target.value)}
-                className="border-2 border-indigo-200 rounded-2xl px-6 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/80 backdrop-blur-sm font-medium"
-              >
+                className="border-2 border-indigo-200 rounded-2xl px-6 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/80 backdrop-blur-sm font-medium">
                 <option value="all">All Animals</option>
                 <option value="dog">Dogs</option>
                 <option value="cat">Cats</option>
@@ -563,8 +598,7 @@ const StartRescuingPage = () => {
                   viewMode === "grid"
                     ? "bg-white text-indigo-600 shadow-lg"
                     : "text-gray-600 hover:text-gray-900"
-                }`}
-              >
+                }`}>
                 <Grid className="w-5 h-5" />
               </button>
               <button
@@ -573,8 +607,7 @@ const StartRescuingPage = () => {
                   viewMode === "list"
                     ? "bg-white text-indigo-600 shadow-lg"
                     : "text-gray-600 hover:text-gray-900"
-                }`}
-              >
+                }`}>
                 <List className="w-5 h-5" />
               </button>
             </div>
@@ -647,8 +680,12 @@ const StartRescuingPage = () => {
               <div className="sticky top-0 bg-white border-b border-gray-200 p-6 rounded-t-3xl">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="text-3xl font-bold text-gray-900">Adopt {selectedAnimal.name}</h2>
-                    <p className="text-gray-600 mt-1">Fill out this form to express your interest</p>
+                    <h2 className="text-3xl font-bold text-gray-900">
+                      Adopt {selectedAnimal.name}
+                    </h2>
+                    <p className="text-gray-600 mt-1">
+                      Fill out this form to express your interest
+                    </p>
                   </div>
                   <button
                     onClick={() => setShowAdoptionModal(false)}
@@ -672,14 +709,31 @@ const StartRescuingPage = () => {
                         {selectedAnimal.name} ({selectedAnimal.type})
                       </h3>
                       <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div><span className="font-medium">Location:</span> {selectedAnimal.location}</div>
-                        <div><span className="font-medium">Age:</span> {selectedAnimal.age}</div>
-                        <div><span className="font-medium">Gender:</span> {selectedAnimal.gender}</div>
-                        <div><span className="font-medium">Condition:</span> {selectedAnimal.condition}</div>
+                        <div>
+                          <span className="font-medium">Location:</span>{" "}
+                          {selectedAnimal.location}
+                        </div>
+                        <div>
+                          <span className="font-medium">Age:</span>{" "}
+                          {selectedAnimal.age}
+                        </div>
+                        <div>
+                          <span className="font-medium">Gender:</span>{" "}
+                          {selectedAnimal.gender}
+                        </div>
+                        <div>
+                          <span className="font-medium">Condition:</span>{" "}
+                          {selectedAnimal.condition}
+                        </div>
                       </div>
-                      <p className="text-gray-600 mt-3">{selectedAnimal.info}</p>
+                      <p className="text-gray-600 mt-3">
+                        {selectedAnimal.info}
+                      </p>
                       <div className="mt-3 text-sm text-gray-500">
-                        Posted by <span className="font-medium">{selectedAnimal.rescuer}</span>
+                        Posted by{" "}
+                        <span className="font-medium">
+                          {selectedAnimal.rescuer}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -689,8 +743,10 @@ const StartRescuingPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Personal Information */}
                   <div className="space-y-4">
-                    <h4 className="text-lg font-semibold text-gray-900 mb-4">Personal Information</h4>
-                    
+                    <h4 className="text-lg font-semibold text-gray-900 mb-4">
+                      Personal Information
+                    </h4>
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Full Name *
@@ -698,7 +754,12 @@ const StartRescuingPage = () => {
                       <input
                         type="text"
                         value={adoptionForm.adopterName}
-                        onChange={(e) => setAdoptionForm({...adoptionForm, adopterName: e.target.value})}
+                        onChange={(e) =>
+                          setAdoptionForm({
+                            ...adoptionForm,
+                            adopterName: e.target.value,
+                          })
+                        }
                         placeholder="Enter your full name"
                         className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                       />
@@ -711,7 +772,12 @@ const StartRescuingPage = () => {
                       <input
                         type="email"
                         value={adoptionForm.email}
-                        onChange={(e) => setAdoptionForm({...adoptionForm, email: e.target.value})}
+                        onChange={(e) =>
+                          setAdoptionForm({
+                            ...adoptionForm,
+                            email: e.target.value,
+                          })
+                        }
                         placeholder="your.email@example.com"
                         className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                       />
@@ -724,7 +790,12 @@ const StartRescuingPage = () => {
                       <input
                         type="tel"
                         value={adoptionForm.phone}
-                        onChange={(e) => setAdoptionForm({...adoptionForm, phone: e.target.value})}
+                        onChange={(e) =>
+                          setAdoptionForm({
+                            ...adoptionForm,
+                            phone: e.target.value,
+                          })
+                        }
                         placeholder="+91 98765 43210"
                         className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                       />
@@ -736,7 +807,12 @@ const StartRescuingPage = () => {
                       </label>
                       <textarea
                         value={adoptionForm.address}
-                        onChange={(e) => setAdoptionForm({...adoptionForm, address: e.target.value})}
+                        onChange={(e) =>
+                          setAdoptionForm({
+                            ...adoptionForm,
+                            address: e.target.value,
+                          })
+                        }
                         placeholder="Your complete address"
                         rows={3}
                         className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
@@ -746,7 +822,9 @@ const StartRescuingPage = () => {
 
                   {/* Adoption Details */}
                   <div className="space-y-4">
-                    <h4 className="text-lg font-semibold text-gray-900 mb-4">Adoption Details</h4>
+                    <h4 className="text-lg font-semibold text-gray-900 mb-4">
+                      Adoption Details
+                    </h4>
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -754,7 +832,12 @@ const StartRescuingPage = () => {
                       </label>
                       <select
                         value={adoptionForm.experience}
-                        onChange={(e) => setAdoptionForm({...adoptionForm, experience: e.target.value})}
+                        onChange={(e) =>
+                          setAdoptionForm({
+                            ...adoptionForm,
+                            experience: e.target.value,
+                          })
+                        }
                         className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all">
                         <option value="">Select experience level</option>
                         <option value="first-time">First time owner</option>
@@ -769,7 +852,12 @@ const StartRescuingPage = () => {
                       </label>
                       <select
                         value={adoptionForm.housing}
-                        onChange={(e) => setAdoptionForm({...adoptionForm, housing: e.target.value})}
+                        onChange={(e) =>
+                          setAdoptionForm({
+                            ...adoptionForm,
+                            housing: e.target.value,
+                          })
+                        }
                         className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all">
                         <option value="">Select housing type</option>
                         <option value="apartment">Apartment</option>
@@ -784,7 +872,12 @@ const StartRescuingPage = () => {
                       </label>
                       <textarea
                         value={adoptionForm.reason}
-                        onChange={(e) => setAdoptionForm({...adoptionForm, reason: e.target.value})}
+                        onChange={(e) =>
+                          setAdoptionForm({
+                            ...adoptionForm,
+                            reason: e.target.value,
+                          })
+                        }
                         placeholder="Tell us about your motivation to adopt..."
                         rows={3}
                         className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
@@ -798,7 +891,12 @@ const StartRescuingPage = () => {
                       <input
                         type="text"
                         value={adoptionForm.availability}
-                        onChange={(e) => setAdoptionForm({...adoptionForm, availability: e.target.value})}
+                        onChange={(e) =>
+                          setAdoptionForm({
+                            ...adoptionForm,
+                            availability: e.target.value,
+                          })
+                        }
                         placeholder="e.g., Immediately, This weekend, Next week"
                         className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                       />
@@ -823,8 +921,9 @@ const StartRescuingPage = () => {
                 {/* Contact Info */}
                 <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-2xl">
                   <p className="text-sm text-yellow-800">
-                    <strong>Note:</strong> Your request will be sent to {selectedAnimal.rescuer}. 
-                    They may contact you directly at {selectedAnimal.contact} to discuss the adoption process.
+                    <strong>Note:</strong> Your request will be sent to{" "}
+                    {selectedAnimal.rescuer}. They may contact you directly at{" "}
+                    {selectedAnimal.contact} to discuss the adoption process.
                   </p>
                 </div>
               </div>
