@@ -11,9 +11,8 @@ import {
   Star,
   Phone,
   Plus,
-  X,
-  Upload,
 } from "lucide-react";
+import PostModal from "./Rescue/Post";
 
 const dummyAnimals = [
   {
@@ -113,9 +112,6 @@ const StartRescuingPage = () => {
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
   const [showPostModal, setShowPostModal] = useState(false);
-  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
-  const [selectedAnimalType, setSelectedAnimalType] = useState<string>("");
-  const [posterName, setPosterName] = useState<string>("");
 
   const getUrgencyColor = (urgency: string) => {
     switch (urgency) {
@@ -148,44 +144,8 @@ const StartRescuingPage = () => {
           (animal) => animal.type.toLowerCase() === selectedFilter
         );
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files) {
-      const newImages: string[] = [];
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        if (file.type.startsWith("image/")) {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            if (e.target?.result) {
-              newImages.push(e.target.result as string);
-              if (newImages.length === files.length) {
-                setUploadedImages((prev) => [...prev, ...newImages]);
-              }
-            }
-          };
-          reader.readAsDataURL(file);
-        }
-      }
-    }
-  };
-
-  const removeImage = (index: number) => {
-    setUploadedImages((prev) => prev.filter((_, i) => i !== index));
-  };
-
   const handleOpenModal = () => {
     setShowPostModal(true);
-    setUploadedImages([]);
-    setSelectedAnimalType("");
-    setPosterName("");
-  };
-
-  const handleCloseModal = () => {
-    setShowPostModal(false);
-    setUploadedImages([]);
-    setSelectedAnimalType("");
-    setPosterName("");
   };
 
   const GridView = () => (
@@ -193,8 +153,7 @@ const StartRescuingPage = () => {
       {filteredAnimals.map((animal) => (
         <div
           key={animal.id}
-          className="bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden group border border-gray-100"
-        >
+          className="bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden group border border-gray-100">
           <div className="relative">
             <img
               src={animal.image}
@@ -205,8 +164,7 @@ const StartRescuingPage = () => {
               <span
                 className={`px-3 py-2 rounded-full text-sm font-bold border backdrop-blur-sm ${getUrgencyColor(
                   animal.urgency
-                )}`}
-              >
+                )}`}>
                 {animal.urgency} priority
               </span>
             </div>
@@ -289,8 +247,7 @@ const StartRescuingPage = () => {
       {filteredAnimals.map((animal) => (
         <div
           key={animal.id}
-          className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 p-6 group"
-        >
+          className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 p-6 group">
           <div className="flex gap-6">
             <div className="relative flex-shrink-0">
               <img
@@ -302,8 +259,7 @@ const StartRescuingPage = () => {
                 <span
                   className={`px-2 py-1 rounded-full text-xs font-medium border ${getUrgencyColor(
                     animal.urgency
-                  )}`}
-                >
+                  )}`}>
                   {animal.urgency}
                 </span>
               </div>
@@ -395,8 +351,7 @@ const StartRescuingPage = () => {
             </h1>
             <button
               onClick={handleOpenModal}
-              className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-2xl font-bold hover:from-green-600 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center gap-2"
-            >
+              className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-2xl font-bold hover:from-green-600 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center gap-2">
               <Plus className="w-5 h-5" />
               Post Animal
             </button>
@@ -413,8 +368,7 @@ const StartRescuingPage = () => {
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-2xl transition-all duration-300 hover:from-indigo-600 hover:to-purple-700 shadow-lg"
-              >
+                className="flex items-center gap-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-2xl transition-all duration-300 hover:from-indigo-600 hover:to-purple-700 shadow-lg">
                 <Filter className="w-5 h-5" />
                 Filters
               </button>
@@ -422,8 +376,7 @@ const StartRescuingPage = () => {
               <select
                 value={selectedFilter}
                 onChange={(e) => setSelectedFilter(e.target.value)}
-                className="border-2 border-indigo-200 rounded-2xl px-6 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/80 backdrop-blur-sm font-medium"
-              >
+                className="border-2 border-indigo-200 rounded-2xl px-6 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/80 backdrop-blur-sm font-medium">
                 <option value="all">All Animals</option>
                 <option value="dog">Dogs</option>
                 <option value="cat">Cats</option>
@@ -438,8 +391,7 @@ const StartRescuingPage = () => {
                   viewMode === "grid"
                     ? "bg-white text-indigo-600 shadow-lg"
                     : "text-gray-600 hover:text-gray-900"
-                }`}
-              >
+                }`}>
                 <Grid className="w-5 h-5" />
               </button>
               <button
@@ -448,8 +400,7 @@ const StartRescuingPage = () => {
                   viewMode === "list"
                     ? "bg-white text-indigo-600 shadow-lg"
                     : "text-gray-600 hover:text-gray-900"
-                }`}
-              >
+                }`}>
                 <List className="w-5 h-5" />
               </button>
             </div>
@@ -512,276 +463,7 @@ const StartRescuingPage = () => {
         </div>
 
         {/* Post Animal Modal */}
-        {showPostModal && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-3xl font-bold text-gray-900">
-                  Post a Stray Animal
-                </h2>
-                <button
-                  onClick={handleCloseModal}
-                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                >
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
-
-              <form className="space-y-6">
-                {/* Animal Type Selection */}
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-3">
-                    Animal Type *
-                  </label>
-                  <div className="grid grid-cols-3 gap-4">
-                    {["Dog", "Cat", "Cow"].map((type) => (
-                      <button
-                        key={type}
-                        type="button"
-                        onClick={() => setSelectedAnimalType(type)}
-                        className={`p-4 border-2 rounded-2xl transition-all text-center font-medium ${
-                          selectedAnimalType === type
-                            ? "border-indigo-500 bg-indigo-50 text-indigo-600"
-                            : "border-gray-200 hover:border-indigo-300 hover:bg-indigo-50"
-                        }`}
-                      >
-                        {type === "Dog" && "🐕"}
-                        {type === "Cat" && "🐱"}
-                        {type === "Cow" && "🐄"}
-                        <div className="mt-2">{type}</div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Animal Name */}
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
-                    Animal Name (Optional)
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g., Buddy, Luna..."
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-indigo-500 focus:outline-none transition-colors"
-                  />
-                </div>
-
-                {/* Location */}
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
-                    Location Where Found *
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g., Near MG Road Metro Station, Bengaluru or Sector 12, Noida"
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-indigo-500 focus:outline-none transition-colors"
-                    required
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Please be as specific as possible to help rescuers find the
-                    animal
-                  </p>
-                </div>
-
-                {/* Animal Details */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">
-                      Age (Estimated)
-                    </label>
-                    <select className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-indigo-500 focus:outline-none transition-colors">
-                      <option value="">Select age</option>
-                      <option value="Young (0-1 year)">Young (0-1 year)</option>
-                      <option value="Adult (1-7 years)">
-                        Adult (1-7 years)
-                      </option>
-                      <option value="Senior (7+ years)">
-                        Senior (7+ years)
-                      </option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">
-                      Gender (Optional)
-                    </label>
-                    <select className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-indigo-500 focus:outline-none transition-colors">
-                      <option value="">Select if known</option>
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                      <option value="Unknown">Unknown</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Condition & Urgency */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">
-                      Condition *
-                    </label>
-                    <select
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-indigo-500 focus:outline-none transition-colors"
-                      required
-                    >
-                      <option value="">Select condition</option>
-                      <option value="Good">Good</option>
-                      <option value="Injured">Injured</option>
-                      <option value="Sick">Sick</option>
-                      <option value="Pregnant">Pregnant</option>
-                      <option value="Malnourished">Malnourished</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">
-                      Urgency *
-                    </label>
-                    <select
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-indigo-500 focus:outline-none transition-colors"
-                      required
-                    >
-                      <option value="">Select urgency</option>
-                      <option value="high">High Priority</option>
-                      <option value="medium">Medium Priority</option>
-                      <option value="low">Low Priority</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Description */}
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
-                    Description *
-                  </label>
-                  <textarea
-                    placeholder="Describe the animal's condition, behavior, and any immediate needs..."
-                    rows={4}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-indigo-500 focus:outline-none transition-colors resize-none"
-                    required
-                  />
-                </div>
-
-                {/* Image Upload */}
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
-                    Upload Photos
-                  </label>
-
-                  {/* Upload Area */}
-                  <div
-                    className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center hover:border-indigo-400 hover:bg-indigo-50 transition-colors cursor-pointer"
-                    onClick={() =>
-                      document.getElementById("imageUpload")?.click()
-                    }
-                  >
-                    <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600 mb-2">Click to upload photos</p>
-                    <p className="text-sm text-gray-500">
-                      Supports JPG, PNG up to 10MB each
-                    </p>
-                  </div>
-
-                  {/* Hidden File Input */}
-                  <input
-                    id="imageUpload"
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleImageUpload}
-                    className="hidden"
-                  />
-
-                  {/* Preview Uploaded Images */}
-                  {uploadedImages.length > 0 && (
-                    <div className="mt-4">
-                      <p className="text-sm font-medium text-gray-700 mb-3">
-                        Uploaded Photos ({uploadedImages.length})
-                      </p>
-                      <div className="grid grid-cols-3 gap-3">
-                        {uploadedImages.map((image, index) => (
-                          <div key={index} className="relative">
-                            <img
-                              src={image}
-                              alt={`Upload ${index + 1}`}
-                              className="w-full h-24 object-cover rounded-xl"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => removeImage(index)}
-                              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
-                            >
-                              <X className="w-4 h-4" />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Contact Information */}
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
-                    Your Contact Number *
-                  </label>
-                  <input
-                    type="tel"
-                    placeholder="+91 98765 43210"
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-indigo-500 focus:outline-none transition-colors"
-                    required
-                  />
-                </div>
-
-                {/* Poster Name */}
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
-                    Your Name *
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g., Priya Singh"
-                    value={posterName}
-                    onChange={(e) => setPosterName(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-indigo-500 focus:outline-none transition-colors"
-                    required
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    This will be shown as "Posted by [Your Name]" on the listing
-                  </p>
-                </div>
-
-                {/* Vaccination Status */}
-                <div>
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="checkbox"
-                      className="w-5 h-5 text-indigo-600 border-2 border-gray-300 rounded focus:ring-indigo-500"
-                    />
-                    <span className="text-sm font-medium text-gray-700">
-                      Animal appears to be vaccinated (if known)
-                    </span>
-                  </label>
-                </div>
-
-                {/* Buttons */}
-                <div className="flex gap-4 pt-4">
-                  <button
-                    type="button"
-                    onClick={handleCloseModal}
-                    className="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-2xl font-bold hover:bg-gray-50 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex-1 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-2xl font-bold hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg"
-                  >
-                    Post Animal
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
+        {showPostModal && <PostModal setShowPostModal={setShowPostModal} />}
       </div>
     </div>
   );
