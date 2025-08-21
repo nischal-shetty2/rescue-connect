@@ -192,41 +192,48 @@ const StartRescuingPage = () => {
   const handleDeletePost = (postId: string | number) => {
     console.log("=== DELETE POST FUNCTION CALLED ===");
     console.log("Post ID to delete:", postId, "Type:", typeof postId);
-    
+
     // Add immediate visual feedback
     alert(`Delete function called for post ID: ${postId}`);
-    
+
     if (window.confirm("Are you sure you want to delete this post?")) {
       try {
         const existingPosts = JSON.parse(
           localStorage.getItem("animalPosts") || "[]"
         );
-        
+
         console.log("All existing posts:", existingPosts);
-        
+
         // Find the post to delete
-        const postToDelete = existingPosts.find((post: AnimalPost) => 
-          String(post.id) === String(postId) || Number(post.id) === Number(postId)
+        const postToDelete = existingPosts.find(
+          (post: AnimalPost) =>
+            String(post.id) === String(postId) ||
+            Number(post.id) === Number(postId)
         );
-        
+
         console.log("Post found for deletion:", postToDelete);
-        
+
         if (!postToDelete) {
           alert(`Post with ID ${postId} not found in localStorage!`);
           return;
         }
-        
-        const updatedPosts = existingPosts.filter((post: AnimalPost) => 
-          String(post.id) !== String(postId) && Number(post.id) !== Number(postId)
+
+        const updatedPosts = existingPosts.filter(
+          (post: AnimalPost) =>
+            String(post.id) !== String(postId) &&
+            Number(post.id) !== Number(postId)
         );
-        
+
         console.log("Posts after deletion:", updatedPosts);
-        console.log("Number of posts removed:", existingPosts.length - updatedPosts.length);
-        
+        console.log(
+          "Number of posts removed:",
+          existingPosts.length - updatedPosts.length
+        );
+
         localStorage.setItem("animalPosts", JSON.stringify(updatedPosts));
         setStoredPosts(updatedPosts);
         window.dispatchEvent(new CustomEvent("postDeleted"));
-        
+
         alert("Post deleted successfully!");
       } catch (error) {
         console.error("Error deleting post:", error);
@@ -240,7 +247,11 @@ const StartRescuingPage = () => {
     console.log("Converting stored posts to animals:", posts);
     const converted = posts.map((post) => {
       const animal = {
-        id: post.id ? (typeof post.id === 'string' ? parseInt(post.id) : post.id) : Date.now(),
+        id: post.id
+          ? typeof post.id === "string"
+            ? parseInt(post.id)
+            : post.id
+          : Date.now(),
         type: post.animalType || "Unknown",
         name: post.animalName || "Unknown",
         image:
@@ -397,7 +408,8 @@ const StartRescuingPage = () => {
       {filteredAnimals.map((animal) => (
         <div
           key={animal.id}
-          className="bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden group border border-gray-100">
+          className="bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden group border border-gray-100"
+        >
           <div className="relative">
             <img
               src={animal.image}
@@ -411,14 +423,16 @@ const StartRescuingPage = () => {
             {animal.isUserCreated && (
               <button
                 onClick={(e) => {
-                  console.log(`Delete button clicked for ${animal.name} with ID: ${animal.id}, isUserCreated: ${animal.isUserCreated}`);
+                  console.log(
+                    `Delete button clicked for ${animal.name} with ID: ${animal.id}, isUserCreated: ${animal.isUserCreated}`
+                  );
                   e.preventDefault();
                   e.stopPropagation();
                   handleDeletePost(animal.id);
                 }}
                 className="absolute top-2 right-2 bg-red-500 hover:bg-red-700 text-white p-2 rounded-full z-10 cursor-pointer"
                 title="Delete this post"
-                style={{ pointerEvents: 'auto' }}
+                style={{ pointerEvents: "auto" }}
               >
                 <X className="w-4 h-4" />
               </button>
@@ -474,7 +488,8 @@ const StartRescuingPage = () => {
             <div className="flex gap-3">
               <button
                 onClick={() => handleRescueClick(animal)}
-                className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-3 rounded-2xl text-sm font-bold hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 flex items-center justify-center group shadow-lg">
+                className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-3 rounded-2xl text-sm font-bold hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 flex items-center justify-center group shadow-lg"
+              >
                 <Heart className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
                 Rescue Now
               </button>
@@ -500,7 +515,8 @@ const StartRescuingPage = () => {
       {filteredAnimals.map((animal) => (
         <div
           key={animal.id}
-          className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 p-6 group">
+          className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 p-6 group"
+        >
           <div className="flex gap-6">
             <div className="relative flex-shrink-0">
               <img
@@ -532,14 +548,16 @@ const StartRescuingPage = () => {
                     {animal.isUserCreated && (
                       <button
                         onClick={(e) => {
-                          console.log(`ListView delete button clicked for ${animal.name} with ID: ${animal.id}, isUserCreated: ${animal.isUserCreated}`);
+                          console.log(
+                            `ListView delete button clicked for ${animal.name} with ID: ${animal.id}, isUserCreated: ${animal.isUserCreated}`
+                          );
                           e.preventDefault();
                           e.stopPropagation();
                           handleDeletePost(animal.id);
                         }}
                         className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-full z-10 cursor-pointer"
                         title="Delete this post"
-                        style={{ pointerEvents: 'auto' }}
+                        style={{ pointerEvents: "auto" }}
                       >
                         <X className="w-4 h-4" />
                       </button>
@@ -587,7 +605,8 @@ const StartRescuingPage = () => {
                   </button>
                   <button
                     onClick={() => handleRescueClick(animal)}
-                    className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center group">
+                    className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center group"
+                  >
                     <Heart className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
                     Rescue Now
                   </button>
@@ -615,7 +634,8 @@ const StartRescuingPage = () => {
             </h1>
             <button
               onClick={handleOpenModal}
-              className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-2xl font-bold hover:from-green-600 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center gap-2">
+              className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-2xl font-bold hover:from-green-600 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center gap-2"
+            >
               <Plus className="w-5 h-5" />
               Post Animal
             </button>
@@ -632,7 +652,8 @@ const StartRescuingPage = () => {
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-2xl transition-all duration-300 hover:from-indigo-600 hover:to-purple-700 shadow-lg">
+                className="flex items-center gap-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-2xl transition-all duration-300 hover:from-indigo-600 hover:to-purple-700 shadow-lg"
+              >
                 <Filter className="w-5 h-5" />
                 Filters
               </button>
@@ -640,7 +661,8 @@ const StartRescuingPage = () => {
               <select
                 value={selectedFilter}
                 onChange={(e) => setSelectedFilter(e.target.value)}
-                className="border-2 border-indigo-200 rounded-2xl px-6 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/80 backdrop-blur-sm font-medium">
+                className="border-2 border-indigo-200 rounded-2xl px-6 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/80 backdrop-blur-sm font-medium"
+              >
                 <option value="all">All Animals</option>
                 <option value="dog">Dogs</option>
                 <option value="cat">Cats</option>
@@ -655,7 +677,8 @@ const StartRescuingPage = () => {
                   viewMode === "grid"
                     ? "bg-white text-indigo-600 shadow-lg"
                     : "text-gray-600 hover:text-gray-900"
-                }`}>
+                }`}
+              >
                 <Grid className="w-5 h-5" />
               </button>
               <button
@@ -664,7 +687,8 @@ const StartRescuingPage = () => {
                   viewMode === "list"
                     ? "bg-white text-indigo-600 shadow-lg"
                     : "text-gray-600 hover:text-gray-900"
-                }`}>
+                }`}
+              >
                 <List className="w-5 h-5" />
               </button>
             </div>
@@ -740,7 +764,8 @@ const StartRescuingPage = () => {
                   </div>
                   <button
                     onClick={() => setShowAdoptionModal(false)}
-                    className="text-gray-400 hover:text-gray-600 transition-colors p-2">
+                    className="text-gray-400 hover:text-gray-600 transition-colors p-2"
+                  >
                     <X className="w-6 h-6" />
                   </button>
                 </div>
@@ -889,7 +914,8 @@ const StartRescuingPage = () => {
                             experience: e.target.value,
                           })
                         }
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all">
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                      >
                         <option value="">Select experience level</option>
                         <option value="first-time">First time owner</option>
                         <option value="some">Some experience</option>
@@ -909,7 +935,8 @@ const StartRescuingPage = () => {
                             housing: e.target.value,
                           })
                         }
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all">
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                      >
                         <option value="">Select housing type</option>
                         <option value="apartment">Apartment</option>
                         <option value="house">House with yard</option>
@@ -959,12 +986,14 @@ const StartRescuingPage = () => {
                 <div className="flex gap-4 mt-8 pt-6 border-t border-gray-200">
                   <button
                     onClick={() => setShowAdoptionModal(false)}
-                    className="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-2xl font-medium hover:bg-gray-50 transition-all">
+                    className="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-2xl font-medium hover:bg-gray-50 transition-all"
+                  >
                     Cancel
                   </button>
                   <button
                     onClick={handleAdoptionSubmit}
-                    className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-2xl font-bold hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg">
+                    className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-2xl font-bold hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg"
+                  >
                     Submit Adoption Request
                   </button>
                 </div>

@@ -62,26 +62,28 @@ const DetectDiseasePage: React.FC = () => {
       // Convert base64 to blob for sending to Flask API
       const response = await fetch(uploadedImage);
       const blob = await response.blob();
-      
+
       // Create FormData for the Flask API
       const formData = new FormData();
-      formData.append('image', blob, 'image.jpg');
-      formData.append('animalType', selectedAnimal);
-      formData.append('symptoms', JSON.stringify(symptoms));
+      formData.append("image", blob, "image.jpg");
+      formData.append("animalType", selectedAnimal);
+      formData.append("symptoms", JSON.stringify(symptoms));
 
       // Call your Flask CNN model API
-      const apiResponse = await fetch('http://localhost:5000/api/analyze', {
-        method: 'POST',
+      const apiResponse = await fetch("http://localhost:5000/api/analyze", {
+        method: "POST",
         body: formData,
       });
 
       if (!apiResponse.ok) {
         const errorData = await apiResponse.json().catch(() => ({}));
-        throw new Error(errorData.error || `HTTP ${apiResponse.status}: Analysis failed`);
+        throw new Error(
+          errorData.error || `HTTP ${apiResponse.status}: Analysis failed`
+        );
       }
 
       const result = await apiResponse.json();
-      
+
       // Set the analysis result with the actual CNN model prediction
       setAnalysisResult({
         disease: result.disease,
@@ -96,18 +98,21 @@ const DetectDiseasePage: React.FC = () => {
         allProbabilities: result.all_probabilities,
       });
 
-      console.log('CNN Model Analysis Result:', result);
-
+      console.log("CNN Model Analysis Result:", result);
     } catch (error) {
-      console.error('Analysis error:', error);
-      
+      console.error("Analysis error:", error);
+
       // Show user-friendly error message
-      alert(`Analysis failed: ${error instanceof Error ? error.message : 'Unknown error'}. Please check if the Flask server is running on http://localhost:5000`);
-      
+      alert(
+        `Analysis failed: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }. Please check if the Flask server is running on http://localhost:5000`
+      );
+
       // Fallback to mock data if API fails (for development)
       const diseaseKey = Object.keys(mockDiseases[selectedAnimal])[0];
       const mockResult = mockDiseases[selectedAnimal][diseaseKey];
-      
+
       setAnalysisResult({
         disease: `${diseaseKey} (Mock Data - API Error)`,
         ...mockResult,
@@ -189,7 +194,8 @@ const DetectDiseasePage: React.FC = () => {
                       selectedAnimal === animal.id
                         ? "border-indigo-600 bg-indigo-50 text-indigo-600 shadow-lg"
                         : "border-gray-200 hover:border-indigo-300 hover:bg-gray-50"
-                    }`}>
+                    }`}
+                  >
                     <div className="text-3xl mb-3">{animal.icon}</div>
                     <div className="font-bold">{animal.name}</div>
                   </button>
@@ -206,7 +212,8 @@ const DetectDiseasePage: React.FC = () => {
               {!uploadedImage ? (
                 <div
                   onClick={handleFileInputClick}
-                  className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors">
+                  className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors"
+                >
                   <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                   <p className="text-gray-600 mb-2">Click to upload an image</p>
                   <p className="text-sm text-gray-500">
@@ -222,7 +229,8 @@ const DetectDiseasePage: React.FC = () => {
                   />
                   <button
                     onClick={handleRemoveImage}
-                    className="absolute top-3 right-3 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors">
+                    className="absolute top-3 right-3 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
+                  >
                     <X className="w-4 h-4" />
                   </button>
                 </div>
@@ -245,7 +253,8 @@ const DetectDiseasePage: React.FC = () => {
                 </label>
                 <button
                   onClick={toggleSymptomForm}
-                  className="text-blue-600 text-sm hover:text-blue-700">
+                  className="text-blue-600 text-sm hover:text-blue-700"
+                >
                   {showSymptomForm ? "Hide" : "Add Symptoms"}
                 </button>
               </div>
@@ -260,7 +269,8 @@ const DetectDiseasePage: React.FC = () => {
                         symptoms.includes(symptom)
                           ? "border-blue-600 bg-blue-50 text-blue-600"
                           : "border-gray-200 hover:border-gray-300"
-                      }`}>
+                      }`}
+                    >
                       {symptom}
                     </button>
                   ))}
@@ -272,7 +282,8 @@ const DetectDiseasePage: React.FC = () => {
             <button
               onClick={handleAnalyze}
               disabled={!uploadedImage || isAnalyzing}
-              className="w-full bg-blue-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center">
+              className="w-full bg-blue-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+            >
               {isAnalyzing ? (
                 <>
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
@@ -322,7 +333,10 @@ const DetectDiseasePage: React.FC = () => {
                     </div>
                     <div className="ml-3">
                       <p className="text-sm text-amber-800">
-                        <strong>Important Notice:</strong> The prediction you see here is meant to give an early indication. It should not be taken as medical advice. For accurate diagnosis and care, a qualified vet must be consulted.
+                        <strong>Important Notice:</strong> The prediction you
+                        see here is meant to give an early indication. It should
+                        not be taken as medical advice. For accurate diagnosis
+                        and care, a qualified vet must be consulted.
                       </p>
                     </div>
                   </div>
@@ -346,7 +360,8 @@ const DetectDiseasePage: React.FC = () => {
                     <div
                       className={`px-3 py-1 rounded-full text-sm border ${getSeverityColor(
                         analysisResult.severity
-                      )}`}>
+                      )}`}
+                    >
                       {analysisResult.severity.charAt(0).toUpperCase() +
                         analysisResult.severity.slice(1)}{" "}
                       Severity
@@ -362,22 +377,29 @@ const DetectDiseasePage: React.FC = () => {
                       CNN Model Predictions:
                     </h4>
                     <div className="space-y-2">
-                      {Object.entries(analysisResult.allProbabilities).map(([condition, probability]) => (
-                        <div key={condition} className="flex items-center justify-between">
-                          <span className="text-sm font-medium text-blue-800">{condition}:</span>
-                          <div className="flex items-center space-x-2">
-                            <div className="w-24 bg-blue-200 rounded-full h-2">
-                              <div 
-                                className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
-                                style={{ width: `${probability}%` }}
-                              ></div>
-                            </div>
-                            <span className="text-sm font-semibold text-blue-900 min-w-12">
-                              {probability.toFixed(1)}%
+                      {Object.entries(analysisResult.allProbabilities).map(
+                        ([condition, probability]) => (
+                          <div
+                            key={condition}
+                            className="flex items-center justify-between"
+                          >
+                            <span className="text-sm font-medium text-blue-800">
+                              {condition}:
                             </span>
+                            <div className="flex items-center space-x-2">
+                              <div className="w-24 bg-blue-200 rounded-full h-2">
+                                <div
+                                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                                  style={{ width: `${probability}%` }}
+                                ></div>
+                              </div>
+                              <span className="text-sm font-semibold text-blue-900 min-w-12">
+                                {probability.toFixed(1)}%
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        )
+                      )}
                     </div>
                   </div>
                 )}
@@ -391,7 +413,8 @@ const DetectDiseasePage: React.FC = () => {
                     {analysisResult.symptoms.map((symptom, idx) => (
                       <li
                         key={idx}
-                        className="flex items-center text-sm text-gray-600">
+                        className="flex items-center text-sm text-gray-600"
+                      >
                         <div className="w-2 h-2 bg-blue-600 rounded-full mr-2"></div>
                         {symptom}
                       </li>
