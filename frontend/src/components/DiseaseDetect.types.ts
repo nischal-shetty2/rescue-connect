@@ -24,4 +24,9 @@ export interface DiseaseInfo {
 export interface AnalysisResult extends DiseaseInfo {
   disease: string;
   analysisTime: string;
+  allProbabilities?: {
+    Bacterial: number;
+    Fungal: number;
+    Healthy: number;
+  };
 }

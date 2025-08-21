@@ -58,20 +58,64 @@ const DetectDiseasePage: React.FC = () => {
 
     setIsAnalyzing(true);
 
-    // Simulate AI analysis delay
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    try {
+      // Convert base64 to blob for sending to Flask API
+      const response = await fetch(uploadedImage);
+      const blob = await response.blob();
+      
+      // Create FormData for the Flask API
+      const formData = new FormData();
+      formData.append('image', blob, 'image.jpg');
+      formData.append('animalType', selectedAnimal);
+      formData.append('symptoms', JSON.stringify(symptoms));
 
-    // Mock analysis result
-    const diseaseKey = Object.keys(mockDiseases[selectedAnimal])[0];
-    const result = mockDiseases[selectedAnimal][diseaseKey];
+      // Call your Flask CNN model API
+      const apiResponse = await fetch('http://localhost:5000/api/analyze', {
+        method: 'POST',
+        body: formData,
+      });
 
-    setAnalysisResult({
-      disease: diseaseKey,
-      ...result,
-      analysisTime: new Date().toLocaleTimeString(),
-    });
+      if (!apiResponse.ok) {
+        const errorData = await apiResponse.json().catch(() => ({}));
+        throw new Error(errorData.error || `HTTP ${apiResponse.status}: Analysis failed`);
+      }
 
-    setIsAnalyzing(false);
+      const result = await apiResponse.json();
+      
+      // Set the analysis result with the actual CNN model prediction
+      setAnalysisResult({
+        disease: result.disease,
+        confidence: result.confidence,
+        severity: result.severity,
+        description: result.description,
+        symptoms: result.symptoms,
+        treatment: result.treatment,
+        urgency: result.urgency,
+        analysisTime: new Date().toLocaleTimeString(),
+        // Additional data from your model
+        allProbabilities: result.all_probabilities,
+      });
+
+      console.log('CNN Model Analysis Result:', result);
+
+    } catch (error) {
+      console.error('Analysis error:', error);
+      
+      // Show user-friendly error message
+      alert(`Analysis failed: ${error instanceof Error ? error.message : 'Unknown error'}. Please check if the Flask server is running on http://localhost:5000`);
+      
+      // Fallback to mock data if API fails (for development)
+      const diseaseKey = Object.keys(mockDiseases[selectedAnimal])[0];
+      const mockResult = mockDiseases[selectedAnimal][diseaseKey];
+      
+      setAnalysisResult({
+        disease: `${diseaseKey} (Mock Data - API Error)`,
+        ...mockResult,
+        analysisTime: new Date().toLocaleTimeString(),
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   const handleSymptomToggle = (symptom: string): void => {
@@ -309,6 +353,34 @@ const DetectDiseasePage: React.FC = () => {
                     </div>
                   </div>
                 </div>
+
+                {/* CNN Model Probability Breakdown */}
+                {analysisResult.allProbabilities && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h4 className="font-semibold text-blue-900 mb-3 flex items-center">
+                      <Stethoscope className="w-5 h-5 mr-2" />
+                      CNN Model Predictions:
+                    </h4>
+                    <div className="space-y-2">
+                      {Object.entries(analysisResult.allProbabilities).map(([condition, probability]) => (
+                        <div key={condition} className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-blue-800">{condition}:</span>
+                          <div className="flex items-center space-x-2">
+                            <div className="w-24 bg-blue-200 rounded-full h-2">
+                              <div 
+                                className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                                style={{ width: `${probability}%` }}
+                              ></div>
+                            </div>
+                            <span className="text-sm font-semibold text-blue-900 min-w-12">
+                              {probability.toFixed(1)}%
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Symptoms */}
                 <div>
