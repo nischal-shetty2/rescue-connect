@@ -18,8 +18,8 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
 # Load your actual CNN model
-# TODO Make this path dynamic or configurable
-MODEL_PATH = '/home/rajesh/AnimalSkinDiseasePrediction_CNN/model/model.h5'
+# Path relative to the project root (two levels up from backend/py/)
+MODEL_PATH = '../../disease_Model/model/model.h5'
 try:
     print("🔄 Loading CNN model...")
     model = tf.keras.models.load_model(MODEL_PATH)
@@ -245,9 +245,9 @@ def health_check():
 if __name__ == '__main__':
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
     print("🚀 Starting Animal Skin Disease Prediction API...")
-    print("📡 Server running on: http://localhost:5000")
-    print("🔗 API endpoint: http://localhost:5000/api/analyze")
-    print("❤️  Health check: http://localhost:5000/api/health")
+    print("📡 Server running on: http://localhost:5001")
+    print("🔗 API endpoint: http://localhost:5001/api/analyze")
+    print("❤️  Health check: http://localhost:5001/api/health")
     print("\n📝 Ready to connect with your CNN model!")
     print("   Replace the mock prediction code with your actual model.predict() call")
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=5001)

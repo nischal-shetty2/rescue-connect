@@ -70,7 +70,7 @@ const DetectDiseasePage: React.FC = () => {
       formData.append('symptoms', JSON.stringify(symptoms))
 
       // Call your Flask CNN model API
-      const apiResponse = await fetch('http://localhost:5000/api/analyze', {
+      const apiResponse = await fetch('http://localhost:5001/api/analyze', {
         method: 'POST',
         body: formData,
       })
@@ -106,7 +106,7 @@ const DetectDiseasePage: React.FC = () => {
       alert(
         `Analysis failed: ${
           error instanceof Error ? error.message : 'Unknown error'
-        }. Please check if the Flask server is running on http://localhost:5000`
+        }. Please check if the Flask server is running on http://localhost:5001`
       )
 
       // Fallback to mock data if API fails (for development)
@@ -150,29 +150,6 @@ const DetectDiseasePage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <div className="flex justify-center mb-6">
-            <div className="p-4 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-3xl shadow-2xl">
-              <Stethoscope className="w-10 h-10 text-white" />
-            </div>
-          </div>
-          <h1 className="text-5xl font-bold text-gray-900 mb-6">
-            AI-Powered
-            <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              {' '}
-              Disease Detection
-            </span>
-          </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Get instant, accurate diagnosis for skin diseases in dogs, cats, and
-            cows. Our advanced AI analyzes images and symptoms to provide
-            treatment recommendations.
-          </p>
-        </div>
-
-        <Stats />
-
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Upload Section */}
           <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl p-10 border border-white/20">
@@ -495,6 +472,23 @@ const DetectDiseasePage: React.FC = () => {
             )}
           </div>
         </div>
+
+        <div className="text-center my-16">
+          <h1 className="text-5xl font-bold text-gray-900 mb-6">
+            <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              {' '}
+              Disease Detection
+            </span>
+          </h1>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            Get instant, accurate diagnosis for skin diseases in dogs, cats, and
+            cows. Our advanced AI analyzes images and symptoms to provide
+            treatment recommendations.
+          </p>
+        </div>
+
+        <Stats />
+
         <Disclaimer />
       </div>
     </div>

@@ -37,9 +37,8 @@ const Landing = () => {
               </span>
             </h1>
             <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-              Advanced AI-powered platform for animal rescue, disease detection,
-              and care services. Bridging communities to save lives, one paw at
-              a time.
+              platform for animal rescue, disease detection, and care services.
+              Bridging communities to save lives, one paw at a time.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
