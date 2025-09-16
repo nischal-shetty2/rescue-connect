@@ -18,7 +18,8 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
 # Load your actual CNN model
-MODEL_PATH = '/home/rajesh/AnimalSkinDiseasePrediction_CNN/model/model.h5'  # Update this path
+# TODO Make this path dynamic or configurable
+MODEL_PATH = '/home/rajesh/AnimalSkinDiseasePrediction_CNN/model/model.h5'
 try:
     print("🔄 Loading CNN model...")
     model = tf.keras.models.load_model(MODEL_PATH)

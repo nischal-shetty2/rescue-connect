@@ -3,7 +3,7 @@ import { app } from './app'
 const port = 3000
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('Hello, Express + TypeScript!')
+  res.send('Server is running!')
 })
 
 app.listen(port, () => {
