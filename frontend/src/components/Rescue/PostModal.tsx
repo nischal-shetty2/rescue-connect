@@ -1,122 +1,121 @@
-import { X, Upload, MapPin, Crosshair } from "lucide-react";
-import { useState, useEffect, useRef, useMemo } from "react";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
+import { X, Upload, MapPin, Crosshair } from 'lucide-react'
+import { useState, useEffect, useRef, useMemo } from 'react'
+import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
 
 // Fix for default markers
-delete (L.Icon.Default.prototype as { _getIconUrl?: unknown })._getIconUrl;
+delete (L.Icon.Default.prototype as { _getIconUrl?: unknown })._getIconUrl
 
 L.Icon.Default.mergeOptions({
   iconRetinaUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
+    'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
   iconUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+    'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
   shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
-});
+    'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+})
 
 interface LocationData {
-  lat: number;
-  lng: number;
-  address?: string;
+  lat: number
+  lng: number
+  address?: string
 }
 
 interface PostModalProps {
-  setShowPostModal: (value: boolean) => void;
+  setShowPostModal: (value: boolean) => void
 }
 
 interface PostData {
-  animalType: string;
-  animalName?: string;
-  location: LocationData;
-  age?: string;
-  gender?: string;
-  condition: string;
-  description: string;
-  images: string[];
-  contactNumber: string;
-  posterName: string;
-  vaccinated: boolean;
-  timestamp: string;
+  animalType: string
+  animalName?: string
+  location: LocationData
+  age?: string
+  gender?: string
+  condition: string
+  description: string
+  images: string[]
+  contactNumber: string
+  posterName: string
+  vaccinated: boolean
+  timestamp: string
 }
 
 export default function PostModal({ setShowPostModal }: PostModalProps) {
-  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
-  const [selectedAnimalType, setSelectedAnimalType] = useState<string>("");
-  const [animalName, setAnimalName] = useState<string>("");
-  const [posterName, setPosterName] = useState<string>("");
-  const [contactNumber, setContactNumber] = useState<string>("");
-  const [age, setAge] = useState<string>("");
-  const [gender, setGender] = useState<string>("");
-  const [condition, setCondition] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
-  const [vaccinated, setVaccinated] = useState<boolean>(false);
-  const [showMap, setShowMap] = useState<boolean>(false);
+  const [uploadedImages, setUploadedImages] = useState<string[]>([])
+  const [selectedAnimalType, setSelectedAnimalType] = useState<string>('')
+  const [animalName, setAnimalName] = useState<string>('')
+  const [posterName, setPosterName] = useState<string>('')
+  const [contactNumber, setContactNumber] = useState<string>('')
+  const [age, setAge] = useState<string>('')
+  const [gender, setGender] = useState<string>('')
+  const [condition, setCondition] = useState<string>('')
+  const [description, setDescription] = useState<string>('')
+  const [vaccinated, setVaccinated] = useState<boolean>(false)
+  const [showMap, setShowMap] = useState<boolean>(false)
   const [selectedLocation, setSelectedLocation] = useState<LocationData | null>(
     null
-  );
-  const [locationInput, setLocationInput] = useState<string>("");
-  const [isDetectingLocation, setIsDetectingLocation] =
-    useState<boolean>(false);
+  )
+  const [locationInput, setLocationInput] = useState<string>('')
+  const [isDetectingLocation, setIsDetectingLocation] = useState<boolean>(false)
 
-  const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<L.Map | null>(null);
-  const markerRef = useRef<L.Marker | null>(null);
+  const mapRef = useRef<HTMLDivElement>(null)
+  const mapInstanceRef = useRef<L.Map | null>(null)
+  const markerRef = useRef<L.Marker | null>(null)
 
   // Default location (New Delhi)
   const defaultLocation = useMemo<LocationData>(
     () => ({ lat: 28.6139, lng: 77.209 }),
     []
-  );
+  )
 
   // Initialize map when showMap becomes true
   useEffect(() => {
     if (showMap && mapRef.current && !mapInstanceRef.current) {
-      const center = selectedLocation || defaultLocation;
+      const center = selectedLocation || defaultLocation
 
       mapInstanceRef.current = L.map(mapRef.current).setView(
         [center.lat, center.lng],
         15
-      );
+      )
 
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution:
           '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      }).addTo(mapInstanceRef.current);
+      }).addTo(mapInstanceRef.current)
 
       // Add click listener - this will update both selectedLocation AND locationInput
-      mapInstanceRef.current.on("click", async (e: L.LeafletMouseEvent) => {
-        const { lat, lng } = e.latlng;
-        const location: LocationData = { lat, lng };
+      mapInstanceRef.current.on('click', async (e: L.LeafletMouseEvent) => {
+        const { lat, lng } = e.latlng
+        const location: LocationData = { lat, lng }
 
         try {
-          const address = await reverseGeocode(lat, lng);
-          location.address = address;
-          setLocationInput(address); // This updates the input box
+          const address = await reverseGeocode(lat, lng)
+          location.address = address
+          setLocationInput(address) // This updates the input box
         } catch (error) {
-          console.error(error);
+          console.error(error)
           const fallbackAddress = `Selected: ${lat.toFixed(4)}, ${lng.toFixed(
             4
-          )}`;
-          location.address = fallbackAddress;
-          setLocationInput(fallbackAddress); // This updates the input box
+          )}`
+          location.address = fallbackAddress
+          setLocationInput(fallbackAddress) // This updates the input box
         }
 
-        setSelectedLocation(location);
+        setSelectedLocation(location)
 
         // Remove existing marker
         if (markerRef.current && mapInstanceRef.current) {
-          mapInstanceRef.current.removeLayer(markerRef.current);
+          mapInstanceRef.current.removeLayer(markerRef.current)
         }
 
         // Add new marker
         if (mapInstanceRef.current) {
           markerRef.current = L.marker([lat, lng])
             .addTo(mapInstanceRef.current)
-            .bindPopup("Selected location")
-            .openPopup();
+            .bindPopup('Selected location')
+            .openPopup()
         }
-      });
+      })
 
       // Add marker if location is already selected
       if (selectedLocation) {
@@ -125,182 +124,180 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
           selectedLocation.lng,
         ])
           .addTo(mapInstanceRef.current)
-          .bindPopup("Selected location")
-          .openPopup();
+          .bindPopup('Selected location')
+          .openPopup()
       }
     }
 
     return () => {
       if (mapInstanceRef.current) {
-        mapInstanceRef.current.remove();
-        mapInstanceRef.current = null;
-        markerRef.current = null;
+        mapInstanceRef.current.remove()
+        mapInstanceRef.current = null
+        markerRef.current = null
       }
-    };
-  }, [showMap, defaultLocation, selectedLocation]);
+    }
+  }, [showMap, defaultLocation, selectedLocation])
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
+    const files = event.target.files
     if (files) {
-      const newImages: string[] = [];
-      let filesProcessed = 0;
+      const newImages: string[] = []
+      let filesProcessed = 0
 
       for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        if (file.type.startsWith("image/")) {
-          const reader = new FileReader();
+        const file = files[i]
+        if (file.type.startsWith('image/')) {
+          const reader = new FileReader()
           reader.onload = (e: ProgressEvent<FileReader>) => {
             if (e.target?.result) {
-              newImages.push(e.target.result as string);
+              newImages.push(e.target.result as string)
             }
-            filesProcessed++;
+            filesProcessed++
             if (filesProcessed === files.length) {
-              setUploadedImages((prev) => [...prev, ...newImages]);
+              setUploadedImages(prev => [...prev, ...newImages])
             }
-          };
-          reader.readAsDataURL(file);
+          }
+          reader.readAsDataURL(file)
         } else {
-          filesProcessed++;
+          filesProcessed++
         }
       }
     }
-  };
+  }
 
   const removeImage = (index: number) => {
-    setUploadedImages((prev) => prev.filter((_, i) => i !== index));
-  };
+    setUploadedImages(prev => prev.filter((_, i) => i !== index))
+  }
 
   const reverseGeocode = async (lat: number, lng: number): Promise<string> => {
     try {
       const response = await fetch(
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`
-      );
-      const data = await response.json();
-      return data.display_name || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+      )
+      const data = await response.json()
+      return data.display_name || `${lat.toFixed(4)}, ${lng.toFixed(4)}`
     } catch (error) {
-      console.error("Reverse geocoding failed:", error);
-      return `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+      console.error('Reverse geocoding failed:', error)
+      return `${lat.toFixed(4)}, ${lng.toFixed(4)}`
     }
-  };
+  }
 
   const handleAutoDetectLocation = () => {
-    setIsDetectingLocation(true);
+    setIsDetectingLocation(true)
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         async (position: GeolocationPosition) => {
-          const { latitude, longitude } = position.coords;
-          const location: LocationData = { lat: latitude, lng: longitude };
+          const { latitude, longitude } = position.coords
+          const location: LocationData = { lat: latitude, lng: longitude }
 
           try {
-            const address = await reverseGeocode(latitude, longitude);
-            location.address = address;
-            setLocationInput(address); // Updates input box
+            const address = await reverseGeocode(latitude, longitude)
+            location.address = address
+            setLocationInput(address) // Updates input box
           } catch (error) {
-            console.error(error);
+            console.error(error)
             const fallbackAddress = `Detected: ${latitude.toFixed(
               4
-            )}, ${longitude.toFixed(4)}`;
-            location.address = fallbackAddress;
-            setLocationInput(fallbackAddress); // Updates input box
+            )}, ${longitude.toFixed(4)}`
+            location.address = fallbackAddress
+            setLocationInput(fallbackAddress) // Updates input box
           }
 
-          setSelectedLocation(location);
-          setIsDetectingLocation(false);
+          setSelectedLocation(location)
+          setIsDetectingLocation(false)
 
           // Update map if it's open
           if (mapInstanceRef.current) {
-            mapInstanceRef.current.setView([latitude, longitude], 15);
+            mapInstanceRef.current.setView([latitude, longitude], 15)
 
             // Remove existing marker
             if (markerRef.current) {
-              mapInstanceRef.current.removeLayer(markerRef.current);
+              mapInstanceRef.current.removeLayer(markerRef.current)
             }
 
             // Add new marker
             markerRef.current = L.marker([latitude, longitude])
               .addTo(mapInstanceRef.current)
-              .bindPopup("Auto-detected location")
-              .openPopup();
+              .bindPopup('Auto-detected location')
+              .openPopup()
           }
         },
         (error: GeolocationPositionError) => {
-          console.error("Error getting location:", error);
-          setIsDetectingLocation(false);
+          console.error('Error getting location:', error)
+          setIsDetectingLocation(false)
           alert(
-            "Could not detect your location. Please select manually on the map."
-          );
+            'Could not detect your location. Please select manually on the map.'
+          )
         },
         {
           enableHighAccuracy: true,
           timeout: 10000,
           maximumAge: 60000,
         }
-      );
+      )
     } else {
-      setIsDetectingLocation(false);
-      alert("Geolocation is not supported by this browser.");
+      setIsDetectingLocation(false)
+      alert('Geolocation is not supported by this browser.')
     }
-  };
+  }
 
   // Remove the separate handleMapClick function since it's now inline in useEffect
 
   const handleCloseModal = () => {
-    setShowPostModal(false);
-    setUploadedImages([]);
-    setSelectedAnimalType("");
-    setAnimalName("");
-    setPosterName("");
-    setContactNumber("");
-    setAge("");
-    setGender("");
-    setCondition("");
-    setDescription("");
-    setVaccinated(false);
-    setSelectedLocation(null);
-    setLocationInput("");
-    setShowMap(false);
-  };
+    setShowPostModal(false)
+    setUploadedImages([])
+    setSelectedAnimalType('')
+    setAnimalName('')
+    setPosterName('')
+    setContactNumber('')
+    setAge('')
+    setGender('')
+    setCondition('')
+    setDescription('')
+    setVaccinated(false)
+    setSelectedLocation(null)
+    setLocationInput('')
+    setShowMap(false)
+  }
 
   const validateForm = (): boolean => {
     if (!selectedAnimalType) {
-      alert("Please select an animal type.");
-      return false;
+      alert('Please select an animal type.')
+      return false
     }
 
     if (!selectedLocation) {
-      alert(
-        "Please select a location on the map or auto-detect your location."
-      );
-      return false;
+      alert('Please select a location on the map or auto-detect your location.')
+      return false
     }
 
     if (!condition) {
-      alert("Please select the animal's condition.");
-      return false;
+      alert("Please select the animal's condition.")
+      return false
     }
 
     if (!description.trim()) {
-      alert("Please provide a description.");
-      return false;
+      alert('Please provide a description.')
+      return false
     }
 
     if (!contactNumber.trim()) {
-      alert("Please provide your contact number.");
-      return false;
+      alert('Please provide your contact number.')
+      return false
     }
 
     if (!posterName.trim()) {
-      alert("Please provide your name.");
-      return false;
+      alert('Please provide your name.')
+      return false
     }
 
-    return true;
-  };
+    return true
+  }
 
   const handleSubmit = () => {
     if (!validateForm()) {
-      return;
+      return
     }
 
     const postData: PostData = {
@@ -316,30 +313,30 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
       posterName,
       vaccinated,
       timestamp: new Date().toISOString(),
-    };
+    }
 
     // Save to localStorage
     try {
       const existingPosts = JSON.parse(
-        localStorage.getItem("animalPosts") || "[]"
-      );
+        localStorage.getItem('animalPosts') || '[]'
+      )
       const updatedPosts = [
         ...existingPosts,
         { ...postData, id: Date.now().toString() },
-      ];
-      localStorage.setItem("animalPosts", JSON.stringify(updatedPosts));
+      ]
+      localStorage.setItem('animalPosts', JSON.stringify(updatedPosts))
 
       // Dispatch custom event to notify other components
-      window.dispatchEvent(new CustomEvent("postAdded"));
+      window.dispatchEvent(new CustomEvent('postAdded'))
 
-      console.log("Post saved to localStorage:", postData);
-      alert("Post created successfully!");
-      handleCloseModal();
+      console.log('Post saved to localStorage:', postData)
+      alert('Post created successfully!')
+      handleCloseModal()
     } catch (error) {
-      console.error("Error saving to localStorage:", error);
-      alert("Error saving post. Please try again.");
+      console.error('Error saving to localStorage:', error)
+      alert('Error saving post. Please try again.')
     }
-  };
+  }
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -363,20 +360,20 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
               Animal Type *
             </label>
             <div className="grid grid-cols-3 gap-4">
-              {["Dog", "Cat", "Cow"].map((type) => (
+              {['Dog', 'Cat', 'Cow'].map(type => (
                 <button
                   key={type}
                   type="button"
                   onClick={() => setSelectedAnimalType(type)}
                   className={`p-4 border-2 rounded-2xl transition-all text-center font-medium ${
                     selectedAnimalType === type
-                      ? "border-indigo-500 bg-indigo-50 text-indigo-600"
-                      : "border-gray-200 hover:border-indigo-300 hover:bg-indigo-50"
+                      ? 'border-indigo-500 bg-indigo-50 text-indigo-600'
+                      : 'border-gray-200 hover:border-indigo-300 hover:bg-indigo-50'
                   }`}
                 >
-                  {type === "Dog" && "🐕"}
-                  {type === "Cat" && "🐱"}
-                  {type === "Cow" && "🐄"}
+                  {type === 'Dog' && '🐕'}
+                  {type === 'Cat' && '🐱'}
+                  {type === 'Cow' && '🐄'}
                   <div className="mt-2">{type}</div>
                 </button>
               ))}
@@ -391,7 +388,7 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
             <input
               type="text"
               value={animalName}
-              onChange={(e) => setAnimalName(e.target.value)}
+              onChange={e => setAnimalName(e.target.value)}
               placeholder="e.g., Buddy, Luna..."
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-indigo-500 focus:outline-none transition-colors"
             />
@@ -409,7 +406,7 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
                 <input
                   type="text"
                   value={locationInput}
-                  onChange={(e) => setLocationInput(e.target.value)}
+                  onChange={e => setLocationInput(e.target.value)}
                   placeholder="Auto-detect or select location on map..."
                   className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-indigo-500 focus:outline-none transition-colors"
                   required
@@ -421,7 +418,7 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
                   className="px-4 py-3 bg-blue-500 text-white rounded-2xl hover:bg-blue-600 disabled:bg-blue-300 transition-colors flex items-center gap-2"
                 >
                   <Crosshair className="w-5 h-5" />
-                  {isDetectingLocation ? "Detecting..." : "Auto-detect"}
+                  {isDetectingLocation ? 'Detecting...' : 'Auto-detect'}
                 </button>
                 <button
                   type="button"
@@ -429,13 +426,13 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
                   className="px-4 py-3 bg-green-500 text-white rounded-2xl hover:bg-green-600 transition-colors flex items-center gap-2"
                 >
                   <MapPin className="w-5 h-5" />
-                  {showMap ? "Hide Map" : "Select on Map"}
+                  {showMap ? 'Hide Map' : 'Select on Map'}
                 </button>
               </div>
 
               {selectedLocation && (
                 <div className="text-sm text-green-600 bg-green-50 px-3 py-2 rounded-xl">
-                  ✓ Location selected: {selectedLocation.lat.toFixed(4)},{" "}
+                  ✓ Location selected: {selectedLocation.lat.toFixed(4)},{' '}
                   {selectedLocation.lng.toFixed(4)}
                 </div>
               )}
@@ -446,7 +443,7 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
               <div className="mt-4">
                 <div
                   ref={mapRef}
-                  style={{ height: "300px", width: "100%" }}
+                  style={{ height: '300px', width: '100%' }}
                   className="rounded-xl border-2 border-gray-200"
                 />
                 <p className="text-xs text-gray-500 mt-2">
@@ -465,7 +462,7 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
               </label>
               <select
                 value={age}
-                onChange={(e) => setAge(e.target.value)}
+                onChange={e => setAge(e.target.value)}
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-indigo-500 focus:outline-none transition-colors"
               >
                 <option value="">Select age</option>
@@ -480,7 +477,7 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
               </label>
               <select
                 value={gender}
-                onChange={(e) => setGender(e.target.value)}
+                onChange={e => setGender(e.target.value)}
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-indigo-500 focus:outline-none transition-colors"
               >
                 <option value="">Select if known</option>
@@ -498,7 +495,7 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
             </label>
             <select
               value={condition}
-              onChange={(e) => setCondition(e.target.value)}
+              onChange={e => setCondition(e.target.value)}
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-indigo-500 focus:outline-none transition-colors"
               required
             >
@@ -518,7 +515,7 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
             </label>
             <textarea
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={e => setDescription(e.target.value)}
               placeholder="Describe the animal's condition, behavior, and any immediate needs..."
               rows={4}
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-indigo-500 focus:outline-none transition-colors resize-none"
@@ -535,7 +532,7 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
             {/* Upload Area */}
             <div
               className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center hover:border-indigo-400 hover:bg-indigo-50 transition-colors cursor-pointer"
-              onClick={() => document.getElementById("imageUpload")?.click()}
+              onClick={() => document.getElementById('imageUpload')?.click()}
             >
               <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <p className="text-gray-600 mb-2">Click to upload photos</p>
@@ -590,7 +587,7 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
             <input
               type="tel"
               value={contactNumber}
-              onChange={(e) => setContactNumber(e.target.value)}
+              onChange={e => setContactNumber(e.target.value)}
               placeholder="+91 98765 43210"
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-indigo-500 focus:outline-none transition-colors"
               required
@@ -606,7 +603,7 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
               type="text"
               placeholder="e.g., Priya Singh"
               value={posterName}
-              onChange={(e) => setPosterName(e.target.value)}
+              onChange={e => setPosterName(e.target.value)}
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-indigo-500 focus:outline-none transition-colors"
               required
             />
@@ -621,7 +618,7 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
               <input
                 type="checkbox"
                 checked={vaccinated}
-                onChange={(e) => setVaccinated(e.target.checked)}
+                onChange={e => setVaccinated(e.target.checked)}
                 className="w-5 h-5 text-indigo-600 border-2 border-gray-300 rounded focus:ring-indigo-500"
               />
               <span className="text-sm font-medium text-gray-700">
@@ -650,5 +647,5 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }

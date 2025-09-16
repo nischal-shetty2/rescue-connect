@@ -1,27 +1,27 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const navigate = useNavigate()
 
   const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
-    type User = { email: string; password: string; [key: string]: unknown };
+    e.preventDefault()
+    const users = JSON.parse(localStorage.getItem('users') || '[]')
+    type User = { email: string; password: string; [key: string]: unknown }
     const user = users.find(
       (u: User) => u.email === email && u.password === password
-    );
+    )
 
     if (user) {
-      localStorage.setItem("currentUser", JSON.stringify(user));
-      navigate("/");
+      localStorage.setItem('currentUser', JSON.stringify(user))
+      navigate('/')
     } else {
-      setError("Invalid email or password");
+      setError('Invalid email or password')
     }
-  };
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
@@ -37,7 +37,7 @@ const Login = () => {
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
               required
               className="w-full rounded-lg border border-gray-300 px-4 py-3 text-base focus:border-blue-500 focus:ring focus:ring-blue-200"
             />
@@ -49,7 +49,7 @@ const Login = () => {
             <input
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
               required
               className="w-full rounded-lg border border-gray-300 px-4 py-3 text-base focus:border-blue-500 focus:ring focus:ring-blue-200"
             />
@@ -57,21 +57,23 @@ const Login = () => {
           {error && <p className="text-sm text-red-500">{error}</p>}
           <button
             type="submit"
-            className="w-full rounded-lg bg-blue-600 py-3 text-base font-semibold text-white transition hover:bg-blue-700">
+            className="w-full rounded-lg bg-blue-600 py-3 text-base font-semibold text-white transition hover:bg-blue-700"
+          >
             Login
           </button>
         </form>
         <p className="mt-6 text-center text-sm text-gray-600">
-          Don’t have an account?{" "}
+          Don’t have an account?{' '}
           <a
             href="/signup"
-            className="font-medium text-blue-600 hover:underline">
+            className="font-medium text-blue-600 hover:underline"
+          >
             Sign Up
           </a>
         </p>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login

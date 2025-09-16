@@ -1,4 +1,4 @@
-import React, { useState, useRef, type ChangeEvent } from "react";
+import React, { useState, useRef, type ChangeEvent } from 'react'
 import {
   Upload,
   Zap,
@@ -9,80 +9,80 @@ import {
   ArrowRight,
   Eye,
   FileText,
-} from "lucide-react";
+} from 'lucide-react'
 
 import {
   mockDiseases,
   commonSymptoms,
   getSeverityColor,
-} from "./DiseaseDetect.utils";
-import { Disclaimer, Stats } from "./DisclaimerAndStats";
-import type { AnalysisResult, AnimalType } from "../DiseaseDetect.types";
+} from './DiseaseDetect.utils'
+import { Disclaimer, Stats } from './DisclaimerAndStats'
+import type { AnalysisResult, AnimalType } from '../DiseaseDetect.types'
 
-export type AnimalId = "dog" | "cat" | "cow";
-export type SeverityLevel = "high" | "medium" | "low";
+export type AnimalId = 'dog' | 'cat' | 'cow'
+export type SeverityLevel = 'high' | 'medium' | 'low'
 
 const animalTypes: AnimalType[] = [
-  { id: "dog", name: "Dog", icon: "🐕" },
-  { id: "cat", name: "Cat", icon: "🐱" },
-  { id: "cow", name: "Cow", icon: "🐄" },
-];
+  { id: 'dog', name: 'Dog', icon: '🐕' },
+  { id: 'cat', name: 'Cat', icon: '🐱' },
+  { id: 'cow', name: 'Cow', icon: '🐄' },
+]
 
 const DetectDiseasePage: React.FC = () => {
-  const [selectedAnimal, setSelectedAnimal] = useState<AnimalId>("dog");
-  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-  const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
+  const [selectedAnimal, setSelectedAnimal] = useState<AnimalId>('dog')
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null)
+  const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false)
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(
     null
-  );
-  const [showSymptomForm, setShowSymptomForm] = useState<boolean>(false);
-  const [symptoms, setSymptoms] = useState<string[]>([]);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  )
+  const [showSymptomForm, setShowSymptomForm] = useState<boolean>(false)
+  const [symptoms, setSymptoms] = useState<string[]>([])
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleImageUpload = (event: ChangeEvent<HTMLInputElement>): void => {
-    const file = event.target.files?.[0];
+    const file = event.target.files?.[0]
     if (file) {
-      const reader = new FileReader();
+      const reader = new FileReader()
       reader.onload = (e: ProgressEvent<FileReader>) => {
-        if (e.target?.result && typeof e.target.result === "string") {
-          setUploadedImage(e.target.result);
-          setAnalysisResult(null);
+        if (e.target?.result && typeof e.target.result === 'string') {
+          setUploadedImage(e.target.result)
+          setAnalysisResult(null)
         }
-      };
-      reader.readAsDataURL(file);
+      }
+      reader.readAsDataURL(file)
     }
-  };
+  }
 
   const handleAnalyze = async (): Promise<void> => {
-    if (!uploadedImage) return;
+    if (!uploadedImage) return
 
-    setIsAnalyzing(true);
+    setIsAnalyzing(true)
 
     try {
       // Convert base64 to blob for sending to Flask API
-      const response = await fetch(uploadedImage);
-      const blob = await response.blob();
+      const response = await fetch(uploadedImage)
+      const blob = await response.blob()
 
       // Create FormData for the Flask API
-      const formData = new FormData();
-      formData.append("image", blob, "image.jpg");
-      formData.append("animalType", selectedAnimal);
-      formData.append("symptoms", JSON.stringify(symptoms));
+      const formData = new FormData()
+      formData.append('image', blob, 'image.jpg')
+      formData.append('animalType', selectedAnimal)
+      formData.append('symptoms', JSON.stringify(symptoms))
 
       // Call your Flask CNN model API
-      const apiResponse = await fetch("http://localhost:5000/api/analyze", {
-        method: "POST",
+      const apiResponse = await fetch('http://localhost:5000/api/analyze', {
+        method: 'POST',
         body: formData,
-      });
+      })
 
       if (!apiResponse.ok) {
-        const errorData = await apiResponse.json().catch(() => ({}));
+        const errorData = await apiResponse.json().catch(() => ({}))
         throw new Error(
           errorData.error || `HTTP ${apiResponse.status}: Analysis failed`
-        );
+        )
       }
 
-      const result = await apiResponse.json();
+      const result = await apiResponse.json()
 
       // Set the analysis result with the actual CNN model prediction
       setAnalysisResult({
@@ -96,56 +96,56 @@ const DetectDiseasePage: React.FC = () => {
         analysisTime: new Date().toLocaleTimeString(),
         // Additional data from your model
         allProbabilities: result.all_probabilities,
-      });
+      })
 
-      console.log("CNN Model Analysis Result:", result);
+      console.log('CNN Model Analysis Result:', result)
     } catch (error) {
-      console.error("Analysis error:", error);
+      console.error('Analysis error:', error)
 
       // Show user-friendly error message
       alert(
         `Analysis failed: ${
-          error instanceof Error ? error.message : "Unknown error"
+          error instanceof Error ? error.message : 'Unknown error'
         }. Please check if the Flask server is running on http://localhost:5000`
-      );
+      )
 
       // Fallback to mock data if API fails (for development)
-      const diseaseKey = Object.keys(mockDiseases[selectedAnimal])[0];
-      const mockResult = mockDiseases[selectedAnimal][diseaseKey];
+      const diseaseKey = Object.keys(mockDiseases[selectedAnimal])[0]
+      const mockResult = mockDiseases[selectedAnimal][diseaseKey]
 
       setAnalysisResult({
         disease: `${diseaseKey} (Mock Data - API Error)`,
         ...mockResult,
         analysisTime: new Date().toLocaleTimeString(),
-      });
+      })
     } finally {
-      setIsAnalyzing(false);
+      setIsAnalyzing(false)
     }
-  };
+  }
 
   const handleSymptomToggle = (symptom: string): void => {
-    setSymptoms((prev) =>
+    setSymptoms(prev =>
       prev.includes(symptom)
-        ? prev.filter((s) => s !== symptom)
+        ? prev.filter(s => s !== symptom)
         : [...prev, symptom]
-    );
-  };
+    )
+  }
 
   const handleFileInputClick = (): void => {
-    fileInputRef.current?.click();
-  };
+    fileInputRef.current?.click()
+  }
 
   const handleRemoveImage = (): void => {
-    setUploadedImage(null);
-  };
+    setUploadedImage(null)
+  }
 
   const handleAnimalSelect = (animalId: AnimalId): void => {
-    setSelectedAnimal(animalId);
-  };
+    setSelectedAnimal(animalId)
+  }
 
   const toggleSymptomForm = (): void => {
-    setShowSymptomForm(!showSymptomForm);
-  };
+    setShowSymptomForm(!showSymptomForm)
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-20 px-4 sm:px-6 lg:px-8">
@@ -160,7 +160,7 @@ const DetectDiseasePage: React.FC = () => {
           <h1 className="text-5xl font-bold text-gray-900 mb-6">
             AI-Powered
             <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              {" "}
+              {' '}
               Disease Detection
             </span>
           </h1>
@@ -186,14 +186,14 @@ const DetectDiseasePage: React.FC = () => {
                 Select Animal Type
               </label>
               <div className="grid grid-cols-3 gap-4">
-                {animalTypes.map((animal) => (
+                {animalTypes.map(animal => (
                   <button
                     key={animal.id}
                     onClick={() => handleAnimalSelect(animal.id)}
                     className={`p-6 rounded-2xl border-2 transition-all duration-300 transform hover:scale-105 ${
                       selectedAnimal === animal.id
-                        ? "border-indigo-600 bg-indigo-50 text-indigo-600 shadow-lg"
-                        : "border-gray-200 hover:border-indigo-300 hover:bg-gray-50"
+                        ? 'border-indigo-600 bg-indigo-50 text-indigo-600 shadow-lg'
+                        : 'border-gray-200 hover:border-indigo-300 hover:bg-gray-50'
                     }`}
                   >
                     <div className="text-3xl mb-3">{animal.icon}</div>
@@ -255,20 +255,20 @@ const DetectDiseasePage: React.FC = () => {
                   onClick={toggleSymptomForm}
                   className="text-blue-600 text-sm hover:text-blue-700"
                 >
-                  {showSymptomForm ? "Hide" : "Add Symptoms"}
+                  {showSymptomForm ? 'Hide' : 'Add Symptoms'}
                 </button>
               </div>
 
               {showSymptomForm && (
                 <div className="grid grid-cols-2 gap-2">
-                  {commonSymptoms[selectedAnimal].map((symptom) => (
+                  {commonSymptoms[selectedAnimal].map(symptom => (
                     <button
                       key={symptom}
                       onClick={() => handleSymptomToggle(symptom)}
                       className={`p-2 text-sm rounded-lg border transition-colors ${
                         symptoms.includes(symptom)
-                          ? "border-blue-600 bg-blue-50 text-blue-600"
-                          : "border-gray-200 hover:border-gray-300"
+                          ? 'border-blue-600 bg-blue-50 text-blue-600'
+                          : 'border-gray-200 hover:border-gray-300'
                       }`}
                     >
                       {symptom}
@@ -363,7 +363,7 @@ const DetectDiseasePage: React.FC = () => {
                       )}`}
                     >
                       {analysisResult.severity.charAt(0).toUpperCase() +
-                        analysisResult.severity.slice(1)}{" "}
+                        analysisResult.severity.slice(1)}{' '}
                       Severity
                     </div>
                   </div>
@@ -498,7 +498,7 @@ const DetectDiseasePage: React.FC = () => {
         <Disclaimer />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default DetectDiseasePage;
+export default DetectDiseasePage

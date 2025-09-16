@@ -1,27 +1,27 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const Signup = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const navigate = useNavigate()
 
   const handleSignup = (e: React.FormEvent) => {
-    e.preventDefault();
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
-    type User = { email: string; [key: string]: unknown };
+    e.preventDefault()
+    const users = JSON.parse(localStorage.getItem('users') || '[]')
+    type User = { email: string; [key: string]: unknown }
     if (users.find((u: User) => u.email === email)) {
-      setError("Email already exists");
-      return;
+      setError('Email already exists')
+      return
     }
-    const newUser = { name, email, password };
-    users.push(newUser);
-    localStorage.setItem("users", JSON.stringify(users));
-    localStorage.setItem("currentUser", JSON.stringify(newUser));
-    navigate("/");
-  };
+    const newUser = { name, email, password }
+    users.push(newUser)
+    localStorage.setItem('users', JSON.stringify(users))
+    localStorage.setItem('currentUser', JSON.stringify(newUser))
+    navigate('/')
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
@@ -37,7 +37,7 @@ const Signup = () => {
             <input
               type="text"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={e => setName(e.target.value)}
               required
               className="w-full rounded-lg border border-gray-300 px-4 py-3 text-base focus:border-blue-500 focus:ring focus:ring-blue-200"
             />
@@ -49,7 +49,7 @@ const Signup = () => {
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
               required
               className="w-full rounded-lg border border-gray-300 px-4 py-3 text-base focus:border-blue-500 focus:ring focus:ring-blue-200"
             />
@@ -61,7 +61,7 @@ const Signup = () => {
             <input
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
               required
               className="w-full rounded-lg border border-gray-300 px-4 py-3 text-base focus:border-blue-500 focus:ring focus:ring-blue-200"
             />
@@ -69,21 +69,23 @@ const Signup = () => {
           {error && <p className="text-sm text-red-500">{error}</p>}
           <button
             type="submit"
-            className="w-full rounded-lg bg-blue-600 py-3 text-base font-semibold text-white transition hover:bg-blue-700">
+            className="w-full rounded-lg bg-blue-600 py-3 text-base font-semibold text-white transition hover:bg-blue-700"
+          >
             Sign Up
           </button>
         </form>
         <p className="mt-6 text-center text-sm text-gray-600">
-          Already have an account?{" "}
+          Already have an account?{' '}
           <a
             href="/login"
-            className="font-medium text-blue-600 hover:underline">
+            className="font-medium text-blue-600 hover:underline"
+          >
             Login
           </a>
         </p>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Signup;
+export default Signup

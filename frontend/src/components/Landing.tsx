@@ -8,14 +8,14 @@ import {
   ArrowRight,
   ChevronRight,
   Star,
-} from "lucide-react";
-import { useNavigate } from "react-router-dom";
+} from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 const Landing = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   // Helper to check if user is logged in
-  const isLoggedIn = !!localStorage.getItem("currentUser");
+  const isLoggedIn = !!localStorage.getItem('currentUser')
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
@@ -32,7 +32,7 @@ const Landing = () => {
             <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
               Connecting Hearts to
               <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                {" "}
+                {' '}
                 Rescue Animals
               </span>
             </h1>
@@ -46,23 +46,25 @@ const Landing = () => {
                 className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-2xl text-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl flex items-center justify-center group shadow-lg"
                 onClick={() => {
                   if (isLoggedIn) {
-                    navigate("/adopt");
+                    navigate('/adopt')
                   } else {
-                    navigate("/login");
+                    navigate('/login')
                   }
-                }}>
+                }}
+              >
                 Start Rescuing
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </button>
               <button
                 onClick={() => {
                   if (isLoggedIn) {
-                    navigate("/disease");
+                    navigate('/disease')
                   } else {
-                    navigate("/login");
+                    navigate('/login')
                   }
                 }}
-                className="bg-white/80 backdrop-blur-sm border-2 border-indigo-200 text-indigo-700 px-8 py-4 rounded-2xl text-lg font-semibold hover:bg-white hover:border-indigo-400 hover:text-indigo-800 transition-all duration-300 hover:shadow-xl">
+                className="bg-white/80 backdrop-blur-sm border-2 border-indigo-200 text-indigo-700 px-8 py-4 rounded-2xl text-lg font-semibold hover:bg-white hover:border-indigo-400 hover:text-indigo-800 transition-all duration-300 hover:shadow-xl"
+              >
                 Detect Disease
               </button>
             </div>
@@ -123,7 +125,8 @@ const Landing = () => {
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="bg-white/80 backdrop-blur-sm p-8 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 group cursor-pointer border border-gray-100 hover:border-indigo-200">
+                className="bg-white/80 backdrop-blur-sm p-8 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 group cursor-pointer border border-gray-100 hover:border-indigo-200"
+              >
                 <div className="text-indigo-600 mb-6 group-hover:scale-110 transition-transform duration-300">
                   {feature.icon}
                 </div>
@@ -146,7 +149,8 @@ const Landing = () => {
       {/* How It Works */}
       <section
         id="how-it-works"
-        className="py-20 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
+        className="py-20 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-5xl font-bold text-gray-900 mb-6">
@@ -217,7 +221,8 @@ const Landing = () => {
             {testimonials.map((testimonial, index) => (
               <div
                 key={index}
-                className="bg-gradient-to-br from-white to-gray-50 p-8 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100">
+                className="bg-gradient-to-br from-white to-gray-50 p-8 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100"
+              >
                 <div className="flex items-center mb-6">
                   {[...Array(testimonial.rating)].map((_, i) => (
                     <Star
@@ -268,70 +273,70 @@ const Landing = () => {
         </div>
       </section>
     </div>
-  );
-};
+  )
+}
 
-export default Landing;
+export default Landing
 
 const features = [
   {
     icon: <Camera className="w-8 h-8" />,
-    title: "AI Disease Detection",
+    title: 'AI Disease Detection',
     description:
-      "Advanced skin disease prediction for dogs, cats, and cows with instant treatment recommendations.",
+      'Advanced skin disease prediction for dogs, cats, and cows with instant treatment recommendations.',
   },
   {
     icon: <MapPin className="w-8 h-8" />,
-    title: "Location-Based Matching",
+    title: 'Location-Based Matching',
     description:
-      "Connect rescuers and adopters based on proximity for faster, more efficient animal rescue.",
+      'Connect rescuers and adopters based on proximity for faster, more efficient animal rescue.',
   },
   {
     icon: <Users className="w-8 h-8" />,
-    title: "Ethical Breeding",
+    title: 'Ethical Breeding',
     description:
-      "Verified marketplace for ethical breeders with transparent breeding practice documentation.",
+      'Verified marketplace for ethical breeders with transparent breeding practice documentation.',
   },
   {
     icon: <Stethoscope className="w-8 h-8" />,
-    title: "Vet Services",
+    title: 'Vet Services',
     description:
-      "Find nearby veterinarians and specialized care services for your rescued animals.",
+      'Find nearby veterinarians and specialized care services for your rescued animals.',
   },
   {
     icon: <Home className="w-8 h-8" />,
-    title: "Pet Boarding",
+    title: 'Pet Boarding',
     description:
-      "Trusted boarding houses and temporary care facilities for animals in need.",
+      'Trusted boarding houses and temporary care facilities for animals in need.',
   },
   {
     icon: <DollarSign className="w-8 h-8" />,
-    title: "Trust Fund Donations",
+    title: 'Trust Fund Donations',
     description:
-      "Support rescue operations and medical treatments through our dedicated trust fund.",
+      'Support rescue operations and medical treatments through our dedicated trust fund.',
   },
-];
+]
 
 const testimonials = [
   {
-    name: "Sarah Johnson",
-    role: "Animal Rescuer",
+    name: 'Sarah Johnson',
+    role: 'Animal Rescuer',
     content:
-      "Rescue Connect helped me save 15 dogs this month. The location matching is incredible!",
+      'Rescue Connect helped me save 15 dogs this month. The location matching is incredible!',
     rating: 5,
   },
   {
-    name: "Dr. Michael Chen",
-    role: "Veterinarian",
+    name: 'Dr. Michael Chen',
+    role: 'Veterinarian',
     content:
-      "The AI disease detection feature has revolutionized how we diagnose skin conditions.",
+      'The AI disease detection feature has revolutionized how we diagnose skin conditions.',
     rating: 5,
   },
   {
-    name: "Emma Williams",
-    role: "Pet Adopter",
+    name: 'Emma Williams',
+    role: 'Pet Adopter',
     content:
       "Found my perfect companion through their matchmaking system. Couldn't be happier!",
     rating: 5,
   },
-];
+]

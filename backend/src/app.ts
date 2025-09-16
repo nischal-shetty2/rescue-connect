@@ -1,4 +1,4 @@
-import express from "express";
+import express from 'express'
 
-export const app = express();
-app.use(express.json());
+export const app = express()
+app.use(express.json())

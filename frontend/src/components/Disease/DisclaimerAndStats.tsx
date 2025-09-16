@@ -1,4 +1,4 @@
-import { AlertTriangle, Upload, Zap, Shield, FileText } from "lucide-react";
+import { AlertTriangle, Upload, Zap, Shield, FileText } from 'lucide-react'
 
 export const Disclaimer = () => {
   return (
@@ -78,8 +78,8 @@ export const Disclaimer = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
 export const Stats = () => {
   return (
@@ -103,5 +103,5 @@ export const Stats = () => {
         <div className="text-gray-600 font-medium">Disease Types</div>
       </div>
     </div>
-  );
-};
+  )
+}

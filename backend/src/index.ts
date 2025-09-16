@@ -1,11 +1,11 @@
-import { Request, Response } from "express";
-import { app } from "./app";
-const port = 3000;
+import { Request, Response } from 'express'
+import { app } from './app'
+const port = 3000
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("Hello, Express + TypeScript!");
-});
+app.get('/', (req: Request, res: Response) => {
+  res.send('Hello, Express + TypeScript!')
+})
 
 app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
-});
+  console.log(`Server running on http://localhost:${port}`)
+})

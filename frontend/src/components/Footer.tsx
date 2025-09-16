@@ -1,4 +1,4 @@
-import { Heart } from "lucide-react";
+import { Heart } from 'lucide-react'
 
 const Footer = () => (
   <footer className="bg-gray-900 text-white py-12">
@@ -104,6 +104,6 @@ const Footer = () => (
       </div>
     </div>
   </footer>
-);
+)
 
-export default Footer;
+export default Footer
