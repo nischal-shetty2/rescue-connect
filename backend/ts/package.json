@@ -14,15 +14,22 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "devDependencies": {
     "@types/express": "^5.0.3",
+    "@types/multer": "^2.0.0",
     "@types/node": "^24.3.0",
+    "@types/node-fetch": "^2.6.13",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2"
   },
   "dependencies": {
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "form-data": "^4.0.4",
+    "groq-sdk": "^0.33.0",
+    "multer": "^2.0.2",
+    "node-fetch": "^3.3.2",
+    "zod": "^4.1.11"
   }
 }

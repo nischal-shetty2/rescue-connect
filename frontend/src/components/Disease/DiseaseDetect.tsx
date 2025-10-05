@@ -59,18 +59,18 @@ const DetectDiseasePage: React.FC = () => {
     setIsAnalyzing(true)
 
     try {
-      // Convert base64 to blob for sending to Flask API
+      // Convert base64 to blob for sending to Express backend
       const response = await fetch(uploadedImage)
       const blob = await response.blob()
 
-      // Create FormData for the Flask API
+      // Create FormData for the Express backend (which forwards to Flask + Groq)
       const formData = new FormData()
       formData.append('image', blob, 'image.jpg')
       formData.append('animalType', selectedAnimal)
       formData.append('symptoms', JSON.stringify(symptoms))
 
-      // Call your Flask CNN model API
-      const apiResponse = await fetch('http://localhost:5001/api/analyze', {
+      // Call Express backend which will forward to Flask and enhance with Groq
+      const apiResponse = await fetch('http://localhost:3000/diagnose', {
         method: 'POST',
         body: formData,
       })
@@ -94,11 +94,11 @@ const DetectDiseasePage: React.FC = () => {
         treatment: result.treatment,
         urgency: result.urgency,
         analysisTime: new Date().toLocaleTimeString(),
-        // Additional data from your model
-        allProbabilities: result.all_probabilities,
+        // Additional data from enhanced model response
+        allProbabilities: result.allProbabilities,
       })
 
-      console.log('CNN Model Analysis Result:', result)
+      console.log('Enhanced Analysis Result (CNN + Groq):', result)
     } catch (error) {
       console.error('Analysis error:', error)
 
@@ -106,7 +106,7 @@ const DetectDiseasePage: React.FC = () => {
       alert(
         `Analysis failed: ${
           error instanceof Error ? error.message : 'Unknown error'
-        }. Please check if the Flask server is running on http://localhost:5001`
+        }. Please check if the Express server is running on http://localhost:3000`
       )
 
       // Fallback to mock data if API fails (for development)
@@ -114,7 +114,7 @@ const DetectDiseasePage: React.FC = () => {
       const mockResult = mockDiseases[selectedAnimal][diseaseKey]
 
       setAnalysisResult({
-        disease: `${diseaseKey} (Mock Data - API Error)`,
+        disease: `${diseaseKey} (Mock Data - Express/Flask API Error)`,
         ...mockResult,
         analysisTime: new Date().toLocaleTimeString(),
       })
@@ -285,7 +285,7 @@ const DetectDiseasePage: React.FC = () => {
               <div className="text-center py-12">
                 <Eye className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                 <p className="text-gray-500">
-                  Upload an image to get started with AI analysis
+                  Upload an image to get started with analysis
                 </p>
               </div>
             )}
@@ -482,7 +482,7 @@ const DetectDiseasePage: React.FC = () => {
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Get instant, accurate diagnosis for skin diseases in dogs, cats, and
-            cows. Our advanced AI analyzes images and symptoms to provide
+            cows. Our advanced model analyzes images and symptoms to provide
             treatment recommendations.
           </p>
         </div>
