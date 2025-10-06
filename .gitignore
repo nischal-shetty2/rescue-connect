@@ -75,3 +75,10 @@ backend/uploads/
 # Testing
 coverage/
 .nyc_output/
+
+# Ignore Python bytecode and caches
+__pycache__/
+*.py[cod]
+
+# source venv/bin/activate
+# python flash_server.py

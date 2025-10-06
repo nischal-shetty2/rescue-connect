@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --watch src -e ts --exec ts-node src/index.ts",
-    "build": "tsc",
+    "dev": "nodemon --watch src -e ts --exec 'ts-node --esm src/index.ts'",
+    "build": "tsc --noEmit false --allowImportingTsExtensions false",
     "start": "node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "prettier --write .",
@@ -15,6 +15,9 @@
   "author": "",
   "license": "ISC",
   "type": "module",
+  "ts-node": {
+    "esm": true
+  },
   "devDependencies": {
     "@types/express": "^5.0.3",
     "@types/multer": "^2.0.0",
@@ -25,11 +28,12 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
+    "@ai-sdk/google": "^1.0.9",
+    "ai": "^4.0.8",
+    "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "form-data": "^4.0.4",
-    "groq-sdk": "^0.33.0",
     "multer": "^2.0.2",
-    "node-fetch": "^3.3.2",
-    "zod": "^4.1.11"
+    "node-fetch": "^3.3.2"
   }
 }

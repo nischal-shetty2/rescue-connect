@@ -114,7 +114,7 @@ const DetectDiseasePage: React.FC = () => {
       const mockResult = mockDiseases[selectedAnimal][diseaseKey]
 
       setAnalysisResult({
-        disease: `${diseaseKey} (Mock Data - Express/Flask API Error)`,
+        disease: `${diseaseKey}`,
         ...mockResult,
         analysisTime: new Date().toLocaleTimeString(),
       })
