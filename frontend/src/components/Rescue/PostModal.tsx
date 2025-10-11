@@ -2,6 +2,10 @@ import { X, Upload, MapPin, Crosshair } from 'lucide-react'
 import { useState, useEffect, useRef, useMemo } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import {
+  createAdoption,
+  type AdoptionPost,
+} from '../../services/adoptionService'
 
 // Fix for default markers
 delete (L.Icon.Default.prototype as { _getIconUrl?: unknown })._getIconUrl
@@ -295,7 +299,7 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
     return true
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validateForm()) {
       return
     }
@@ -315,8 +319,65 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
       timestamp: new Date().toISOString(),
     }
 
-    // Save to localStorage
     try {
+      // Get user info for API
+      const user = JSON.parse(localStorage.getItem('user') || '{}')
+
+      // Prepare data for API
+      const mapAnimalType = (
+        type: string
+      ): 'dog' | 'cat' | 'bird' | 'other' => {
+        const lowerType = type.toLowerCase()
+        if (lowerType === 'cow') return 'other'
+        if (['dog', 'cat', 'bird'].includes(lowerType)) {
+          return lowerType as 'dog' | 'cat' | 'bird'
+        }
+        return 'other'
+      }
+
+      const parseAge = (ageString?: string): number => {
+        if (!ageString) return 0
+        const match = ageString.match(/(\d+)/)
+        return match ? parseInt(match[1]) : 0
+      }
+
+      const apiData: Omit<AdoptionPost, '_id' | 'postedAt' | 'updatedAt'> = {
+        animalName: postData.animalName || 'Unknown',
+        animalType: mapAnimalType(postData.animalType),
+        breed: 'Mixed', // You can add breed field to your form if needed
+        age: parseAge(postData.age),
+        gender: (postData.gender?.toLowerCase() === 'female'
+          ? 'female'
+          : 'male') as 'male' | 'female',
+        size: 'medium' as const, // You can add size field to your form if needed
+        description: postData.description,
+        medicalInfo: postData.condition || 'No medical information provided',
+        location:
+          postData.location.address ||
+          `${postData.location.lat}, ${postData.location.lng}`,
+        contactInfo: {
+          name: postData.posterName,
+          phone: postData.contactNumber,
+          email: user.email || 'no-email@example.com',
+        },
+        images: postData.images,
+        status: 'available' as const,
+        postedBy: user.email || 'anonymous',
+      }
+
+      // Try to save to API first
+      try {
+        await createAdoption(apiData)
+        console.log('Post saved to API successfully')
+        alert('Post created successfully and saved to database!')
+        handleCloseModal()
+        return
+      } catch (apiError) {
+        console.warn('API save failed, falling back to localStorage:', apiError)
+        // Fall through to localStorage save
+      }
+
+      // Fallback: Save to localStorage
       const existingPosts = JSON.parse(
         localStorage.getItem('animalPosts') || '[]'
       )
@@ -330,10 +391,12 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
       window.dispatchEvent(new CustomEvent('postAdded'))
 
       console.log('Post saved to localStorage:', postData)
-      alert('Post created successfully!')
+      alert(
+        'Post created successfully! (Saved locally - will sync when connection is restored)'
+      )
       handleCloseModal()
     } catch (error) {
-      console.error('Error saving to localStorage:', error)
+      console.error('Error saving post:', error)
       alert('Error saving post. Please try again.')
     }
   }

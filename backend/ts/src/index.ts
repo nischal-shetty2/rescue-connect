@@ -1,34 +1,26 @@
 import 'dotenv/config'
 import express from 'express'
 import multer from 'multer'
-
+import cors from 'cors'
+import connectDB from './config/database.ts'
+import adoptionRoutes from './routes/adoption.ts'
 import { DiagnosisService } from './ai/index.ts'
 
-const PORT = 3000
+// Connect to MongoDB
+connectDB()
+
+const PORT = process.env.PORT || 3000
 const app = express()
 const diagnosisService = new DiagnosisService()
 
-// Enable CORS for frontend communication
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*')
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-  )
-  if (req.method === 'OPTIONS') {
-    res.sendStatus(200)
-  } else {
-    next()
-  }
-})
-
-// to parse non-file fields
+// Middleware
+app.use(cors())
 app.use(express.json())
 
 // to parse file uploads
 const upload = multer({ storage: multer.memoryStorage() })
 
+// 🧠 AI Diagnosis route
 app.post('/diagnose', upload.single('image'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'Image required' })
@@ -60,10 +52,15 @@ app.post('/diagnose', upload.single('image'), async (req, res) => {
   }
 })
 
+
+app.use('/api/adoptions', adoptionRoutes)
+
+
 app.get('/', (_, res) => {
-  res.send('Server is running!')
+  res.send('Server is running with AI + MongoDB!')
 })
 
+
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`)
+  console.log(`🚀 Server running on http://localhost:${PORT}`)
 })

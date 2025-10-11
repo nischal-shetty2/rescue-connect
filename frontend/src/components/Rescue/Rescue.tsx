@@ -14,6 +14,11 @@ import {
   X,
 } from 'lucide-react'
 import PostModal from './PostModal'
+import {
+  getAdoptions,
+  deleteAdoption,
+  type AdoptionPost,
+} from '../../services/adoptionService'
 
 const dummyAnimals = [
   {
@@ -145,9 +150,15 @@ const StartRescuingPage = () => {
     contact: string
     isUserCreated?: boolean
   }
+
   const [storedPosts, setStoredPosts] = useState<AnimalPost[]>([])
   const [selectedAnimal, setSelectedAnimal] = useState<Animal | null>(null)
   const [showAdoptionModal, setShowAdoptionModal] = useState(false)
+
+  // New API-related state
+  const [apiAnimals, setApiAnimals] = useState<Animal[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [adoptionForm, setAdoptionForm] = useState({
     adopterName: '',
     email: '',
@@ -158,6 +169,48 @@ const StartRescuingPage = () => {
     reason: '',
     availability: '',
   })
+
+  // Fetch animals from API
+  const fetchAnimalsFromAPI = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+
+      const apiData = await getAdoptions({
+        type: selectedFilter === 'all' ? undefined : selectedFilter,
+      })
+
+      // Convert API data to Animal format
+      const convertedAnimals = apiData.map((post: AdoptionPost) => ({
+        id: post._id || Date.now(),
+        type:
+          post.animalType.charAt(0).toUpperCase() + post.animalType.slice(1),
+        name: post.animalName,
+        image:
+          post.images?.[0] ||
+          'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=400&q=80',
+        location: post.location,
+        distance: '0 km away',
+        info: post.description,
+        age: post.age.toString(),
+        gender: post.gender.charAt(0).toUpperCase() + post.gender.slice(1),
+        rescuer: post.contactInfo.name,
+        postedTime: getTimeAgo(post.postedAt),
+        condition: 'good', // You can map this from your API data
+        vaccinated: true, // You can map this from your API data
+        contact: post.contactInfo.phone,
+        isUserCreated: true,
+      }))
+
+      setApiAnimals(convertedAnimals)
+    } catch (err) {
+      console.error('Error fetching from API:', err)
+      setError('Failed to load from database')
+      setApiAnimals([])
+    } finally {
+      setLoading(false)
+    }
+  }
 
   // Load posts from localStorage on component mount
   useEffect(() => {
@@ -189,52 +242,62 @@ const StartRescuingPage = () => {
     }
   }, [])
 
-  const handleDeletePost = (postId: string | number) => {
+  // Fetch animals from API when filter changes
+  useEffect(() => {
+    fetchAnimalsFromAPI()
+  }, [selectedFilter])
+
+  const handleDeletePost = async (postId: string | number) => {
     console.log('=== DELETE POST FUNCTION CALLED ===')
     console.log('Post ID to delete:', postId, 'Type:', typeof postId)
 
-    // Add immediate visual feedback
-    alert(`Delete function called for post ID: ${postId}`)
-
     if (window.confirm('Are you sure you want to delete this post?')) {
       try {
-        const existingPosts = JSON.parse(
-          localStorage.getItem('animalPosts') || '[]'
-        )
+        // If it's a string ID, it's from the API
+        if (typeof postId === 'string') {
+          await deleteAdoption(postId)
+          alert('Post deleted successfully!')
+          fetchAnimalsFromAPI() // Refresh API data
+        } else {
+          // Handle localStorage deletion (for backward compatibility)
+          const existingPosts = JSON.parse(
+            localStorage.getItem('animalPosts') || '[]'
+          )
 
-        console.log('All existing posts:', existingPosts)
+          console.log('All existing posts:', existingPosts)
 
-        // Find the post to delete
-        const postToDelete = existingPosts.find(
-          (post: AnimalPost) =>
-            String(post.id) === String(postId) ||
-            Number(post.id) === Number(postId)
-        )
+          // Find the post to delete
+          const postToDelete = existingPosts.find(
+            (post: AnimalPost) =>
+              String(post.id) === String(postId) ||
+              Number(post.id) === Number(postId)
+          )
 
-        console.log('Post found for deletion:', postToDelete)
+          console.log('Post found for deletion:', postToDelete)
 
-        if (!postToDelete) {
-          alert(`Post with ID ${postId} not found in localStorage!`)
-          return
+          if (!postToDelete) {
+            alert(`Post with ID ${postId} not found in localStorage!`)
+            return
+          }
+
+          const updatedPosts = existingPosts.filter(
+            (post: AnimalPost) =>
+              String(post.id) !== String(postId) &&
+              Number(post.id) !== Number(postId)
+          )
+
+          console.log('Posts after deletion:', updatedPosts)
+          console.log(
+            'Number of posts removed:',
+            existingPosts.length - updatedPosts.length
+          )
+
+          localStorage.setItem('animalPosts', JSON.stringify(updatedPosts))
+          setStoredPosts(updatedPosts)
+          window.dispatchEvent(new CustomEvent('postDeleted'))
+
+          alert('Post deleted successfully!')
         }
-
-        const updatedPosts = existingPosts.filter(
-          (post: AnimalPost) =>
-            String(post.id) !== String(postId) &&
-            Number(post.id) !== Number(postId)
-        )
-
-        console.log('Posts after deletion:', updatedPosts)
-        console.log(
-          'Number of posts removed:',
-          existingPosts.length - updatedPosts.length
-        )
-
-        localStorage.setItem('animalPosts', JSON.stringify(updatedPosts))
-        setStoredPosts(updatedPosts)
-        window.dispatchEvent(new CustomEvent('postDeleted'))
-
-        alert('Post deleted successfully!')
       } catch (error) {
         console.error('Error deleting post:', error)
         alert('Error deleting post. Please try again.')
@@ -371,10 +434,11 @@ const StartRescuingPage = () => {
     }
   }
 
-  // Combine dummy animals with stored posts
+  // Combine dummy animals with stored posts and API data
   const allAnimals = [
     ...dummyAnimals,
     ...convertStoredPostsToAnimals(storedPosts),
+    ...apiAnimals,
   ]
 
   const filteredAnimals =
@@ -390,7 +454,8 @@ const StartRescuingPage = () => {
 
   const handleCloseModal = () => {
     setShowPostModal(false)
-    // Refresh posts when modal closes (in case a new post was added)
+    // Refresh both stored posts and API data when modal closes
+    fetchAnimalsFromAPI()
     const loadStoredPosts = () => {
       try {
         const posts = JSON.parse(localStorage.getItem('animalPosts') || '[]')
@@ -618,6 +683,36 @@ const StartRescuingPage = () => {
       ))}
     </div>
   )
+
+  // Add loading state
+  if (loading && apiAnimals.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+          <p className="text-xl text-gray-600">Loading animals...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Add error state (optional)
+  if (error && apiAnimals.length === 0 && dummyAnimals.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <p className="text-xl text-red-600 mb-4">{error}</p>
+          <button
+            onClick={fetchAnimalsFromAPI}
+            className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-20 px-4 sm:px-6 lg:px-8">
