@@ -1,24 +1,24 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document } from 'mongoose'
 
 export interface IAdoption extends Document {
-  animalName: string;
-  animalType: string;
-  breed: string;
-  age: number;
-  gender: string;
-  size: string;
-  description: string;
-  medicalInfo: string;
-  location: string;
+  animalName: string
+  animalType: string
+  breed: string
+  age: number
+  gender: string
+  size: string
+  description: string
+  medicalInfo: string
+  location: string
   contactInfo: {
-    name: string;
-    phone: string;
-    email: string;
-  };
-  images: string[];
-  status: string;
-  postedBy: string;
-  postedAt: Date;
+    name: string
+    phone: string
+    email: string
+  }
+  images: string[]
+  status: string
+  postedBy: string
+  postedAt: Date
 }
 
 const AdoptionSchema = new Schema<IAdoption>({
@@ -37,9 +37,9 @@ const AdoptionSchema = new Schema<IAdoption>({
     email: String,
   },
   images: [String],
-  status: { type: String, default: "available" },
+  status: { type: String, default: 'available' },
   postedBy: { type: String, required: true },
   postedAt: { type: Date, default: Date.now },
-});
+})
 
-export default mongoose.model<IAdoption>("Adoption", AdoptionSchema);
+export default mongoose.model<IAdoption>('Adoption', AdoptionSchema)

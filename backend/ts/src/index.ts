@@ -52,14 +52,11 @@ app.post('/diagnose', upload.single('image'), async (req, res) => {
   }
 })
 
-
 app.use('/api/adoptions', adoptionRoutes)
-
 
 app.get('/', (_, res) => {
   res.send('Server is running with AI + MongoDB!')
 })
-
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`)
