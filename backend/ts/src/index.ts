@@ -4,7 +4,7 @@ import multer from 'multer'
 import cors from 'cors'
 import connectDB from './config/database.ts'
 import adoptionRoutes from './routes/adoption.ts'
-import { DiagnosisService } from './ai/index.ts'
+import { DiagnosisService } from './proxy/index.ts'
 
 // Connect to MongoDB
 connectDB()
