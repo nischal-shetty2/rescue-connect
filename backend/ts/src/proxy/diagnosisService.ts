@@ -50,7 +50,7 @@ export class DiagnosisService {
         return cnnResult
       } else {
         console.log(
-          'CNN model unavailable, proceeding with Gemini-only analysis'
+          'primary model unavailable, proceeding with secondary-only analysis'
         )
         return null
       }
@@ -60,19 +60,19 @@ export class DiagnosisService {
     }
   }
 
-  /**
-   * Perform AI diagnosis using Gemini Vision
-   */
   private async performGeminiDiagnosis(
     input: DiagnosisInput,
     cnnResult: FlaskResult | null
   ): Promise<any> {
-    console.log('Performing primary diagnosis with Gemini Vision...')
+    console.log('Performing primary diagnosis with Vision...')
 
     const imageBase64 = input.imageBuffer.toString('base64')
     const imageUrl = `data:${input.mimeType};base64,${imageBase64}`
 
-    const systemPrompt = createSystemPromptWithCNNContext(cnnResult)
+    const systemPrompt = createSystemPromptWithCNNContext(
+      input.animalType,
+      cnnResult
+    )
     const userPrompt = createUserPrompt(
       input.animalType,
       input.symptoms,
@@ -113,7 +113,7 @@ export class DiagnosisService {
       // Step 1: Optional CNN model call (mainly for validation/logging)
       const cnnResult = await this.getCNNReference(input)
 
-      // Step 2: Primary diagnosis using Gemini Vision
+      // Step 2: Primary diagnosis using Secondary Vision
       const geminiResult = await this.performGeminiDiagnosis(input, cnnResult)
 
       const analysisTime = new Date().toLocaleTimeString()
@@ -124,8 +124,8 @@ export class DiagnosisService {
         analysisTime,
         processingTimeMs: processingTime,
         modelUsed: cnnResult
-          ? 'Gemini Vision (with CNN reference)'
-          : 'Gemini Vision (standalone)',
+          ? 'Secondary Vision (with CNN reference)'
+          : 'Secondary Vision (standalone)',
         cnnReference: cnnResult
           ? {
               disease: cnnResult.disease,
@@ -135,7 +135,7 @@ export class DiagnosisService {
           : null,
       }
 
-      console.log('Primary Gemini diagnosis completed:', finalResult)
+      console.log('Secondary diagnosis completed:', finalResult)
       return finalResult
     } catch (error) {
       console.error('Error in diagnosis pipeline:', error)

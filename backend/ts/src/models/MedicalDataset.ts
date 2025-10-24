@@ -1,19 +1,19 @@
 export const dogSkinDiseases: Record<string, string> = {
   'Flea Allergy Dermatitis':
     'Flea control (Frontline, NexGard, Bravecto), antihistamines, corticosteroids',
-  'Atopic Dermatitis (Allergies)':
+  'Atopic Dermatitis':
     'Antihistamines, corticosteroids, cyclosporine (Atopica), Apoquel, Cytopoint injections',
-  'Mange (Demodectic or Sarcoptic)':
+  Mange:
     'Ivermectin, Milbemycin, Amitraz dips, Lime sulfur dips, Bravecto, NexGard',
-  'Hot Spots (Acute Moist Dermatitis)':
+  'Hot Spots':
     'Topical antibiotics (Neomycin, Mupirocin), corticosteroid sprays, cleansing with chlorhexidine',
-  'Yeast Infection (Malassezia Dermatitis)':
+  'Yeast Infection':
     'Antifungal shampoos (Ketoconazole, Miconazole, Chlorhexidine), oral antifungals (Fluconazole, Itraconazole)',
-  'Ringworm (Dermatophytosis)':
+  Ringworm:
     'Topical antifungals (Clotrimazole, Miconazole), oral antifungals (Griseofulvin, Itraconazole)',
-  'Bacterial Infection (Pyoderma)':
+  'Bacterial Infection':
     'Antibiotics (Cephalexin, Clindamycin, Amoxicillin-Clavulanate), medicated shampoos (Chlorhexidine)',
-  'Dry Skin (Xerosis)':
+  'Dry Skin':
     'Omega-3 fatty acid supplements, moisturizing shampoos, improved diet',
   Seborrhea:
     'Medicated shampoos (Sulfur, Salicylic acid, Benzoyl peroxide), omega-3 supplements, retinoids in chronic cases',
@@ -23,42 +23,42 @@ export const dogSkinDiseases: Record<string, string> = {
     'Tick removal, tick preventives (Simparica, Bravecto), antibiotics if secondary infection',
   'Contact Dermatitis':
     'Identify and remove irritant, topical corticosteroids, soothing oatmeal or aloe shampoos',
-  'Hormonal Skin Disease (e.g., Hypothyroidism)':
+  'Hormonal Skin Disease':
     'Thyroid hormone supplementation (Levothyroxine), regular monitoring',
 }
 
 export const catSkinDiseases: Record<string, string> = {
   'Flea Allergy Dermatitis':
     'Flea control (Revolution, Advantage, Frontline), antihistamines, corticosteroids for inflammation',
-  'Atopic Dermatitis (Environmental Allergies)':
+  'Atopic Dermatitis':
     'Antihistamines, corticosteroids, cyclosporine (Atopica for cats), hypoallergenic environment',
-  'Mange (Notoedric or Demodectic)':
+  Mange:
     'Lime sulfur dips, Ivermectin (careful with dosage), Selamectin (Revolution), Milbemycin',
-  'Ringworm (Dermatophytosis)':
+  Ringworm:
     'Topical antifungals (Miconazole, Enilconazole), oral antifungals (Itraconazole, Terbinafine), environmental decontamination',
-  'Bacterial Infection (Pyoderma)':
+  'Bacterial Infection':
     'Antibiotics (Clindamycin, Cephalexin, Amoxicillin-Clavulanate), antiseptic shampoos (Chlorhexidine)',
-  'Yeast Infection (Malassezia Dermatitis)':
+  'Yeast Infection':
     'Antifungal shampoos (Miconazole, Chlorhexidine), oral antifungals (Itraconazole), manage underlying allergies',
   'Eosinophilic Granuloma Complex':
     'Corticosteroids (Prednisolone), cyclosporine, treat underlying allergies or parasites',
   'Feline Acne':
     'Topical cleansing with benzoyl peroxide or chlorhexidine, topical antibiotics (Mupirocin), stainless steel or ceramic bowls',
-  'Stud Tail (Supracaudal Gland Hyperplasia)':
+  'Stud Tail':
     'Topical antiseborrheic shampoos (Benzoyl peroxide), regular cleaning, neutering if intact male',
   'Food Allergy Dermatitis':
     'Hypoallergenic or novel protein diet trial, antihistamines or corticosteroids for flare control',
-  'Ear Mites (Otodectic Mange)':
+  'Ear Mites':
     'Topical treatments (Selamectin, Ivermectin, Moxidectin), ear cleaning, treat all in-contact pets',
   'Contact Dermatitis':
     'Remove irritant, topical corticosteroids, soothing oatmeal or aloe-based cleansers',
-  'Hormonal Skin Disease (e.g., Hyperthyroidism)':
+  'Hormonal Skin Disease':
     'Treat underlying hormonal disorder (Methimazole, radioactive iodine, surgery), supportive skin care',
-  'Dry Skin (Xerosis)':
+  'Dry Skin':
     'Omega-3 fatty acid supplements, humidifier use, moisturizing shampoos for cats',
 }
 
-const cowDiseases: Record<string, string> = {
+export const cowDiseases: Record<string, string> = {
   'Bovine Respiratory Disease (BRD)':
     'Broad-spectrum antibiotics (Tilmicosin, Florfenicol, Enrofloxacin), anti-inflammatory drugs (Flunixin Meglumine), proper ventilation, and vaccination for prevention',
   Bovine:

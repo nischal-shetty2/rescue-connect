@@ -12,7 +12,7 @@ export const Disclaimer = () => {
               Important Medical Disclaimer
             </h3>
             <p className="text-amber-800 text-sm leading-relaxed">
-              This AI diagnosis tool is designed to assist with preliminary
+              This diagnosis tool is designed to assist with preliminary
               assessment only. It should not replace professional veterinary
               consultation. For serious conditions, persistent symptoms, or
               emergency situations, please consult a qualified veterinarian
@@ -26,7 +26,7 @@ export const Disclaimer = () => {
       {/* How it Works */}
       <div className="mt-16 bg-white rounded-2xl shadow-sm p-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">
-          How Our AI Detection Works
+          How Our Modal Detection Works
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -46,7 +46,7 @@ export const Disclaimer = () => {
             <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Zap className="w-8 h-8 text-blue-600" />
             </div>
-            <h3 className="font-semibold text-gray-900 mb-2">2. AI Analysis</h3>
+            <h3 className="font-semibold text-gray-900 mb-2">2. Analysis</h3>
             <p className="text-gray-600 text-sm">
               Advanced algorithms analyze visual patterns and symptoms
             </p>
@@ -83,25 +83,40 @@ export const Disclaimer = () => {
 
 export const Stats = () => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-      <div className="bg-white/80 backdrop-blur-lg rounded-3xl p-8 shadow-xl text-center border border-white/20 hover:shadow-2xl transition-all duration-300">
-        <div className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-3">
-          95%
-        </div>
-        <div className="text-gray-600 font-medium">Accuracy Rate</div>
+    <>
+      <div className="text-center my-16">
+        <h1 className="text-5xl font-bold text-gray-900 mb-6">
+          <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            {' '}
+            Disease Detection
+          </span>
+        </h1>
+        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          Get instant, accurate diagnosis for skin diseases in dogs, cats, and
+          cows. Our advanced model analyzes images and symptoms to provide
+          treatment recommendations.
+        </p>
       </div>
-      <div className="bg-white/80 backdrop-blur-lg rounded-3xl p-8 shadow-xl text-center border border-white/20 hover:shadow-2xl transition-all duration-300">
-        <div className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-3">
-          &lt;30s
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div className="bg-white/80 backdrop-blur-lg rounded-3xl p-8 shadow-xl text-center border border-white/20 hover:shadow-2xl transition-all duration-300">
+          <div className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-3">
+            95%
+          </div>
+          <div className="text-gray-600 font-medium">Accuracy Rate</div>
         </div>
-        <div className="text-gray-600 font-medium">Analysis Time</div>
-      </div>
-      <div className="bg-white/80 backdrop-blur-lg rounded-3xl p-8 shadow-xl text-center border border-white/20 hover:shadow-2xl transition-all duration-300">
-        <div className="text-4xl font-bold bg-gradient-to-r from-pink-600 to-indigo-600 bg-clip-text text-transparent mb-3">
-          50+
+        <div className="bg-white/80 backdrop-blur-lg rounded-3xl p-8 shadow-xl text-center border border-white/20 hover:shadow-2xl transition-all duration-300">
+          <div className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-3">
+            &lt;30s
+          </div>
+          <div className="text-gray-600 font-medium">Analysis Time</div>
         </div>
-        <div className="text-gray-600 font-medium">Disease Types</div>
+        <div className="bg-white/80 backdrop-blur-lg rounded-3xl p-8 shadow-xl text-center border border-white/20 hover:shadow-2xl transition-all duration-300">
+          <div className="text-4xl font-bold bg-gradient-to-r from-pink-600 to-indigo-600 bg-clip-text text-transparent mb-3">
+            50+
+          </div>
+          <div className="text-gray-600 font-medium">Disease Types</div>
+        </div>
       </div>
-    </div>
+    </>
   )
 }

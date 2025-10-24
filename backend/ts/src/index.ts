@@ -55,7 +55,7 @@ app.post('/diagnose', upload.single('image'), async (req, res) => {
 app.use('/api/adoptions', adoptionRoutes)
 
 app.get('/', (_, res) => {
-  res.send('Server is running with AI + MongoDB!')
+  res.send('Server is running!')
 })
 
 app.listen(PORT, () => {
