@@ -3,7 +3,7 @@ import {
   dogSkinDiseases,
   catSkinDiseases,
   cowDiseases,
-} from '../models/MedicalDataset.ts'
+} from '../models/MedicalDataset.js'
 
 export const VETERINARY_SYSTEM_PROMPT = `You are a highly skilled veterinary diagnostic specialist with expertise in analyzing animal skin conditions across dogs, cats, and cattle. Analyze the provided image to perform a concise veterinary diagnosis.
 

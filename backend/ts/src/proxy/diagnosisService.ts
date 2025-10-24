@@ -3,12 +3,12 @@ import { google } from '@ai-sdk/google'
 import FormData from 'form-data'
 import fetch from 'node-fetch'
 
-import type { DiagnosisInput, DiagnosisResult, FlaskResult } from './types.ts'
-import { DiagnosisSchema } from './types.ts'
+import type { DiagnosisInput, DiagnosisResult, FlaskResult } from './types.js'
+import { DiagnosisSchema } from './types.js'
 import {
   createSystemPromptWithCNNContext,
   createUserPrompt,
-} from './prompts.ts'
+} from './prompts.js'
 
 const FLASK_SERVER_URL = 'http://localhost:5001'
 

@@ -1,3 +1,3 @@
-export { DiagnosisService } from './diagnosisService.ts'
-export * from './types.ts'
-export * from './prompts.ts'
+export { DiagnosisService } from './diagnosisService.js'
+export * from './types.js'
+export * from './prompts.js'
