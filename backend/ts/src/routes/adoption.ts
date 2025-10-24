@@ -1,5 +1,5 @@
 import express from 'express'
-import Adoption from '../models/Adoption.ts'
+import Adoption from '../models/Adoption.js'
 
 const router = express.Router()
 

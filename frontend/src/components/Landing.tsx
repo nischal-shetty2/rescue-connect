@@ -187,7 +187,7 @@ const Landing = () => {
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">Care</h3>
               <p className="text-gray-600">
-                Use AI diagnosis, find vets, or access boarding services
+                Use modal diagnosis, find vets, or access boarding services
               </p>
             </div>
 
@@ -280,7 +280,7 @@ export default Landing
 const features = [
   {
     icon: <Camera className="w-8 h-8" />,
-    title: 'AI Disease Detection',
+    title: 'Disease Detection',
     description:
       'Advanced skin disease prediction for dogs, cats, and cows with instant treatment recommendations.',
   },
@@ -328,7 +328,7 @@ const testimonials = [
     name: 'Dr. Michael Chen',
     role: 'Veterinarian',
     content:
-      'The AI disease detection feature has revolutionized how we diagnose skin conditions.',
+      'The disease detection feature has revolutionized how we diagnose skin conditions.',
     rating: 5,
   },
   {

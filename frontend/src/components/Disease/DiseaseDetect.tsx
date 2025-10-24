@@ -37,11 +37,12 @@ const DetectDiseasePage: React.FC = () => {
   )
   const [showSymptomForm, setShowSymptomForm] = useState<boolean>(false)
   const [symptoms, setSymptoms] = useState<string[]>([])
+  const [isDragging, setIsDragging] = useState<boolean>(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const dragCounter = useRef<number>(0)
 
-  const handleImageUpload = (event: ChangeEvent<HTMLInputElement>): void => {
-    const file = event.target.files?.[0]
-    if (file) {
+  const processImageFile = (file: File): void => {
+    if (file && file.type.startsWith('image/')) {
       const reader = new FileReader()
       reader.onload = (e: ProgressEvent<FileReader>) => {
         if (e.target?.result && typeof e.target.result === 'string') {
@@ -50,6 +51,49 @@ const DetectDiseasePage: React.FC = () => {
         }
       }
       reader.readAsDataURL(file)
+    }
+  }
+
+  const handleImageUpload = (event: ChangeEvent<HTMLInputElement>): void => {
+    const file = event.target.files?.[0]
+    if (file) {
+      processImageFile(file)
+    }
+  }
+
+  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>): void => {
+    e.preventDefault()
+    e.stopPropagation()
+    dragCounter.current++
+    if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+      setIsDragging(true)
+    }
+  }
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>): void => {
+    e.preventDefault()
+    e.stopPropagation()
+    dragCounter.current--
+    if (dragCounter.current === 0) {
+      setIsDragging(false)
+    }
+  }
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>): void => {
+    e.preventDefault()
+    e.stopPropagation()
+  }
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>): void => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+    dragCounter.current = 0
+
+    const files = e.dataTransfer.files
+    if (files && files.length > 0) {
+      const file = files[0]
+      processImageFile(file)
     }
   }
 
@@ -148,7 +192,26 @@ const DetectDiseasePage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-20 px-4 sm:px-6 lg:px-8">
+    <div
+      className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-20 px-4 sm:px-6 lg:px-8"
+      onDragEnter={handleDragEnter}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
+      {/* Drag overlay */}
+      {isDragging && (
+        <div className="fixed inset-0 bg-blue-600/20 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="bg-white rounded-2xl shadow-2xl p-12 text-center border-4 border-dashed border-blue-600">
+            <Upload className="w-20 h-20 text-blue-600 mx-auto mb-4" />
+            <p className="text-2xl font-bold text-gray-900 mb-2">
+              Drop image here
+            </p>
+            <p className="text-gray-600">Release to upload your image</p>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Upload Section */}
@@ -192,7 +255,9 @@ const DetectDiseasePage: React.FC = () => {
                   className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors"
                 >
                   <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600 mb-2">Click to upload an image</p>
+                  <p className="text-gray-600 mb-2">
+                    Click to upload an image or drag and drop
+                  </p>
                   <p className="text-sm text-gray-500">
                     Supports JPG, PNG up to 10MB
                   </p>
@@ -471,20 +536,6 @@ const DetectDiseasePage: React.FC = () => {
               </div>
             )}
           </div>
-        </div>
-
-        <div className="text-center my-16">
-          <h1 className="text-5xl font-bold text-gray-900 mb-6">
-            <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              {' '}
-              Disease Detection
-            </span>
-          </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Get instant, accurate diagnosis for skin diseases in dogs, cats, and
-            cows. Our advanced model analyzes images and symptoms to provide
-            treatment recommendations.
-          </p>
         </div>
 
         <Stats />

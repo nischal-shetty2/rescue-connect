@@ -1,4 +1,9 @@
 // System prompts for veterinary diagnosis AI
+import {
+  dogSkinDiseases,
+  catSkinDiseases,
+  cowDiseases,
+} from '../models/MedicalDataset.js'
 
 export const VETERINARY_SYSTEM_PROMPT = `You are a highly skilled veterinary diagnostic specialist with expertise in analyzing animal skin conditions across dogs, cats, and cattle. Analyze the provided image to perform a concise veterinary diagnosis.
 
@@ -34,6 +39,24 @@ Focus on:
 - Environmental factors if applicable
 - Clear, concise treatment and urgency recommendations`
 
+const getDiseaseListForAnimal = (animalType: string): string[] => {
+  const normalizedType = animalType.toLowerCase()
+
+  if (normalizedType.includes('dog')) {
+    return ['Healthy', ...Object.keys(dogSkinDiseases)]
+  } else if (normalizedType.includes('cat')) {
+    return ['Healthy', ...Object.keys(catSkinDiseases)]
+  } else if (
+    normalizedType.includes('cow') ||
+    normalizedType.includes('cattle')
+  ) {
+    return Object.keys(cowDiseases)
+  }
+
+  // Default fallback
+  return ['Healthy', 'Bacterial', 'Fungal', 'Other']
+}
+
 export const createUserPrompt = (
   animalType: string,
   symptoms: string[] | string | undefined,
@@ -50,23 +73,38 @@ export const createUserPrompt = (
     ? `CNN reference: ${cnnResult.disease} (${cnnResult.confidence}% confidence)`
     : 'No CNN reference available'
 
+  const allowedDiseases = getDiseaseListForAnimal(animalType)
+  const diseaseListText = allowedDiseases.join(', ')
+
   return `Analyze this ${animalType} for skin conditions.
 
 Animal type: ${animalType}
 Reported symptoms: ${symptomsText}
 ${cnnReference}
 
+CRITICAL: You MUST select the disease name ONLY from this exact list: ${diseaseListText}
+
+Do not create new disease names or variations. Choose the most appropriate disease from the list above that matches your diagnosis.
+
 Provide a concise veterinary diagnosis based on your visual analysis of the image.`
 }
 
 export const createSystemPromptWithCNNContext = (
+  animalType: string,
   cnnResult?: { disease?: string; confidence?: number } | null
 ): string => {
   const cnnContext = cnnResult
     ? `Note: A basic CNN model detected "${cnnResult.disease}" with ${cnnResult.confidence}% confidence, but this model has limited training data (75 dog images: bacterial, fungal, healthy). Your analysis is the primary diagnostic assessment.`
     : 'Perform your analysis independently as the primary diagnostic tool.'
 
+  const allowedDiseases = getDiseaseListForAnimal(animalType)
+  const diseaseListText = allowedDiseases.join(', ')
+
   return `${VETERINARY_SYSTEM_PROMPT}
+
+STRICT REQUIREMENT: The "disease" field in your response MUST be one of these exact names: ${diseaseListText}
+
+Do not use variations, abbreviations, or combine disease names. Select the single most appropriate disease name from the list above.
 
 ${cnnContext}`
 }

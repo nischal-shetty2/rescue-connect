@@ -2,9 +2,9 @@ import 'dotenv/config'
 import express from 'express'
 import multer from 'multer'
 import cors from 'cors'
-import connectDB from './config/database.ts'
-import adoptionRoutes from './routes/adoption.ts'
-import { DiagnosisService } from './proxy/index.ts'
+import connectDB from './config/database.js'
+import adoptionRoutes from './routes/adoption.js'
+import { DiagnosisService } from './proxy/index.js'
 
 // Connect to MongoDB
 connectDB()
@@ -55,7 +55,7 @@ app.post('/diagnose', upload.single('image'), async (req, res) => {
 app.use('/api/adoptions', adoptionRoutes)
 
 app.get('/', (_, res) => {
-  res.send('Server is running with AI + MongoDB!')
+  res.send('Server is running!')
 })
 
 app.listen(PORT, () => {
