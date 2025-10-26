@@ -34,7 +34,12 @@ const Navbar = () => {
         >
           Detect Disease
         </Link>
-
+        <Link
+          to="/marketplace"
+          className="text-gray-700 hover:text-blue-600 transition"
+        >
+          Marketplace
+        </Link>
         {isLoggedIn ? (
           <div className="flex items-center gap-4">
             <span className="text-gray-600 text-sm font-medium">

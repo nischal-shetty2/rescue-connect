@@ -66,6 +66,18 @@ const Landing = () => {
               >
                 Detect Disease
               </button>
+              <button
+                onClick={() => {
+                  if (isLoggedIn) {
+                    navigate('/marketplace')
+                  } else {
+                    navigate('/login')
+                  }
+                }}
+                className="bg-white/80 backdrop-blur-sm border-2 border-indigo-200 text-indigo-700 px-8 py-4 rounded-2xl text-lg font-semibold hover:bg-white hover:border-indigo-400 hover:text-indigo-800 transition-all duration-300 hover:shadow-xl"
+              >
+                MarketPlace
+              </button>
             </div>
           </div>
 

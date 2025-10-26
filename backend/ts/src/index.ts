@@ -5,6 +5,7 @@ import cors from 'cors'
 import connectDB from './config/database.js'
 import adoptionRoutes from './routes/adoption.js'
 import { DiagnosisService } from './proxy/index.js'
+import marketplaceRoutes from './routes/marketplace.ts';
 
 // Connect to MongoDB
 connectDB()
@@ -53,6 +54,7 @@ app.post('/diagnose', upload.single('image'), async (req, res) => {
 })
 
 app.use('/api/adoptions', adoptionRoutes)
+app.use('/api/marketplace', marketplaceRoutes);
 
 app.get('/', (_, res) => {
   res.send('Server is running!')

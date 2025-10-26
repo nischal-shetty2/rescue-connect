@@ -6,6 +6,7 @@ import Login from './components/Login'
 import Signup from './components/Signup'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
+import Marketplace from './components/Marketplace/marketplace'
 
 const App = () => (
   <Router>
@@ -17,6 +18,7 @@ const App = () => (
         <Route path="/disease" element={<DetectDiseasePage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/marketplace" element={<Marketplace />} />
       </Routes>
     </div>
     <Footer />
