@@ -1,1 +1,26 @@
 @import 'tailwindcss';
+
+/* Custom CSS for better image handling and text clamping */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Aspect ratio utility for consistent image containers */
+.aspect-w-16 {
+  position: relative;
+  padding-bottom: 75%; /* 4:3 aspect ratio */
+}
+
+.aspect-w-16 > * {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
