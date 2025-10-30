@@ -40,6 +40,12 @@ const Navbar = () => {
         >
           Marketplace
         </Link>
+        <Link
+          to="/donation"
+          className="text-gray-700 hover:text-blue-600 transition"
+        >
+          Donate
+        </Link>
         {isLoggedIn ? (
           <div className="flex items-center gap-4">
             <span className="text-gray-600 text-sm font-medium">

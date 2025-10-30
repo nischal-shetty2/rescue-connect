@@ -7,6 +7,7 @@ import Signup from './components/Signup'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import Marketplace from './components/Marketplace/marketplace'
+import Donation from './components/Donation/Donation'
 
 const App = () => (
   <Router>
@@ -19,6 +20,7 @@ const App = () => (
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/marketplace" element={<Marketplace />} />
+        <Route path="/donation" element={<Donation />} />
       </Routes>
     </div>
     <Footer />
