@@ -5,23 +5,21 @@ import cors from 'cors'
 import connectDB from './config/database.js'
 import adoptionRoutes from './routes/adoption.js'
 import { DiagnosisService } from './proxy/index.js'
-import marketplaceRoutes from './routes/marketplace.ts';
+import marketplaceRoutes from './routes/marketplace.js';
+import donationRoutes from './routes/donations.js'
 
-// Connect to MongoDB
 connectDB()
 
 const PORT = process.env.PORT || 3000
 const app = express()
 const diagnosisService = new DiagnosisService()
 
-// Middleware
 app.use(cors())
 app.use(express.json())
 
-// to parse file uploads
+
 const upload = multer({ storage: multer.memoryStorage() })
 
-// 🧠 AI Diagnosis route
 app.post('/diagnose', upload.single('image'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'Image required' })
@@ -35,7 +33,6 @@ app.post('/diagnose', upload.single('image'), async (req, res) => {
       symptoms
     )
 
-    // Use the diagnosis service
     const result = await diagnosisService.diagnose({
       imageBuffer: req.file.buffer,
       mimeType: req.file.mimetype || 'image/jpeg',
@@ -55,6 +52,7 @@ app.post('/diagnose', upload.single('image'), async (req, res) => {
 
 app.use('/api/adoptions', adoptionRoutes)
 app.use('/api/marketplace', marketplaceRoutes);
+app.use('/api/donations', donationRoutes);
 
 app.get('/', (_, res) => {
   res.send('Server is running!')
