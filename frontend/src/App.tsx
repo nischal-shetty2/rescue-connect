@@ -10,6 +10,9 @@ import Marketplace from './components/Marketplace/marketplace'
 import Donation from './components/Donation/Donation'
 import VetFinder from './components/VetFinder/VetFinder'
 import BoardingFinder from './components/BoardingFinder/BoardingFinder'
+import Foster from './components/Foster/Foster'
+import Sterilization from './components/Sterilization/Sterilization'
+import EthicalBreeding from './components/EthicalBreeding/EthicalBreeding'
 
 const App = () => (
   <Router>
@@ -25,6 +28,9 @@ const App = () => (
         <Route path="/donation" element={<Donation />} />
         <Route path="/vets" element={<VetFinder />} />
         <Route path="/boarding" element={<BoardingFinder />} />
+        <Route path="/foster" element={<Foster />} />
+        <Route path="/sterilization" element={<Sterilization />} />
+        <Route path="/ethical-breeding" element={<EthicalBreeding />} />
       </Routes>
     </div>
     <Footer />

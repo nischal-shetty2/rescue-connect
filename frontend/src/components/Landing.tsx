@@ -300,7 +300,7 @@ const features = [
     title: 'Ethical Breeding',
     description:
       'Verified marketplace for ethical breeders with transparent breeding practice documentation.',
-    link: 'ethical-breeding'
+    link: '/ethical-breeding'
   },
   {
     icon: <Stethoscope className="w-8 h-8" />,
@@ -321,7 +321,7 @@ const features = [
     title: 'Trust Fund Donations',
     description:
       'Support rescue operations and medical treatments through our dedicated trust fund.',
-    link: '/donate'
+    link: '/donation'
   },
   {
     icon: <HomeIcon className="w-8 h-8" />,
