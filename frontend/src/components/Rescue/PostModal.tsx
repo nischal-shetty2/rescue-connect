@@ -66,9 +66,9 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
   const mapInstanceRef = useRef<L.Map | null>(null)
   const markerRef = useRef<L.Marker | null>(null)
 
-  // Default location (New Delhi)
+  // Default location (Mangalore, India)
   const defaultLocation = useMemo<LocationData>(
-    () => ({ lat: 28.6139, lng: 77.209 }),
+    () => ({ lat: 12.8855, lng: 74.8388 }),
     []
   )
 
@@ -429,8 +429,8 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
                   type="button"
                   onClick={() => setSelectedAnimalType(type)}
                   className={`p-4 border-2 rounded-2xl transition-all text-center font-medium ${selectedAnimalType === type
-                      ? 'border-indigo-500 bg-indigo-50 text-indigo-600'
-                      : 'border-gray-200 hover:border-indigo-300 hover:bg-indigo-50'
+                    ? 'border-indigo-500 bg-indigo-50 text-indigo-600'
+                    : 'border-gray-200 hover:border-indigo-300 hover:bg-indigo-50'
                     }`}
                 >
                   {type === 'Dog' && '🐕'}

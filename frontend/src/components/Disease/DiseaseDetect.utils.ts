@@ -1,5 +1,4 @@
-import type { DiseaseInfo } from '../DiseaseDetect.types'
-import type { AnimalId, SeverityLevel } from './DiseaseDetect'
+import type { DiseaseInfo, AnimalId, SeverityLevel } from '../DiseaseDetect.types'
 
 export const commonSymptoms: Record<AnimalId, string[]> = {
   dog: [

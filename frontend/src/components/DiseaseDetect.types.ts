@@ -1,6 +1,9 @@
 // Types for DiseaseDetect
+export type AnimalId = 'dog' | 'cat' | 'cow';
+export type SeverityLevel = 'high' | 'medium' | 'low';
+
 export interface AnimalType {
-  id: 'dog' | 'cat' | 'cow'
+  id: AnimalId
   name: string
   icon: string
 }
@@ -14,7 +17,7 @@ interface Treatment {
 
 export interface DiseaseInfo {
   confidence: number
-  severity: 'high' | 'medium' | 'low'
+  severity: SeverityLevel
   description: string
   symptoms: string[]
   treatment: Treatment

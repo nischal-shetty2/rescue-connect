@@ -10,6 +10,7 @@ import donationRoutes from './routes/donations.js'
 import vetRoutes from './routes/vet.js'
 import boardingRoutes from './routes/boarding.js'
 import fosterRoutes from './routes/foster.js'
+import strayRoutes from './routes/stray.js'
 
 connectDB()
 
@@ -58,6 +59,7 @@ app.use('/api/donations', donationRoutes);
 app.use('/api/vets', vetRoutes)
 app.use('/api/boardings', boardingRoutes)
 app.use('/api/fosters', fosterRoutes)
+app.use('/api/strays', strayRoutes)
 
 app.get('/', (_, res) => {
   res.send('Server is running!')

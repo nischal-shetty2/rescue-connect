@@ -34,7 +34,7 @@ const Donation: React.FC = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [donatedAmount, setDonatedAmount] = useState<number>(0)
-  const [donorEmail, setDonorEmail] = useState<string>('')
+  // const [donorEmail, setDonorEmail] = useState<string>('')
 
   const GOAL_AMOUNT = 5000000
 
@@ -98,7 +98,6 @@ const Donation: React.FC = () => {
     setFormData({ name: '', email: '', amount: 0 })
     setSelectedAmount(null)
     setDonatedAmount(0)
-    setDonorEmail('')
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -135,7 +134,6 @@ const Donation: React.FC = () => {
       // Store donation details before resetting form
       console.log('Setting donated amount to:', formData.amount)
       setDonatedAmount(formData.amount)
-      setDonorEmail(formData.email)
 
       // Show modal first
       setShowModal(true)

@@ -57,9 +57,9 @@ interface AdoptionMapProps {
 }
 
 // Helper component to handle flyTo functionality
-const FlyToSelected: React.FC<{ selectedAnimal?: string | null; locations: LocationData[] }> = ({ 
-  selectedAnimal, 
-  locations 
+const FlyToSelected: React.FC<{ selectedAnimal?: string | null; locations: LocationData[] }> = ({
+  selectedAnimal,
+  locations
 }) => {
   const map = useMap()
 
@@ -67,8 +67,8 @@ const FlyToSelected: React.FC<{ selectedAnimal?: string | null; locations: Locat
     if (selectedAnimal) {
       const selectedLocation = locations.find(loc => loc.id === selectedAnimal)
       if (selectedLocation) {
-        map.flyTo([selectedLocation.latitude, selectedLocation.longitude], 13, { 
-          duration: 1.5 
+        map.flyTo([selectedLocation.latitude, selectedLocation.longitude], 13, {
+          duration: 1.5
         })
       }
     }
@@ -80,9 +80,9 @@ const FlyToSelected: React.FC<{ selectedAnimal?: string | null; locations: Locat
 const AdoptionMap: React.FC<AdoptionMapProps> = ({ locations, selectedAnimal }) => {
   const customIcon = createCustomIcon()
 
-  // Default center coordinates (India)
-  const defaultCenter: [number, number] = [20.5937, 78.9629]
-  const defaultZoom = 5
+  // Default center coordinates (Mangalore, India)
+  const defaultCenter: [number, number] = [12.8855, 74.8388]
+  const defaultZoom = 12
 
   return (
     <div className="w-full h-full">
@@ -96,9 +96,9 @@ const AdoptionMap: React.FC<AdoptionMapProps> = ({ locations, selectedAnimal }) 
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        
+
         <FlyToSelected selectedAnimal={selectedAnimal} locations={locations} />
-        
+
         {locations.map((location) => (
           <Marker
             key={location.id}
