@@ -19,6 +19,7 @@ import {
   deleteAdoption,
   type AdoptionPost,
 } from '../../services/adoptionService'
+import AdoptionMap from '../adoption/AdoptionMap'
 
 const dummyAnimals = [
   {
@@ -154,6 +155,8 @@ const StartRescuingPage = () => {
   const [storedPosts, setStoredPosts] = useState<AnimalPost[]>([])
   const [selectedAnimal, setSelectedAnimal] = useState<Animal | null>(null)
   const [showAdoptionModal, setShowAdoptionModal] = useState(false)
+  const [selectedAnimalId, setSelectedAnimalId] = useState<string | null>(null)
+  const [layoutMode, setLayoutMode] = useState<'listings' | 'map'>('listings')
 
   // New API-related state
   const [apiAnimals, setApiAnimals] = useState<Animal[]>([])
@@ -363,10 +366,61 @@ const StartRescuingPage = () => {
     }
   }
 
+  // Generate map locations from animal data
+  const generateMapLocations = (animals: Animal[]) => {
+    // Base coordinates for different Indian cities for demonstration
+    const cityCoordinates: { [key: string]: { lat: number; lng: number } } = {
+      'MG Road, Bengaluru': { lat: 12.9716, lng: 77.5946 },
+      'Indiranagar, Bengaluru': { lat: 12.9719, lng: 77.6412 },
+      'Koramangala, Bengaluru': { lat: 12.9352, lng: 77.6245 },
+      'Whitefield, Bengaluru': { lat: 12.9698, lng: 77.7500 },
+      'HSR Layout, Bengaluru': { lat: 12.9082, lng: 77.6476 },
+      'Delhi': { lat: 28.6139, lng: 77.2090 },
+      'Mumbai': { lat: 19.0760, lng: 72.8777 },
+      'Chennai': { lat: 13.0827, lng: 80.2707 },
+      'Kolkata': { lat: 22.5726, lng: 88.3639 },
+      'Hyderabad': { lat: 17.3850, lng: 78.4867 },
+    }
+
+    return animals.map((animal) => {
+      // Try to match location with known coordinates
+      let coordinates = cityCoordinates[animal.location]
+      
+      // If no exact match, try partial matching
+      if (!coordinates) {
+        const locationKey = Object.keys(cityCoordinates).find(key => 
+          animal.location.toLowerCase().includes(key.toLowerCase()) ||
+          key.toLowerCase().includes(animal.location.toLowerCase())
+        )
+        if (locationKey) {
+          coordinates = cityCoordinates[locationKey]
+        }
+      }
+
+      // If still no match, generate random coordinates around Bengaluru
+      if (!coordinates) {
+        coordinates = {
+          lat: 12.9716 + (Math.random() - 0.5) * 0.1, // Random offset around Bengaluru
+          lng: 77.5946 + (Math.random() - 0.5) * 0.1
+        }
+      }
+
+      return {
+        id: String(animal.id),
+        name: animal.name,
+        latitude: coordinates.lat,
+        longitude: coordinates.lng,
+      }
+    })
+  }
+
   // Adoption handlers
   const handleRescueClick = (animal: Animal) => {
+    console.log('Rescue button clicked for animal:', animal.name)
     setSelectedAnimal(animal)
+    setSelectedAnimalId(String(animal.id)) // Set selected animal for map flyTo
     setShowAdoptionModal(true)
+    console.log('Modal should be shown now')
   }
 
   const handleAdoptionSubmit = () => {
@@ -715,8 +769,42 @@ const StartRescuingPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-20 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen flex flex-col">
+      {/* Layout Toggle */}
+      <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-gray-900">Animal Rescue</h1>
+        <div className="flex items-center gap-2 bg-gray-100 rounded-xl p-1">
+          <button
+            onClick={() => setLayoutMode('listings')}
+            className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 flex items-center gap-2 ${
+              layoutMode === 'listings'
+                ? 'bg-white text-indigo-600 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            <List className="w-4 h-4" />
+            Listings
+          </button>
+          <button
+            onClick={() => setLayoutMode('map')}
+            className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 flex items-center gap-2 ${
+              layoutMode === 'map'
+                ? 'bg-white text-indigo-600 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            <MapPin className="w-4 h-4" />
+            Map
+          </button>
+        </div>
+      </div>
+
+      {/* Main Content Area */}
+      <div className="flex-1">
+        {/* Adoption Listings */}
+        {layoutMode === 'listings' && (
+          <div className="w-full min-h-screen p-6 bg-gradient-to-b from-white to-blue-50">
+            <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
           <div className="flex justify-center items-center gap-6 mb-6">
@@ -838,12 +926,28 @@ const StartRescuingPage = () => {
             Load More Animals
           </button>
         </div>
+        </div>
+        </div>
+        )}
 
-        {/* Post Animal Modal */}
-        {showPostModal && <PostModal setShowPostModal={handleCloseModal} />}
+        {/* Map */}
+        {layoutMode === 'map' && (
+          <div className="w-full min-h-screen bg-white p-6">
+            <div className="h-[calc(100vh-12rem)] rounded-2xl overflow-hidden shadow-lg">
+              <AdoptionMap 
+                locations={generateMapLocations(filteredAnimals)} 
+                selectedAnimal={selectedAnimalId}
+              />
+            </div>
+          </div>
+        )}
+      </div>
 
-        {/* Adoption Modal */}
-        {showAdoptionModal && selectedAnimal && (
+      {/* Post Animal Modal */}
+      {showPostModal && <PostModal setShowPostModal={handleCloseModal} />}
+
+      {/* Adoption Modal */}
+      {showAdoptionModal && selectedAnimal && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
               {/* Modal Header */}
@@ -1105,7 +1209,6 @@ const StartRescuingPage = () => {
             </div>
           </div>
         )}
-      </div>
     </div>
   )
 }
