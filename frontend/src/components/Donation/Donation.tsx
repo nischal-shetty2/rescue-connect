@@ -39,7 +39,7 @@ const Donation: React.FC = () => {
   const [donatedAmount, setDonatedAmount] = useState<number>(0)
   const [donorEmail, setDonorEmail] = useState<string>('')
 
-  const GOAL_AMOUNT = 50000
+  const GOAL_AMOUNT = 5000000
 
   useEffect(() => {
     fetchDonationStats()
@@ -74,7 +74,7 @@ const Donation: React.FC = () => {
     }
   }
   // Predefined donation amounts
-  const quickAmounts = [25, 50, 100, 250, 500, 1000]
+  const quickAmounts = [500, 1000, 2000, 5000, 10000, 25000]
 
   // Mock trust fund data
   const handleAmountSelect = (amount: number) => {
@@ -204,7 +204,7 @@ const Donation: React.FC = () => {
               {/* Quick Amount Selection */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-3">
-                  Select Amount ($)
+                  Select Amount (₹)
                 </label>
                 <div className="grid grid-cols-3 gap-3">
                   {quickAmounts.map(amount => (
@@ -218,7 +218,7 @@ const Donation: React.FC = () => {
                           : 'border-gray-300 text-gray-700 hover:border-purple-300'
                       }`}
                     >
-                      ${amount}
+                      ₹{amount}
                     </button>
                   ))}
                 </div>
@@ -230,7 +230,7 @@ const Donation: React.FC = () => {
                   htmlFor="amount"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
-                  Custom Amount ($)
+                  Custom Amount (₹)
                 </label>
                 <input
                   type="number"
@@ -297,7 +297,7 @@ const Donation: React.FC = () => {
               >
                 {loading
                   ? 'Processing...'
-                  : `Donate Now - $${formData.amount || '0'}`}
+                  : `Donate Now - ₹${formData.amount || '0'}`}
               </button>
             </form>
 
@@ -321,7 +321,7 @@ const Donation: React.FC = () => {
                     Progress
                   </span>
                   <span className="text-sm font-medium text-gray-600">
-                    ${stats.totalRaised.toLocaleString()} / $
+                    ₹{stats.totalRaised.toLocaleString()} / ₹
                     {GOAL_AMOUNT.toLocaleString()}
                   </span>
                 </div>
@@ -339,7 +339,7 @@ const Donation: React.FC = () => {
               <div className="grid grid-cols-2 gap-6">
                 <div className="text-center">
                   <div className="text-3xl font-bold text-blue-600">
-                    ${stats.totalRaised.toLocaleString()}
+                    ₹{stats.totalRaised.toLocaleString()}
                   </div>
                   <div className="text-sm text-gray-600">Total Raised</div>
                 </div>
@@ -374,7 +374,7 @@ const Donation: React.FC = () => {
                         </div>
                       </div>
                       <div className="font-bold text-purple-600">
-                        ${donation.amount}
+                        ₹{donation.amount}
                       </div>
                     </div>
                   ))
@@ -400,7 +400,7 @@ const Donation: React.FC = () => {
               <p className="text-gray-600 mb-6">
                 Your generous donation of{' '}
                 <span className="font-bold text-purple-600">
-                  ${donatedAmount}
+                  ₹{donatedAmount}
                 </span>{' '}
                 will help us rescue and care for animals in need. Thank you for
                 making a difference!
