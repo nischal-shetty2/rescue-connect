@@ -10,8 +10,8 @@ export interface IVet {
   city: string
   state: string
   zipCode: string
-  phone: string
-  email?: string
+  phone: string | null
+  email?: string | null
   rating: number
   specialties: string[]
   emergencyService: boolean
@@ -24,7 +24,7 @@ export interface IVet {
     saturday?: string
     sunday?: string
   }
-  website?: string
+  website?: string | null
   description?: string
 }
 

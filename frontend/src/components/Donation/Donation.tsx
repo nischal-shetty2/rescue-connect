@@ -1,7 +1,4 @@
-import React, { use, useEffect, useState } from 'react'
-import { X } from 'lucide-react'
-import { jsx } from 'react/jsx-runtime'
-
+import React, { useEffect, useState } from 'react'
 interface DonationForm {
   name: string
   email: string
@@ -403,10 +400,6 @@ const Donation: React.FC = () => {
                 will help us rescue and care for animals in need. Thank you for
                 making a difference!
               </p>
-              {/* Debug info - remove this later */}
-              <div className="text-xs text-gray-400 mb-4">
-                Debug: donatedAmount = {donatedAmount}
-              </div>
               <button
                 onClick={closeModal}
                 className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-colors"

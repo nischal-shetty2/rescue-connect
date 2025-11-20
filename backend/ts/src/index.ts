@@ -8,6 +8,7 @@ import { DiagnosisService } from './proxy/index.js'
 import marketplaceRoutes from './routes/marketplace.js';
 import donationRoutes from './routes/donations.js'
 import vetRoutes from './routes/vet.js'
+import boardingRoutes from './routes/boarding.js'
 
 connectDB()
 
@@ -54,6 +55,7 @@ app.use('/api/adoptions', adoptionRoutes)
 app.use('/api/marketplace', marketplaceRoutes);
 app.use('/api/donations', donationRoutes);
 app.use('/api/vets', vetRoutes)
+app.use('/api/boardings', boardingRoutes)
 
 app.get('/', (_, res) => {
   res.send('Server is running!')

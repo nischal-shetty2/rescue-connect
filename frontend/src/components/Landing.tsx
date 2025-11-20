@@ -8,6 +8,8 @@ import {
   ArrowRight,
   ChevronRight,
   Star,
+  HomeIcon,
+  Syringe,
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
@@ -136,10 +138,10 @@ const Landing = () => {
                 <p className="text-gray-600 leading-relaxed mb-6">
                   {feature.description}
                 </p>
-                <div className="flex items-center text-indigo-600 font-semibold group-hover:translate-x-2 transition-transform duration-300">
+                <a href={feature.link} className="flex items-center text-indigo-600 font-semibold group-hover:translate-x-2 transition-transform duration-300">
                   Learn more
                   <ChevronRight className="w-5 h-5 ml-1" />
-                </div>
+                </a>
               </div>
             ))}
           </div>
@@ -284,36 +286,56 @@ const features = [
     title: 'Disease Detection',
     description:
       'Advanced skin disease prediction for dogs, cats and cows with instant treatment recommendations.',
+    link: '/disease'
   },
   {
     icon: <MapPin className="w-8 h-8" />,
     title: 'Location-Based Matching',
     description:
       'Connect rescuers and adopters based on proximity for faster, more efficient animal rescue.',
+    link: '/adopt'
   },
   {
     icon: <Users className="w-8 h-8" />,
     title: 'Ethical Breeding',
     description:
       'Verified marketplace for ethical breeders with transparent breeding practice documentation.',
+    link: 'ethical-breeding'
   },
   {
     icon: <Stethoscope className="w-8 h-8" />,
     title: 'Vet Services',
     description:
       'Find nearby veterinarians and specialized care services for your rescued animals.',
+    link: '/vets'
   },
   {
     icon: <Home className="w-8 h-8" />,
-    title: 'Pet Boarding / Foster',
+    title: 'Pet Boarding',
     description:
       'Trusted boarding houses and temporary care facilities for animals in need.',
+    link: "/boarding"
   },
   {
     icon: <DollarSign className="w-8 h-8" />,
     title: 'Trust Fund Donations',
     description:
       'Support rescue operations and medical treatments through our dedicated trust fund.',
+    link: '/donate'
+  },
+  {
+    icon: <HomeIcon className="w-8 h-8" />,
+    title: 'Foster',
+    description:
+      'Connect animals in need with loving temporary foster homes.',
+    link: '/foster'
+  },
+  {
+    icon: <Syringe className="w-8 h-8" />,
+    title: 'Sterilization',
+    description:
+      'Facilitate and fund sterilization programs to control animal populations and improve welfare.',
+    link: '/sterilization'
   },
 ]
 

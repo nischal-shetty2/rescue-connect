@@ -86,9 +86,8 @@ const VetFinder = () => {
             <button
               onClick={handleGetLocation}
               disabled={loading}
-              className={`px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2 ${
-                loading ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
+              className={`px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2 ${loading ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
             >
               <span>📍</span>
               {loading ? 'Finding Vets...' : 'Find Nearby Vets'}
@@ -208,17 +207,17 @@ const VetFinder = () => {
                   {vet.openingHours[
                     getDayName() as keyof typeof vet.openingHours
                   ] && (
-                    <div className="mb-4 text-sm">
-                      <p className="text-gray-700">
-                        <span className="font-medium">🕐 Today:</span>{' '}
-                        {
-                          vet.openingHours[
+                      <div className="mb-4 text-sm">
+                        <p className="text-gray-700">
+                          <span className="font-medium">🕐 Today:</span>{' '}
+                          {
+                            vet.openingHours[
                             getDayName() as keyof typeof vet.openingHours
-                          ]
-                        }
-                      </p>
-                    </div>
-                  )}
+                            ]
+                          }
+                        </p>
+                      </div>
+                    )}
 
                   {/* Specialties */}
                   {vet.specialties.length > 0 && (

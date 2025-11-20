@@ -9,6 +9,7 @@ import Footer from './components/Footer'
 import Marketplace from './components/Marketplace/marketplace'
 import Donation from './components/Donation/Donation'
 import VetFinder from './components/VetFinder/VetFinder'
+import BoardingFinder from './components/BoardingFinder/BoardingFinder'
 
 const App = () => (
   <Router>
@@ -23,6 +24,7 @@ const App = () => (
         <Route path="/marketplace" element={<Marketplace />} />
         <Route path="/donation" element={<Donation />} />
         <Route path="/vets" element={<VetFinder />} />
+        <Route path="/boarding" element={<BoardingFinder />} />
       </Routes>
     </div>
     <Footer />
