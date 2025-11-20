@@ -18,9 +18,9 @@ To replicate the steps and use the model for your own research or applications, 
 
 * **Environment Setup:** Set up a Python environment with the required dependencies listed in the requirements.txt file.
 
-* **Model Training:** Run the provided training script, specifying the path to your prepared dataset. Tweak hyperparameters such as learning rate, batch size, and number of training epochs as needed.
+* **Model Training:** Run the provided training script, specifying the path to your prepared dataset. Tweak hyperparameters such as learning rate, batch sizeand number of training epochs as needed.
 
-* **Model Evaluation:** Evaluate the trained model's performance using standard evaluation metrics such as accuracy, precision, recall, and F1-score. Evaluate the model on a separate validation dataset to assess its generalization capability.
+* **Model Evaluation:** Evaluate the trained model's performance using standard evaluation metrics such as accuracy, precision, recalland F1-score. Evaluate the model on a separate validation dataset to assess its generalization capability.
 
 * **Inference:** Use the trained model to make predictions on new animal skin images. Preprocess the images as required (e.g., resizing, normalization) and pass them through the model for disease detection.
 

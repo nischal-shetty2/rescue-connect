@@ -428,11 +428,10 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
                   key={type}
                   type="button"
                   onClick={() => setSelectedAnimalType(type)}
-                  className={`p-4 border-2 rounded-2xl transition-all text-center font-medium ${
-                    selectedAnimalType === type
+                  className={`p-4 border-2 rounded-2xl transition-all text-center font-medium ${selectedAnimalType === type
                       ? 'border-indigo-500 bg-indigo-50 text-indigo-600'
                       : 'border-gray-200 hover:border-indigo-300 hover:bg-indigo-50'
-                  }`}
+                    }`}
                 >
                   {type === 'Dog' && '🐕'}
                   {type === 'Cat' && '🐱'}
@@ -579,7 +578,7 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
             <textarea
               value={description}
               onChange={e => setDescription(e.target.value)}
-              placeholder="Describe the animal's condition, behavior, and any immediate needs..."
+              placeholder="Describe the animal's condition, behaviorand any immediate needs..."
               rows={4}
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-indigo-500 focus:outline-none transition-colors resize-none"
               required

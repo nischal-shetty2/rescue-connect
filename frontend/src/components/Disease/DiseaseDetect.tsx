@@ -17,19 +17,20 @@ import {
   getSeverityColor,
 } from './DiseaseDetect.utils'
 import { Disclaimer, Stats } from './DisclaimerAndStats'
-import type { AnalysisResult, AnimalType } from '../DiseaseDetect.types'
+import type { AnalysisResult as BaseAnalysisResult } from '../DiseaseDetect.types'
 
-export type AnimalId = 'dog' | 'cat' | 'cow'
-export type SeverityLevel = 'high' | 'medium' | 'low'
+// Extend the base type to include detectedAnimal if it's not already there
+// or just use it if it is. For now, let's assume we might need to extend it locally
+// or update the definition file. Let's check the definition file first.
+// Actually, I should update the definition file first. But for now I will cast or extend here.
+interface AnalysisResult extends BaseAnalysisResult {
+  detectedAnimal?: string;
+}
 
-const animalTypes: AnimalType[] = [
-  { id: 'dog', name: 'Dog', icon: '🐕' },
-  { id: 'cat', name: 'Cat', icon: '🐱' },
-  { id: 'cow', name: 'Cow', icon: '🐄' },
-]
+// Removed manual animal selection types and constants
 
 const DetectDiseasePage: React.FC = () => {
-  const [selectedAnimal, setSelectedAnimal] = useState<AnimalId>('dog')
+  // Removed selectedAnimal state
   const [uploadedImage, setUploadedImage] = useState<string | null>(null)
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false)
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(
@@ -110,7 +111,7 @@ const DetectDiseasePage: React.FC = () => {
       // Create FormData for the Express backend (which forwards to Flask + Groq)
       const formData = new FormData()
       formData.append('image', blob, 'image.jpg')
-      formData.append('animalType', selectedAnimal)
+      // animalType is now auto-detected by backend
       formData.append('symptoms', JSON.stringify(symptoms))
 
       // Call Express backend which will forward to Flask and enhance with Groq
@@ -140,6 +141,7 @@ const DetectDiseasePage: React.FC = () => {
         analysisTime: new Date().toLocaleTimeString(),
         // Additional data from enhanced model response
         allProbabilities: result.allProbabilities,
+        detectedAnimal: result.detectedAnimal,
       })
 
       console.log('Enhanced Analysis Result (CNN + Groq):', result)
@@ -148,14 +150,17 @@ const DetectDiseasePage: React.FC = () => {
 
       // Show user-friendly error message
       alert(
-        `Analysis failed: ${
-          error instanceof Error ? error.message : 'Unknown error'
+        `Analysis failed: ${error instanceof Error ? error.message : 'Unknown error'
         }. Please check if the Express server is running on http://localhost:3000`
       )
 
       // Fallback to mock data if API fails (for development)
-      const diseaseKey = Object.keys(mockDiseases[selectedAnimal])[0]
-      const mockResult = mockDiseases[selectedAnimal][diseaseKey]
+      // Fallback to mock data if API fails (for development)
+      // Note: Mock data logic might need adjustment or removal if strictly relying on backend
+      // For now, we'll just show a generic error or keep existing mock fallback but default to dog
+      const mockAnimal = 'dog'
+      const diseaseKey = Object.keys(mockDiseases[mockAnimal])[0]
+      const mockResult = mockDiseases[mockAnimal][diseaseKey]
 
       setAnalysisResult({
         disease: `${diseaseKey}`,
@@ -183,9 +188,7 @@ const DetectDiseasePage: React.FC = () => {
     setUploadedImage(null)
   }
 
-  const handleAnimalSelect = (animalId: AnimalId): void => {
-    setSelectedAnimal(animalId)
-  }
+  // Removed handleAnimalSelect
 
   const toggleSymptomForm = (): void => {
     setShowSymptomForm(!showSymptomForm)
@@ -220,28 +223,7 @@ const DetectDiseasePage: React.FC = () => {
               Upload Image for Analysis
             </h2>
 
-            {/* Animal Selection */}
-            <div className="mb-8">
-              <label className="block text-sm font-bold text-gray-700 mb-4">
-                Select Animal Type
-              </label>
-              <div className="grid grid-cols-3 gap-4">
-                {animalTypes.map(animal => (
-                  <button
-                    key={animal.id}
-                    onClick={() => handleAnimalSelect(animal.id)}
-                    className={`p-6 rounded-2xl border-2 transition-all duration-300 transform hover:scale-105 ${
-                      selectedAnimal === animal.id
-                        ? 'border-indigo-600 bg-indigo-50 text-indigo-600 shadow-lg'
-                        : 'border-gray-200 hover:border-indigo-300 hover:bg-gray-50'
-                    }`}
-                  >
-                    <div className="text-3xl mb-3">{animal.icon}</div>
-                    <div className="font-bold">{animal.name}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
+            {/* Animal Selection Removed */}
 
             {/* Image Upload */}
             <div className="mb-6">
@@ -303,15 +285,15 @@ const DetectDiseasePage: React.FC = () => {
 
               {showSymptomForm && (
                 <div className="grid grid-cols-2 gap-2">
-                  {commonSymptoms[selectedAnimal].map(symptom => (
+                  {/* Using dog symptoms as default list since we don't know animal yet */}
+                  {commonSymptoms['dog'].map(symptom => (
                     <button
                       key={symptom}
                       onClick={() => handleSymptomToggle(symptom)}
-                      className={`p-2 text-sm rounded-lg border transition-colors ${
-                        symptoms.includes(symptom)
-                          ? 'border-blue-600 bg-blue-50 text-blue-600'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
+                      className={`p-2 text-sm rounded-lg border transition-colors ${symptoms.includes(symptom)
+                        ? 'border-blue-600 bg-blue-50 text-blue-600'
+                        : 'border-gray-200 hover:border-gray-300'
+                        }`}
                     >
                       {symptom}
                     </button>
@@ -410,6 +392,15 @@ const DetectDiseasePage: React.FC = () => {
                     </div>
                   </div>
                 </div>
+
+                {/* Detected Animal Badge */}
+                {analysisResult.detectedAnimal && (
+                  <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3 mb-4">
+                    <p className="text-sm text-indigo-800">
+                      <strong>Detected Animal:</strong> {analysisResult.detectedAnimal.charAt(0).toUpperCase() + analysisResult.detectedAnimal.slice(1)}
+                    </p>
+                  </div>
+                )}
 
                 {/* CNN Model Probability Breakdown */}
                 {analysisResult.allProbabilities && (

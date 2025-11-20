@@ -60,11 +60,11 @@ export const catSkinDiseases: Record<string, string> = {
 
 export const cowDiseases: Record<string, string> = {
   'Bovine Respiratory Disease (BRD)':
-    'Broad-spectrum antibiotics (Tilmicosin, Florfenicol, Enrofloxacin), anti-inflammatory drugs (Flunixin Meglumine), proper ventilation, and vaccination for prevention',
+    'Broad-spectrum antibiotics (Tilmicosin, Florfenicol, Enrofloxacin), anti-inflammatory drugs (Flunixin Meglumine), proper ventilationand vaccination for prevention',
   Bovine:
-    'General health maintenance through balanced nutrition, deworming, vaccination schedules, and proper housing hygiene',
+    'General health maintenance through balanced nutrition, deworming, vaccination schedulesand proper housing hygiene',
   'Contagious Bovine Pleuropneumonia (CBPP)':
-    'Antibiotics (Tylosin, Oxytetracycline), isolation of infected animals, vaccination, and movement control',
+    'Antibiotics (Tylosin, Oxytetracycline), isolation of infected animals, vaccinationand movement control',
   Dermatitis:
     'Topical antiseptics (Chlorhexidine, Iodine), systemic antibiotics if severe, maintain clean and dry skin, improve hygiene',
   'Ecthyma (Contagious Pustular Dermatitis)':
@@ -72,7 +72,7 @@ export const cowDiseases: Record<string, string> = {
   Respiratory:
     'Broad-spectrum antibiotics (Oxytetracycline, Enrofloxacin), NSAIDs for inflammation, ensure good ventilation and reduce stress factors',
   Healthy:
-    'Regular deworming, vaccination (FMD, LSD, BRD complex), mineral supplementation, clean shelter, and balanced diet',
+    'Regular deworming, vaccination (FMD, LSD, BRD complex), mineral supplementation, clean shelterand balanced diet',
   'Lumpy Skin Disease':
     'Vaccination (live attenuated LSD vaccine), supportive care (NSAIDs, antibiotics for secondary infection), fly control, isolation of affected animals',
   'Skin Disease':

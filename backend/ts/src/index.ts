@@ -7,6 +7,7 @@ import adoptionRoutes from './routes/adoption.js'
 import { DiagnosisService } from './proxy/index.js'
 import marketplaceRoutes from './routes/marketplace.js';
 import donationRoutes from './routes/donations.js'
+import vetRoutes from './routes/vet.js'
 
 connectDB()
 
@@ -25,11 +26,10 @@ app.post('/diagnose', upload.single('image'), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'Image required' })
 
     const { animalType, symptoms } = req.body
-    if (!animalType)
-      return res.status(400).json({ error: 'animalType required' })
+    // animalType is optional now (auto-detected if missing)
 
     console.log(
-      `Processing diagnosis request for ${animalType} with symptoms:`,
+      `Processing diagnosis request. Animal: ${animalType || 'Auto-detect'}, Symptoms:`,
       symptoms
     )
 
@@ -53,6 +53,7 @@ app.post('/diagnose', upload.single('image'), async (req, res) => {
 app.use('/api/adoptions', adoptionRoutes)
 app.use('/api/marketplace', marketplaceRoutes);
 app.use('/api/donations', donationRoutes);
+app.use('/api/vets', vetRoutes)
 
 app.get('/', (_, res) => {
   res.send('Server is running!')

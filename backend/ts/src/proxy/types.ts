@@ -32,6 +32,7 @@ export const DiagnosisSchema = z.object({
     additional: z.array(z.string()),
   }),
   urgency: z.string(),
+  detectedAnimal: z.enum(['dog', 'cat', 'cow', 'other']).optional(),
   allProbabilities: z.object({
     Healthy: z.number(),
     Bacterial: z.number(),
@@ -46,7 +47,7 @@ export type Diagnosis = z.infer<typeof DiagnosisSchema>
 export interface DiagnosisInput {
   imageBuffer: Buffer
   mimeType: string
-  animalType: string
+  animalType?: string
   symptoms?: string[] | string
 }
 

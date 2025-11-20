@@ -26,29 +26,59 @@ const Navbar = () => {
           to="/adopt"
           className="text-gray-700 hover:text-blue-600 transition"
         >
-          Adopt
+          Adopt |
         </Link>
         <Link
           to="/disease"
           className="text-gray-700 hover:text-blue-600 transition"
         >
-          Detect Disease
+          Detect Disease |
         </Link>
         <Link
           to="/marketplace"
           className="text-gray-700 hover:text-blue-600 transition"
         >
-          Marketplace
+          Marketplace |
         </Link>
         <Link
           to="/donation"
           className="text-gray-700 hover:text-blue-600 transition"
         >
-          Donate
+          Donate |
+        </Link>
+        <Link
+          to="/vets"
+          className="text-gray-700 hover:text-blue-600 transition"
+        >
+          Find Vets |
+        </Link>
+        <Link
+          to="/boarding"
+          className="text-gray-700 hover:text-blue-600 transition"
+        >
+          Boarding |
+        </Link>
+        <Link
+          to="/foster"
+          className="text-gray-700 hover:text-blue-600 transition"
+        >
+          Foster |
+        </Link>
+        <Link
+          to="/sterilization"
+          className="text-gray-700 hover:text-blue-600 transition"
+        >
+          Sterilization |
+        </Link>
+        <Link
+          to="/ethical-breeding"
+          className="text-gray-700 hover:text-blue-600 transition"
+        >
+          Ethical breeding
         </Link>
         {isLoggedIn ? (
           <div className="flex items-center gap-4">
-            <span className="text-gray-600 text-sm font-medium">
+            <span className="text-gray-600 p-2 bg-gray-200 rounded-md text-sm font-medium">
               {user?.name}
             </span>
             <button

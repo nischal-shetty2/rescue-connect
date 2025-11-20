@@ -168,7 +168,7 @@ const Donation: React.FC = () => {
             Help Save Lives, One Rescue at a Time
           </h1>
           <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
-            Your donation helps us rescue, rehabilitate, and find loving homes
+            Your donation helps us rescue, rehabilitate and find loving homes
             for animals in need. Every contribution makes a difference in an
             animal's life.
           </p>
@@ -212,11 +212,10 @@ const Donation: React.FC = () => {
                       key={amount}
                       type="button"
                       onClick={() => handleAmountSelect(amount)}
-                      className={`py-3 px-4 rounded-lg border-2 font-medium transition-colors ${
-                        selectedAmount === amount
-                          ? 'border-purple-500 bg-gradient-to-r from-blue-600 to-purple-600 text-white'
-                          : 'border-gray-300 text-gray-700 hover:border-purple-300'
-                      }`}
+                      className={`py-3 px-4 rounded-lg border-2 font-medium transition-colors ${selectedAmount === amount
+                        ? 'border-purple-500 bg-gradient-to-r from-blue-600 to-purple-600 text-white'
+                        : 'border-gray-300 text-gray-700 hover:border-purple-300'
+                        }`}
                     >
                       ₹{amount}
                     </button>
@@ -289,11 +288,10 @@ const Donation: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading || formData.amount <= 0}
-                className={`w-full py-4 px-6 rounded-lg font-semibold text-lg transition-colors shadow-lg ${
-                  loading || formData.amount <= 0
-                    ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700'
-                }`}
+                className={`w-full py-4 px-6 rounded-lg font-semibold text-lg transition-colors shadow-lg ${loading || formData.amount <= 0
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700'
+                  }`}
               >
                 {loading
                   ? 'Processing...'

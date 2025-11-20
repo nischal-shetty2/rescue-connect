@@ -92,7 +92,7 @@ export const Stats = () => {
           </span>
         </h1>
         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-          Get instant, accurate diagnosis for skin diseases in dogs, cats, and
+          Get instant, accurate diagnosis for skin diseases in dogs, cats and
           cows. Our advanced model analyzes images and symptoms to provide
           treatment recommendations.
         </p>

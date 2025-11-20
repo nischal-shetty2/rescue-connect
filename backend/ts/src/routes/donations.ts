@@ -21,12 +21,12 @@ router.get('/stats', async (req, res) => {
     const totalRaisedResult = await Donation.aggregate([
       { $group: { _id: null, total: { $sum: '$amount' } } }
     ]);
-    
+
     const totalRaised = totalRaisedResult[0]?.total || 0;
-    
+
     // Count total donors
     const donorCount = await Donation.countDocuments();
-    
+
     // Get recent donations (last 5)
     const recentDonations = await Donation.find()
       .sort({ donatedAt: -1 })
@@ -48,10 +48,10 @@ router.get('/stats', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const { name, email, amount } = req.body;
-    
+
     // Validation
     if (!name || !email || !amount) {
-      return res.status(400).json({ error: 'Name, email, and amount are required' });
+      return res.status(400).json({ error: 'Name, emailand amount are required' });
     }
 
     if (amount <= 0) {
@@ -66,11 +66,11 @@ router.post('/', async (req, res) => {
     });
 
     await donation.save();
-    
+
     console.log('New donation created:', { name, email, amount });
-    
-    res.status(201).json({ 
-      message: 'Donation created successfully', 
+
+    res.status(201).json({
+      message: 'Donation created successfully',
       donation: {
         _id: donation._id,
         name: donation.name,

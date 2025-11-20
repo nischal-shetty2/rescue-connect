@@ -37,7 +37,7 @@ const Landing = () => {
               </span>
             </h1>
             <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-              platform for animal rescue, disease detection, and care services.
+              Platform for animal rescue, disease detection and care services.
               Bridging communities to save lives, one paw at a time.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -66,18 +66,7 @@ const Landing = () => {
               >
                 Detect Disease
               </button>
-              <button
-                onClick={() => {
-                  if (isLoggedIn) {
-                    navigate('/marketplace')
-                  } else {
-                    navigate('/login')
-                  }
-                }}
-                className="bg-white/80 backdrop-blur-sm border-2 border-indigo-200 text-indigo-700 px-8 py-4 rounded-2xl text-lg font-semibold hover:bg-white hover:border-indigo-400 hover:text-indigo-800 transition-all duration-300 hover:shadow-xl"
-              >
-                MarketPlace
-              </button>
+
             </div>
           </div>
 
@@ -294,7 +283,7 @@ const features = [
     icon: <Camera className="w-8 h-8" />,
     title: 'Disease Detection',
     description:
-      'Advanced skin disease prediction for dogs, cats, and cows with instant treatment recommendations.',
+      'Advanced skin disease prediction for dogs, cats and cows with instant treatment recommendations.',
   },
   {
     icon: <MapPin className="w-8 h-8" />,
@@ -316,7 +305,7 @@ const features = [
   },
   {
     icon: <Home className="w-8 h-8" />,
-    title: 'Pet Boarding',
+    title: 'Pet Boarding / Foster',
     description:
       'Trusted boarding houses and temporary care facilities for animals in need.',
   },

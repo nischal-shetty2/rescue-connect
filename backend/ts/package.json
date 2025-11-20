@@ -7,6 +7,7 @@
     "dev": "nodemon --watch src -e ts --exec 'node --loader ts-node/esm --experimental-specifier-resolution=node src/index.ts'",
     "build": "tsc --noEmit false --allowImportingTsExtensions false",
     "start": "node dist/index.js",
+    "populate": "node --loader ts-node/esm --experimental-specifier-resolution=node src/seeds/populate.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "prettier --write .",
     "format:check": "prettier --check ."

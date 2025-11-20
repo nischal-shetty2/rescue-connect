@@ -20,7 +20,7 @@ router.get('/stats', async (req, res) => {
     const totalRaised = await Donation.aggregate([
       { $group: { _id: null, total: { $sum: '$amount' } } }
     ]);
-    
+
     const donorCount = await Donation.countDocuments();
     const recentDonations = await Donation.find()
       .sort({ donatedAt: -1 })
@@ -41,9 +41,9 @@ router.get('/stats', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const { name, email, amount } = req.body;
-    
+
     if (!name || !email || !amount) {
-      return res.status(400).json({ error: 'Name, email, and amount are required' });
+      return res.status(400).json({ error: 'Name, emailand amount are required' });
     }
 
     const donation = new Donation({

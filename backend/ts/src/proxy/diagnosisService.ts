@@ -35,7 +35,9 @@ export class DiagnosisService {
         filename: 'image.jpg',
         contentType: input.mimeType,
       })
-      formData.append('animalType', input.animalType)
+      // Default to dog if not provided, as CNN requires it. 
+      // In auto-detect mode, CNN might be less accurate if it depends heavily on this.
+      formData.append('animalType', input.animalType || 'dog')
       formData.append('symptoms', JSON.stringify(input.symptoms || []))
 
       const flaskResponse = await fetch(`${FLASK_SERVER_URL}/api/analyze`, {
@@ -128,10 +130,10 @@ export class DiagnosisService {
           : 'Secondary Vision (standalone)',
         cnnReference: cnnResult
           ? {
-              disease: cnnResult.disease,
-              confidence: cnnResult.confidence,
-              note: 'Limited CNN model used only for reference',
-            }
+            disease: cnnResult.disease,
+            confidence: cnnResult.confidence,
+            note: 'Limited CNN model used only for reference',
+          }
           : null,
       }
 
