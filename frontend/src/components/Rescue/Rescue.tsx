@@ -22,13 +22,52 @@ import {
 import { createAdoptionRequest } from '../../services/adoptionRequestService'
 import AdoptionMap from '../adoption/AdoptionMap'
 
-const dummyAnimals = [
+// Haversine formula to calculate distance between two points
+const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+  const R = 6371 // Radius of the earth in km
+  const dLat = deg2rad(lat2 - lat1)
+  const dLon = deg2rad(lon2 - lon1)
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(deg2rad(lat1)) *
+    Math.cos(deg2rad(lat2)) *
+    Math.sin(dLon / 2) *
+    Math.sin(dLon / 2)
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+  const d = R * c // Distance in km
+  return d.toFixed(1)
+}
+
+const deg2rad = (deg: number) => {
+  return deg * (Math.PI / 180)
+}
+
+type Animal = {
+  id: number
+  type: string
+  name: string
+  image: string
+  location: string
+  distance: string
+  info: string
+  age: string
+  gender: string
+  rescuer: string
+  postedTime: string
+  condition: string
+  vaccinated: boolean
+  contact: string
+  isUserCreated?: boolean
+  coordinates?: number[] | { lat: number; lng: number }
+}
+
+const dummyAnimals: Animal[] = [
   {
     id: 1,
     type: 'Dog',
     name: 'Buddy',
     image:
-      'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=400&q=80',
+      'https://i.ibb.co/qFCCz9Sr/Whats-App-Image-2025-11-21-at-12-09-41.jpg',
     location: 'Kadri Hills, Yeyyadi, Mangaluru, Karnataka 575004',
     distance: '2.1 km',
     info: 'Healthy, friendly, needs shelter. Vaccinated.',
@@ -47,7 +86,7 @@ const dummyAnimals = [
     type: 'Cow',
     name: 'Gauri',
     image:
-      'https://images.unsplash.com/photo-1527153857715-3908f2bae5e8?q=80&w=788&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      'https://i.ibb.co/Q38XxqmF/Whats-App-Image-2025-11-21-at-12-11-45.jpg',
     location: 'Padil Junction, GATE, NH 77, Padil, Mangaluru, Karnataka 575007',
     distance: '3.5 km',
     info: 'Injured leg, needs medical attention. Docile.',
@@ -66,7 +105,7 @@ const dummyAnimals = [
     type: 'Cat',
     name: 'Whiskers',
     image:
-      'https://plus.unsplash.com/premium_photo-1667030474693-6d0632f97029?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      'https://i.ibb.co/zW0WS2qY/Whats-App-Image-2025-11-21-at-12-09-40.jpg',
     location: 'Ground Floor Abhish Business Center, NH 66, Surathkal, Mangaluru, Karnataka 575014',
     distance: '1.2 km',
     info: 'Young, scared, needs food and care.',
@@ -85,7 +124,7 @@ const dummyAnimals = [
     type: 'Dog',
     name: 'Rocky',
     image:
-      'https://plus.unsplash.com/premium_photo-1667099521469-df09eb52c812?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      'https://i.ibb.co/pj3DJLxc/Whats-App-Image-2025-11-21-at-12-11-11.jpg',
     location: 'Kallapu, Mangaluru, Thokottu, Karnataka 575017',
     distance: '5.8 km',
     info: 'Abandoned puppy, very playful and energetic.',
@@ -104,7 +143,7 @@ const dummyAnimals = [
     type: 'Cat',
     name: 'Luna',
     image:
-      'https://images.unsplash.com/photo-1570018143038-6f4c428f6e3e?q=80&w=761&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      'https://i.ibb.co/5gPVbTnk/Whats-App-Image-2025-11-21-at-12-11-11-1.jpg',
     location: 'RAJEEVI PUNDALIKA ENCLAVE , SHOP NO 4, near IOC PETROL BUNK, B.C Road, Bantwal, Karnataka 574219',
     distance: '4.2 km',
     info: 'Pregnant cat, needs immediate shelter and care.',
@@ -123,8 +162,12 @@ const dummyAnimals = [
 const StartRescuingPage = () => {
   const [viewMode, setViewMode] = useState('grid')
   const [selectedFilter, setSelectedFilter] = useState('all')
+  const [selectedDistance, setSelectedDistance] = useState('any')
+  const [selectedCondition, setSelectedCondition] = useState('all')
+  const [selectedAge, setSelectedAge] = useState('all')
   const [showFilters, setShowFilters] = useState(false)
   const [showPostModal, setShowPostModal] = useState(false)
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null)
   type AnimalPost = {
     id: string | number
     animalType?: string
@@ -140,23 +183,7 @@ const StartRescuingPage = () => {
     vaccinated?: boolean
     contactNumber?: string
   }
-  type Animal = {
-    id: number
-    type: string
-    name: string
-    image: string
-    location: string
-    distance: string
-    info: string
-    age: string
-    gender: string
-    rescuer: string
-    postedTime: string
-    condition: string
-    vaccinated: boolean
-    contact: string
-    isUserCreated?: boolean
-  }
+
 
   const [storedPosts, setStoredPosts] = useState<AnimalPost[]>([])
   const [selectedAnimal, setSelectedAnimal] = useState<Animal | null>(null)
@@ -190,27 +217,40 @@ const StartRescuingPage = () => {
       })
 
       // Convert API data to Animal format
-      const convertedAnimals = apiData.map((post: AdoptionPost) => ({
-        id: post._id || Date.now(),
-        type:
-          post.animalType.charAt(0).toUpperCase() + post.animalType.slice(1),
-        name: post.animalName,
-        image:
-          post.images?.[0] ||
-          'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=400&q=80',
-        location: post.location,
-        coordinates: post.coordinates, // Pass coordinates for map
-        distance: '0 km away',
-        info: post.description,
-        age: post.age.toString(),
-        gender: post.gender.charAt(0).toUpperCase() + post.gender.slice(1),
-        rescuer: post.contactInfo.name,
-        postedTime: getTimeAgo(post.postedAt),
-        condition: 'good', // You can map this from your API data
-        vaccinated: true, // You can map this from your API data
-        contact: post.contactInfo.phone,
-        isUserCreated: true,
-      }))
+      const convertedAnimals = apiData.map((post: AdoptionPost) => {
+        let distance = 'Unknown distance'
+        if (userLocation && post.coordinates) {
+          const dist = calculateDistance(
+            userLocation.lat,
+            userLocation.lng,
+            post.coordinates.lat,
+            post.coordinates.lng
+          )
+          distance = `${dist} km`
+        }
+
+        return {
+          id: post._id || Date.now(),
+          type:
+            post.animalType.charAt(0).toUpperCase() + post.animalType.slice(1),
+          name: post.animalName,
+          image:
+            post.images?.[0] ||
+            'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=400&q=80',
+          location: post.location,
+          coordinates: post.coordinates, // Pass coordinates for map
+          distance: distance,
+          info: post.description,
+          age: post.age.toString(),
+          gender: post.gender.charAt(0).toUpperCase() + post.gender.slice(1),
+          rescuer: post.contactInfo.name,
+          postedTime: getTimeAgo(post.postedAt),
+          condition: post.condition || 'Unknown',
+          vaccinated: post.vaccinated || false,
+          contact: post.contactInfo.phone,
+          isUserCreated: true,
+        }
+      })
 
       setApiAnimals(convertedAnimals)
     } catch (err) {
@@ -221,6 +261,23 @@ const StartRescuingPage = () => {
       setLoading(false)
     }
   }
+
+  // Get user location
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          })
+        },
+        (error) => {
+          console.error('Error getting location:', error)
+        }
+      )
+    }
+  }, [])
 
   // Load posts from localStorage on component mount
   useEffect(() => {
@@ -255,7 +312,7 @@ const StartRescuingPage = () => {
   // Fetch animals from API when filter changes
   useEffect(() => {
     fetchAnimalsFromAPI()
-  }, [selectedFilter])
+  }, [selectedFilter, userLocation])
 
   const handleDeletePost = async (postId: string | number) => {
     console.log('=== DELETE POST FUNCTION CALLED ===')
@@ -319,6 +376,10 @@ const StartRescuingPage = () => {
   const convertStoredPostsToAnimals = (posts: AnimalPost[]): Animal[] => {
     console.log('Converting stored posts to animals:', posts)
     const converted = posts.map(post => {
+      let distance = 'Unknown distance'
+      // Note: Stored posts might not have coordinates, or might have them in a different format
+      // Assuming stored posts don't have coordinates for now, or we need to add them
+
       const animal = {
         id: post.id
           ? typeof post.id === 'string'
@@ -332,7 +393,7 @@ const StartRescuingPage = () => {
             ? post.images[0]
             : 'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=400&q=80',
         location: post.location?.address || 'Unknown Location',
-        distance: '0 km away',
+        distance: distance,
         info: post.description || 'No description available',
         age: post.age || 'Unknown',
         gender: post.gender || 'Unknown',
@@ -356,6 +417,12 @@ const StartRescuingPage = () => {
 
     const now = new Date()
     const posted = new Date(timestamp)
+
+    // Check if date is valid
+    if (isNaN(posted.getTime())) {
+      return 'Recently'
+    }
+
     const diffInMinutes = Math.floor(
       (now.getTime() - posted.getTime()) / (1000 * 60)
     )
@@ -394,7 +461,12 @@ const StartRescuingPage = () => {
 
       // First, check if animal has coordinates (from API/database)
       if ((animal as any).coordinates) {
-        coordinates = (animal as any).coordinates
+        const coords = (animal as any).coordinates
+        if (Array.isArray(coords)) {
+          coordinates = { lat: coords[1], lng: coords[0] }
+        } else {
+          coordinates = coords
+        }
       } else {
         // Try to match location with known coordinates
         coordinates = cityCoordinates[animal.location]
@@ -419,13 +491,18 @@ const StartRescuingPage = () => {
         }
       }
 
+      // Validate coordinates
+      if (!coordinates || typeof coordinates.lat !== 'number' || typeof coordinates.lng !== 'number') {
+        return null
+      }
+
       return {
         id: String(animal.id),
         name: animal.name,
-        latitude: coordinates!.lat,
-        longitude: coordinates!.lng,
+        latitude: coordinates.lat,
+        longitude: coordinates.lng,
       }
-    })
+    }).filter((item): item is { id: string; name: string; latitude: number; longitude: number } => item !== null)
   }
 
   // Adoption handlers
@@ -498,17 +575,65 @@ const StartRescuingPage = () => {
 
   // Combine dummy animals with stored posts and API data
   const allAnimals = [
-    ...dummyAnimals,
+    ...dummyAnimals.map(animal => {
+      let distance = animal.distance
+      if (userLocation && animal.coordinates) {
+        // Check if coordinates is array or object
+        let lat, lng
+        if (Array.isArray(animal.coordinates)) {
+          [lng, lat] = animal.coordinates
+        } else {
+          // Handle object coordinates { lat, lng }
+          lat = animal.coordinates.lat
+          lng = animal.coordinates.lng
+        }
+
+        const dist = calculateDistance(
+          userLocation.lat,
+          userLocation.lng,
+          lat,
+          lng
+        )
+        distance = `${dist} km`
+      }
+      return { ...animal, distance }
+    }),
     ...convertStoredPostsToAnimals(storedPosts),
     ...apiAnimals,
   ]
 
-  const filteredAnimals =
-    selectedFilter === 'all'
-      ? allAnimals
-      : allAnimals.filter(
-        animal => animal.type.toLowerCase() === selectedFilter
-      )
+  const filteredAnimals = allAnimals.filter(animal => {
+    // Filter by type
+    if (selectedFilter !== 'all' && animal.type.toLowerCase() !== selectedFilter) {
+      return false
+    }
+
+    // Filter by distance
+    if (selectedDistance !== 'any') {
+      const distValue = parseFloat(animal.distance)
+      if (isNaN(distValue)) return false // Or true, depending on how strict we want to be
+
+      const maxDist = parseInt(selectedDistance)
+      if (distValue > maxDist) {
+        return false
+      }
+    }
+
+    // Filter by condition
+    if (selectedCondition !== 'all' && animal.condition.toLowerCase() !== selectedCondition.toLowerCase()) {
+      return false
+    }
+
+    // Filter by age
+    if (selectedAge !== 'all') {
+      // Simple string matching for now, can be improved with range parsing
+      if (!animal.age.toLowerCase().includes(selectedAge.toLowerCase())) {
+        return false
+      }
+    }
+
+    return true
+  })
 
   const handleOpenModal = () => {
     setShowPostModal(true)
@@ -807,6 +932,94 @@ const StartRescuingPage = () => {
 
       {/* Main Content Area */}
       <div className="flex-1">
+        {/* Filters and View Toggle */}
+        <div className="max-w-7xl mx-auto px-6 mb-8">
+          <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl p-8 border border-white/20">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="flex items-center gap-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-2xl transition-all duration-300 hover:from-indigo-600 hover:to-purple-700 shadow-lg"
+                >
+                  <Filter className="w-5 h-5" />
+                  Filters
+                </button>
+
+                <select
+                  value={selectedFilter}
+                  onChange={e => setSelectedFilter(e.target.value)}
+                  className="border-2 border-indigo-200 rounded-2xl px-6 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/80 backdrop-blur-sm font-medium"
+                >
+                  <option value="all">All Animals</option>
+                  <option value="dog">Dogs</option>
+                  <option value="cat">Cats</option>
+                  <option value="cow">Cows</option>
+                </select>
+              </div>
+
+              <div className="flex items-center gap-2 bg-gray-100 rounded-2xl p-2">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`p-3 rounded-xl transition-all duration-300 ${viewMode === 'grid'
+                    ? 'bg-white text-indigo-600 shadow-lg'
+                    : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                >
+                  <Grid className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`p-3 rounded-xl transition-all duration-300 ${viewMode === 'list'
+                    ? 'bg-white text-indigo-600 shadow-lg'
+                    : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                >
+                  <List className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {showFilters && (
+              <div className="mt-8 pt-8 border-t border-gray-200">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  <select
+                    value={selectedCondition}
+                    onChange={(e) => setSelectedCondition(e.target.value)}
+                    className="border-2 border-gray-200 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/80 backdrop-blur-sm"
+                  >
+                    <option value="all">All Conditions</option>
+                    <option value="good">Good</option>
+                    <option value="injured">Injured</option>
+                    <option value="pregnant">Pregnant</option>
+                    <option value="sick">Sick</option>
+                  </select>
+                  <select
+                    value={selectedAge}
+                    onChange={(e) => setSelectedAge(e.target.value)}
+                    className="border-2 border-gray-200 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/80 backdrop-blur-sm"
+                  >
+                    <option value="all">All Ages</option>
+                    <option value="young">Young</option>
+                    <option value="adult">Adult</option>
+                    <option value="senior">Senior</option>
+                  </select>
+                  <select
+                    value={selectedDistance}
+                    onChange={(e) => setSelectedDistance(e.target.value)}
+                    className="border-2 border-gray-200 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/80 backdrop-blur-sm"
+                  >
+                    <option value="any">Any Distance</option>
+                    <option value="1">Under 1km</option>
+                    <option value="5">Under 5km</option>
+                    <option value="10">Under 10km</option>
+                    <option value="20">Under 20km</option>
+                  </select>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* Adoption Listings */}
         {layoutMode === 'listings' && (
           <div className="w-full min-h-screen p-6 bg-gradient-to-b from-white to-blue-50">
@@ -833,78 +1046,6 @@ const StartRescuingPage = () => {
                   Connect with stray animals in your area and make a difference in
                   their lives
                 </p>
-              </div>
-
-              {/* Filters and View Toggle */}
-              <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl p-8 mb-12 border border-white/20">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-                  <div className="flex items-center gap-4">
-                    <button
-                      onClick={() => setShowFilters(!showFilters)}
-                      className="flex items-center gap-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-2xl transition-all duration-300 hover:from-indigo-600 hover:to-purple-700 shadow-lg"
-                    >
-                      <Filter className="w-5 h-5" />
-                      Filters
-                    </button>
-
-                    <select
-                      value={selectedFilter}
-                      onChange={e => setSelectedFilter(e.target.value)}
-                      className="border-2 border-indigo-200 rounded-2xl px-6 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/80 backdrop-blur-sm font-medium"
-                    >
-                      <option value="all">All Animals</option>
-                      <option value="dog">Dogs</option>
-                      <option value="cat">Cats</option>
-                      <option value="cow">Cows</option>
-                    </select>
-                  </div>
-
-                  <div className="flex items-center gap-2 bg-gray-100 rounded-2xl p-2">
-                    <button
-                      onClick={() => setViewMode('grid')}
-                      className={`p-3 rounded-xl transition-all duration-300 ${viewMode === 'grid'
-                        ? 'bg-white text-indigo-600 shadow-lg'
-                        : 'text-gray-600 hover:text-gray-900'
-                        }`}
-                    >
-                      <Grid className="w-5 h-5" />
-                    </button>
-                    <button
-                      onClick={() => setViewMode('list')}
-                      className={`p-3 rounded-xl transition-all duration-300 ${viewMode === 'list'
-                        ? 'bg-white text-indigo-600 shadow-lg'
-                        : 'text-gray-600 hover:text-gray-900'
-                        }`}
-                    >
-                      <List className="w-5 h-5" />
-                    </button>
-                  </div>
-                </div>
-
-                {showFilters && (
-                  <div className="mt-8 pt-8 border-t border-gray-200">
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      <select className="border-2 border-gray-200 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/80 backdrop-blur-sm">
-                        <option>All Conditions</option>
-                        <option>Good</option>
-                        <option>Injured</option>
-                        <option>Pregnant</option>
-                      </select>
-                      <select className="border-2 border-gray-200 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/80 backdrop-blur-sm">
-                        <option>Any Distance</option>
-                        <option>Under 1km</option>
-                        <option>Under 5km</option>
-                        <option>Under 10km</option>
-                      </select>
-                      <select className="border-2 border-gray-200 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/80 backdrop-blur-sm">
-                        <option>All Ages</option>
-                        <option>Young</option>
-                        <option>Adult</option>
-                        <option>Senior</option>
-                      </select>
-                    </div>
-                  </div>
-                )}
               </div>
 
               {/* Results Count */}
@@ -937,10 +1078,12 @@ const StartRescuingPage = () => {
         {/* Map */}
         {layoutMode === 'map' && (
           <div className="w-full min-h-screen bg-white p-6">
-            <div className="h-[calc(100vh-12rem)] rounded-2xl overflow-hidden shadow-lg">
+            <div className="h-[calc(100vh-180px)] w-full relative">
               <AdoptionMap
                 locations={generateMapLocations(filteredAnimals)}
                 selectedAnimal={selectedAnimalId}
+                userLocation={userLocation}
+                radius={selectedDistance}
               />
             </div>
           </div>

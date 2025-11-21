@@ -10,6 +10,8 @@ export interface AdoptionPost {
   size: 'small' | 'medium' | 'large'
   description: string
   medicalInfo: string
+  condition?: string
+  vaccinated?: boolean
   location: string
   coordinates?: {
     lat: number

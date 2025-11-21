@@ -352,6 +352,8 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
         size: 'medium' as const, // You can add size field to your form if needed
         description: postData.description,
         medicalInfo: postData.condition || 'No medical information provided',
+        condition: postData.condition,
+        vaccinated: postData.vaccinated,
         location:
           postData.location.address ||
           `${postData.location.lat}, ${postData.location.lng}`,

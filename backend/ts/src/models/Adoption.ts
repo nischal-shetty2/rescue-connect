@@ -9,6 +9,8 @@ export interface IAdoption extends Document {
   size: string
   description: string
   medicalInfo: string
+  condition: string
+  vaccinated: boolean
   location: string
   coordinates?: {
     lat: number
@@ -34,6 +36,8 @@ const AdoptionSchema = new Schema<IAdoption>({
   size: { type: String, required: true },
   description: { type: String, required: true },
   medicalInfo: { type: String },
+  condition: { type: String },
+  vaccinated: { type: Boolean },
   location: { type: String, required: true },
   coordinates: {
     lat: Number,
