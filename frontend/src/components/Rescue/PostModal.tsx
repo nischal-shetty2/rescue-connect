@@ -321,7 +321,7 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
 
     try {
       // Get user info for API
-      const user = JSON.parse(localStorage.getItem('user') || '{}')
+      const user = JSON.parse(localStorage.getItem('currentUser') || '{}')
 
       // Prepare data for API
       const mapAnimalType = (
