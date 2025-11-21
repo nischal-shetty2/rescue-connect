@@ -7,12 +7,20 @@ export interface IStray extends Document {
         lng: number;
         address: string;
     };
+    animalType: string;
+    gender: string;
     isSterilized: boolean;
     surveyData?: {
-        earNotched: boolean;
-        surgicalScars: boolean;
-        behavior: string;
-        skinCondition: string;
+        earsNotched?: string;
+        hasCollar?: string;
+        surgicalMarks?: string;
+        isLactating?: string;
+        isPregnant?: string;
+        recentlyDelivered?: string;
+        testicularIssues?: string;
+        isFriendly?: string;
+        showsAggression?: string;
+        allowsTouch?: string;
         notes?: string;
     };
     createdAt: Date;
@@ -25,12 +33,20 @@ const StraySchema: Schema = new Schema({
         lng: { type: Number, required: true },
         address: { type: String, required: true }
     },
+    animalType: { type: String, required: true },
+    gender: { type: String, required: true },
     isSterilized: { type: Boolean, default: false },
     surveyData: {
-        earNotched: Boolean,
-        surgicalScars: Boolean,
-        behavior: String,
-        skinCondition: String,
+        earsNotched: String,
+        hasCollar: String,
+        surgicalMarks: String,
+        isLactating: String,
+        isPregnant: String,
+        recentlyDelivered: String,
+        testicularIssues: String,
+        isFriendly: String,
+        showsAggression: String,
+        allowsTouch: String,
         notes: String
     },
     createdAt: { type: Date, default: Date.now }

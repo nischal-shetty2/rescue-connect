@@ -86,7 +86,7 @@ const StrayMap: React.FC<StrayMapProps> = ({ strays, onStraySelect }) => {
                                     onClick={() => onStraySelect(stray)}
                                     className="text-xs bg-indigo-600 text-white px-3 py-1 rounded-full hover:bg-indigo-700"
                                 >
-                                    Take Survey
+                                    View Survey
                                 </button>
                             </div>
                         </Popup>

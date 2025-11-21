@@ -29,7 +29,7 @@ const dummyAnimals = [
     name: 'Buddy',
     image:
       'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=400&q=80',
-    location: 'MG Road, Bengaluru',
+    location: 'Kadri Hills, Yeyyadi, Mangaluru, Karnataka 575004',
     distance: '2.1 km',
     info: 'Healthy, friendly, needs shelter. Vaccinated.',
     age: '2 years',
@@ -40,6 +40,7 @@ const dummyAnimals = [
     vaccinated: true,
     contact: '+91 98765 43210',
     isUserCreated: false,
+    coordinates: [74.8507362, 12.8929078]
   },
   {
     id: 2,
@@ -47,7 +48,7 @@ const dummyAnimals = [
     name: 'Gauri',
     image:
       'https://images.unsplash.com/photo-1527153857715-3908f2bae5e8?q=80&w=788&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    location: 'Indiranagar, Bengaluru',
+    location: 'Padil Junction, GATE, NH 77, Padil, Mangaluru, Karnataka 575007',
     distance: '3.5 km',
     info: 'Injured leg, needs medical attention. Docile.',
     age: 'Adult',
@@ -58,6 +59,7 @@ const dummyAnimals = [
     vaccinated: false,
     contact: '+91 87654 32109',
     isUserCreated: false,
+    coordinates: [74.8827284, 12.8716644]
   },
   {
     id: 3,
@@ -65,7 +67,7 @@ const dummyAnimals = [
     name: 'Whiskers',
     image:
       'https://plus.unsplash.com/premium_photo-1667030474693-6d0632f97029?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    location: 'Koramangala, Bengaluru',
+    location: 'Ground Floor Abhish Business Center, NH 66, Surathkal, Mangaluru, Karnataka 575014',
     distance: '1.2 km',
     info: 'Young, scared, needs food and care.',
     age: '6 months',
@@ -76,6 +78,7 @@ const dummyAnimals = [
     vaccinated: true,
     contact: '+91 76543 21098',
     isUserCreated: false,
+    coordinates: [74.796327, 12.9911548]
   },
   {
     id: 4,
@@ -83,7 +86,7 @@ const dummyAnimals = [
     name: 'Rocky',
     image:
       'https://plus.unsplash.com/premium_photo-1667099521469-df09eb52c812?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    location: 'Whitefield, Bengaluru',
+    location: 'Kallapu, Mangaluru, Thokottu, Karnataka 575017',
     distance: '5.8 km',
     info: 'Abandoned puppy, very playful and energetic.',
     age: '4 months',
@@ -94,6 +97,7 @@ const dummyAnimals = [
     vaccinated: false,
     contact: '+91 65432 10987',
     isUserCreated: false,
+    coordinates: [74.8572996, 12.8277734]
   },
   {
     id: 5,
@@ -101,7 +105,7 @@ const dummyAnimals = [
     name: 'Luna',
     image:
       'https://images.unsplash.com/photo-1570018143038-6f4c428f6e3e?q=80&w=761&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    location: 'HSR Layout, Bengaluru',
+    location: 'RAJEEVI PUNDALIKA ENCLAVE , SHOP NO 4, near IOC PETROL BUNK, B.C Road, Bantwal, Karnataka 574219',
     distance: '4.2 km',
     info: 'Pregnant cat, needs immediate shelter and care.',
     age: '1.5 years',
@@ -112,6 +116,7 @@ const dummyAnimals = [
     vaccinated: true,
     contact: '+91 54321 09876',
     isUserCreated: false,
+    coordinates: [75.0228046, 12.882198]
   },
 ]
 

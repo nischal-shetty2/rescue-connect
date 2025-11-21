@@ -8,12 +8,20 @@ export interface Stray {
         lng: number;
         address: string;
     };
+    animalType: string;
+    gender: string;
     isSterilized: boolean;
     surveyData?: {
-        earNotched: boolean;
-        surgicalScars: boolean;
-        behavior: string;
-        skinCondition: string;
+        earsNotched?: string;
+        hasCollar?: string;
+        surgicalMarks?: string;
+        isLactating?: string;
+        isPregnant?: string;
+        recentlyDelivered?: string;
+        testicularIssues?: string;
+        isFriendly?: string;
+        showsAggression?: string;
+        allowsTouch?: string;
         notes?: string;
     };
     createdAt: string;

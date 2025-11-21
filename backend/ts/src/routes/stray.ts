@@ -28,7 +28,7 @@ router.post('/', async (req, res) => {
 router.put('/:id/survey', async (req, res) => {
     try {
         const { surveyData } = req.body;
-        const isSterilized = surveyData.earNotched || surveyData.surgicalScars; // Logic: if ear notched or scars, it's sterilized
+        const isSterilized = surveyData.earsNotched === 'yes' || surveyData.surgicalMarks === 'yes';
 
         const updatedStray = await Stray.findByIdAndUpdate(
             req.params.id,

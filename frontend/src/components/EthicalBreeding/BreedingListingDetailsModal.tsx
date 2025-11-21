@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { X, MapPin, Phone, ShieldCheck, ChevronLeft, ChevronRight, Award } from 'lucide-react'
+import { X, MapPin, Phone, ChevronLeft, ChevronRight, Award } from 'lucide-react'
 import { type BreedingListing } from '../../services/breedingService'
 import BreederComments from './BreederComments'
 
@@ -95,10 +95,7 @@ const BreedingListingDetailsModal: React.FC<BreedingListingDetailsModalProps> = 
                                 <div className="text-3xl font-bold text-indigo-600">
                                     ₹{listing.price.toLocaleString('en-IN')}
                                 </div>
-                                <div className="flex items-center text-green-600 bg-green-50 px-3 py-1.5 rounded-full text-sm font-medium">
-                                    <ShieldCheck className="w-4 h-4 mr-1.5" />
-                                    AWBI Verified
-                                </div>
+
                             </div>
 
                             {/* Description */}
