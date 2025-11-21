@@ -355,6 +355,10 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
         location:
           postData.location.address ||
           `${postData.location.lat}, ${postData.location.lng}`,
+        coordinates: {
+          lat: postData.location.lat,
+          lng: postData.location.lng,
+        },
         contactInfo: {
           name: postData.posterName,
           phone: postData.contactNumber,
@@ -365,38 +369,18 @@ export default function PostModal({ setShowPostModal }: PostModalProps) {
         postedBy: user.email || 'anonymous',
       }
 
-      // Try to save to API first
+      // Save to API
       try {
         await createAdoption(apiData)
-        console.log('Post saved to API successfully')
+        console.log('Post saved to database successfully')
         alert('Post created successfully and saved to database!')
         handleCloseModal()
-        return
       } catch (apiError) {
-        console.warn('API save failed, falling back to localStorage:', apiError)
-        // Fall through to localStorage save
+        console.error('Failed to save adoption post:', apiError)
+        alert('Error saving post to database. Please try again.')
       }
-
-      // Fallback: Save to localStorage
-      const existingPosts = JSON.parse(
-        localStorage.getItem('animalPosts') || '[]'
-      )
-      const updatedPosts = [
-        ...existingPosts,
-        { ...postData, id: Date.now().toString() },
-      ]
-      localStorage.setItem('animalPosts', JSON.stringify(updatedPosts))
-
-      // Dispatch custom event to notify other components
-      window.dispatchEvent(new CustomEvent('postAdded'))
-
-      console.log('Post saved to localStorage:', postData)
-      alert(
-        'Post created successfully! (Saved locally - will sync when connection is restored)'
-      )
-      handleCloseModal()
     } catch (error) {
-      console.error('Error saving post:', error)
+      console.error('Error preparing post:', error)
       alert('Error saving post. Please try again.')
     }
   }

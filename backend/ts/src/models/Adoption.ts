@@ -10,6 +10,10 @@ export interface IAdoption extends Document {
   description: string
   medicalInfo: string
   location: string
+  coordinates?: {
+    lat: number
+    lng: number
+  }
   contactInfo: {
     name: string
     phone: string
@@ -31,6 +35,10 @@ const AdoptionSchema = new Schema<IAdoption>({
   description: { type: String, required: true },
   medicalInfo: { type: String },
   location: { type: String, required: true },
+  coordinates: {
+    lat: Number,
+    lng: Number,
+  },
   contactInfo: {
     name: String,
     phone: String,

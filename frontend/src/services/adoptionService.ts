@@ -11,6 +11,10 @@ export interface AdoptionPost {
   description: string
   medicalInfo: string
   location: string
+  coordinates?: {
+    lat: number
+    lng: number
+  }
   contactInfo: {
     name: string
     phone: string

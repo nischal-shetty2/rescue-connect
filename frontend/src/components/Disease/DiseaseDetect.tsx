@@ -512,10 +512,10 @@ const DetectDiseasePage: React.FC = () => {
 
                 {/* Actions */}
                 <div className="flex gap-3 pt-4">
-                  <button className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-xl font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center">
+                  <a href='/vets' className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-xl font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center">
                     <ArrowRight className="w-4 h-4 mr-2" />
                     Find Nearby Vet
-                  </button>
+                  </a>
                   <button className="bg-gray-100 text-gray-700 py-3 px-4 rounded-xl font-semibold hover:bg-gray-200 transition-colors">
                     Save Report
                   </button>

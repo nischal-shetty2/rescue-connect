@@ -4,6 +4,7 @@ import multer from 'multer'
 import cors from 'cors'
 import connectDB from './config/database.js'
 import adoptionRoutes from './routes/adoption.js'
+import adoptionRequestRoutes from './routes/adoptionRequest.js'
 import { DiagnosisService } from './proxy/index.js'
 import marketplaceRoutes from './routes/marketplace.js';
 import donationRoutes from './routes/donations.js'
@@ -54,6 +55,7 @@ app.post('/diagnose', upload.single('image'), async (req, res) => {
 })
 
 app.use('/api/adoptions', adoptionRoutes)
+app.use('/api/adoption-requests', adoptionRequestRoutes)
 app.use('/api/marketplace', marketplaceRoutes);
 app.use('/api/donations', donationRoutes);
 app.use('/api/vets', vetRoutes)

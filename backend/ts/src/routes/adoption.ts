@@ -3,10 +3,21 @@ import Adoption from '../models/Adoption.js'
 
 const router = express.Router()
 
-// Get all adoption posts
+// Get all adoption posts with optional filtering
 router.get('/', async (req, res) => {
   try {
-    const adoptions = await Adoption.find().sort({ postedAt: -1 })
+    const { type, location } = req.query
+
+    // Build filter object
+    const filter: any = {}
+    if (type && type !== 'all') {
+      filter.animalType = type
+    }
+    if (location) {
+      filter.location = { $regex: location, $options: 'i' } // Case-insensitive search
+    }
+
+    const adoptions = await Adoption.find(filter).sort({ postedAt: -1 })
     res.json(adoptions)
   } catch (err) {
     res.status(500).json({ message: 'Error fetching adoptions' })

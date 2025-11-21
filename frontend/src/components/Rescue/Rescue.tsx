@@ -19,6 +19,7 @@ import {
   deleteAdoption,
   type AdoptionPost,
 } from '../../services/adoptionService'
+import { createAdoptionRequest } from '../../services/adoptionRequestService'
 import AdoptionMap from '../adoption/AdoptionMap'
 
 const dummyAnimals = [
@@ -193,6 +194,7 @@ const StartRescuingPage = () => {
           post.images?.[0] ||
           'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=400&q=80',
         location: post.location,
+        coordinates: post.coordinates, // Pass coordinates for map
         distance: '0 km away',
         info: post.description,
         age: post.age.toString(),
@@ -383,33 +385,40 @@ const StartRescuingPage = () => {
     }
 
     return animals.map((animal) => {
-      // Try to match location with known coordinates
-      let coordinates = cityCoordinates[animal.location]
-      
-      // If no exact match, try partial matching
-      if (!coordinates) {
-        const locationKey = Object.keys(cityCoordinates).find(key => 
-          animal.location.toLowerCase().includes(key.toLowerCase()) ||
-          key.toLowerCase().includes(animal.location.toLowerCase())
-        )
-        if (locationKey) {
-          coordinates = cityCoordinates[locationKey]
-        }
-      }
+      let coordinates: { lat: number; lng: number } | undefined
 
-      // If still no match, generate random coordinates around Bengaluru
-      if (!coordinates) {
-        coordinates = {
-          lat: 12.9716 + (Math.random() - 0.5) * 0.1, // Random offset around Bengaluru
-          lng: 77.5946 + (Math.random() - 0.5) * 0.1
+      // First, check if animal has coordinates (from API/database)
+      if ((animal as any).coordinates) {
+        coordinates = (animal as any).coordinates
+      } else {
+        // Try to match location with known coordinates
+        coordinates = cityCoordinates[animal.location]
+
+        // If no exact match, try partial matching
+        if (!coordinates) {
+          const locationKey = Object.keys(cityCoordinates).find(key =>
+            animal.location.toLowerCase().includes(key.toLowerCase()) ||
+            key.toLowerCase().includes(animal.location.toLowerCase())
+          )
+          if (locationKey) {
+            coordinates = cityCoordinates[locationKey]
+          }
+        }
+
+        // If still no match, generate random coordinates around Bengaluru
+        if (!coordinates) {
+          coordinates = {
+            lat: 12.9716 + (Math.random() - 0.5) * 0.1, // Random offset around Bengaluru
+            lng: 77.5946 + (Math.random() - 0.5) * 0.1
+          }
         }
       }
 
       return {
         id: String(animal.id),
         name: animal.name,
-        latitude: coordinates.lat,
-        longitude: coordinates.lng,
+        latitude: coordinates!.lat,
+        longitude: coordinates!.lng,
       }
     })
   }
@@ -423,7 +432,7 @@ const StartRescuingPage = () => {
     console.log('Modal should be shown now')
   }
 
-  const handleAdoptionSubmit = () => {
+  const handleAdoptionSubmit = async () => {
     if (
       !selectedAnimal ||
       !adoptionForm.adopterName ||
@@ -435,26 +444,20 @@ const StartRescuingPage = () => {
     }
 
     // Create adoption request
-    const adoptionRequest = {
-      id: Date.now().toString(),
-      animalId: selectedAnimal.id,
+    const adoptionRequestData = {
+      animalId: String(selectedAnimal.id),
       animalName: selectedAnimal.name,
       animalType: selectedAnimal.type,
       animalLocation: selectedAnimal.location,
       rescuerName: selectedAnimal.rescuer,
       rescuerContact: selectedAnimal.contact,
       adopterInfo: { ...adoptionForm },
-      status: 'pending',
-      timestamp: new Date().toISOString(),
+      status: 'pending' as const,
     }
 
-    // Save to localStorage
+    // Save to database via API
     try {
-      const existingRequests = JSON.parse(
-        localStorage.getItem('adoptionRequests') || '[]'
-      )
-      const updatedRequests = [...existingRequests, adoptionRequest]
-      localStorage.setItem('adoptionRequests', JSON.stringify(updatedRequests))
+      await createAdoptionRequest(adoptionRequestData)
 
       alert(
         `Your adoption request for ${selectedAnimal.name} has been submitted! The rescuer will be notified.`
@@ -499,8 +502,8 @@ const StartRescuingPage = () => {
     selectedFilter === 'all'
       ? allAnimals
       : allAnimals.filter(
-          animal => animal.type.toLowerCase() === selectedFilter
-        )
+        animal => animal.type.toLowerCase() === selectedFilter
+      )
 
   const handleOpenModal = () => {
     setShowPostModal(true)
@@ -776,22 +779,20 @@ const StartRescuingPage = () => {
         <div className="flex items-center gap-2 bg-gray-100 rounded-xl p-1">
           <button
             onClick={() => setLayoutMode('listings')}
-            className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 flex items-center gap-2 ${
-              layoutMode === 'listings'
-                ? 'bg-white text-indigo-600 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
+            className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 flex items-center gap-2 ${layoutMode === 'listings'
+              ? 'bg-white text-indigo-600 shadow-sm'
+              : 'text-gray-600 hover:text-gray-900'
+              }`}
           >
             <List className="w-4 h-4" />
             Listings
           </button>
           <button
             onClick={() => setLayoutMode('map')}
-            className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 flex items-center gap-2 ${
-              layoutMode === 'map'
-                ? 'bg-white text-indigo-600 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
+            className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 flex items-center gap-2 ${layoutMode === 'map'
+              ? 'bg-white text-indigo-600 shadow-sm'
+              : 'text-gray-600 hover:text-gray-900'
+              }`}
           >
             <MapPin className="w-4 h-4" />
             Map
@@ -805,137 +806,135 @@ const StartRescuingPage = () => {
         {layoutMode === 'listings' && (
           <div className="w-full min-h-screen p-6 bg-gradient-to-b from-white to-blue-50">
             <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <div className="flex justify-center items-center gap-6 mb-6">
-            <h1 className="text-5xl font-bold text-gray-900">
-              Animals Nearby Need Your
-              <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                {' '}
-                Help
-              </span>
-            </h1>
-            <button
-              onClick={handleOpenModal}
-              className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-2xl font-bold hover:from-green-600 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center gap-2"
-            >
-              <Plus className="w-5 h-5" />
-              Post Animal
-            </button>
-          </div>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Connect with stray animals in your area and make a difference in
-            their lives
-          </p>
-        </div>
+              {/* Header */}
+              <div className="text-center mb-12">
+                <div className="flex justify-center items-center gap-6 mb-6">
+                  <h1 className="text-5xl font-bold text-gray-900">
+                    Animals Nearby Need Your
+                    <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                      {' '}
+                      Help
+                    </span>
+                  </h1>
+                  <button
+                    onClick={handleOpenModal}
+                    className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-2xl font-bold hover:from-green-600 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center gap-2"
+                  >
+                    <Plus className="w-5 h-5" />
+                    Post Animal
+                  </button>
+                </div>
+                <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                  Connect with stray animals in your area and make a difference in
+                  their lives
+                </p>
+              </div>
 
-        {/* Filters and View Toggle */}
-        <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl p-8 mb-12 border border-white/20">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-2xl transition-all duration-300 hover:from-indigo-600 hover:to-purple-700 shadow-lg"
-              >
-                <Filter className="w-5 h-5" />
-                Filters
-              </button>
+              {/* Filters and View Toggle */}
+              <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl p-8 mb-12 border border-white/20">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                  <div className="flex items-center gap-4">
+                    <button
+                      onClick={() => setShowFilters(!showFilters)}
+                      className="flex items-center gap-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-2xl transition-all duration-300 hover:from-indigo-600 hover:to-purple-700 shadow-lg"
+                    >
+                      <Filter className="w-5 h-5" />
+                      Filters
+                    </button>
 
-              <select
-                value={selectedFilter}
-                onChange={e => setSelectedFilter(e.target.value)}
-                className="border-2 border-indigo-200 rounded-2xl px-6 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/80 backdrop-blur-sm font-medium"
-              >
-                <option value="all">All Animals</option>
-                <option value="dog">Dogs</option>
-                <option value="cat">Cats</option>
-                <option value="cow">Cows</option>
-              </select>
-            </div>
+                    <select
+                      value={selectedFilter}
+                      onChange={e => setSelectedFilter(e.target.value)}
+                      className="border-2 border-indigo-200 rounded-2xl px-6 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/80 backdrop-blur-sm font-medium"
+                    >
+                      <option value="all">All Animals</option>
+                      <option value="dog">Dogs</option>
+                      <option value="cat">Cats</option>
+                      <option value="cow">Cows</option>
+                    </select>
+                  </div>
 
-            <div className="flex items-center gap-2 bg-gray-100 rounded-2xl p-2">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`p-3 rounded-xl transition-all duration-300 ${
-                  viewMode === 'grid'
-                    ? 'bg-white text-indigo-600 shadow-lg'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                <Grid className="w-5 h-5" />
-              </button>
-              <button
-                onClick={() => setViewMode('list')}
-                className={`p-3 rounded-xl transition-all duration-300 ${
-                  viewMode === 'list'
-                    ? 'bg-white text-indigo-600 shadow-lg'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                <List className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
+                  <div className="flex items-center gap-2 bg-gray-100 rounded-2xl p-2">
+                    <button
+                      onClick={() => setViewMode('grid')}
+                      className={`p-3 rounded-xl transition-all duration-300 ${viewMode === 'grid'
+                        ? 'bg-white text-indigo-600 shadow-lg'
+                        : 'text-gray-600 hover:text-gray-900'
+                        }`}
+                    >
+                      <Grid className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={() => setViewMode('list')}
+                      className={`p-3 rounded-xl transition-all duration-300 ${viewMode === 'list'
+                        ? 'bg-white text-indigo-600 shadow-lg'
+                        : 'text-gray-600 hover:text-gray-900'
+                        }`}
+                    >
+                      <List className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
 
-          {showFilters && (
-            <div className="mt-8 pt-8 border-t border-gray-200">
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <select className="border-2 border-gray-200 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/80 backdrop-blur-sm">
-                  <option>All Conditions</option>
-                  <option>Good</option>
-                  <option>Injured</option>
-                  <option>Pregnant</option>
-                </select>
-                <select className="border-2 border-gray-200 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/80 backdrop-blur-sm">
-                  <option>Any Distance</option>
-                  <option>Under 1km</option>
-                  <option>Under 5km</option>
-                  <option>Under 10km</option>
-                </select>
-                <select className="border-2 border-gray-200 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/80 backdrop-blur-sm">
-                  <option>All Ages</option>
-                  <option>Young</option>
-                  <option>Adult</option>
-                  <option>Senior</option>
-                </select>
+                {showFilters && (
+                  <div className="mt-8 pt-8 border-t border-gray-200">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      <select className="border-2 border-gray-200 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/80 backdrop-blur-sm">
+                        <option>All Conditions</option>
+                        <option>Good</option>
+                        <option>Injured</option>
+                        <option>Pregnant</option>
+                      </select>
+                      <select className="border-2 border-gray-200 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/80 backdrop-blur-sm">
+                        <option>Any Distance</option>
+                        <option>Under 1km</option>
+                        <option>Under 5km</option>
+                        <option>Under 10km</option>
+                      </select>
+                      <select className="border-2 border-gray-200 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/80 backdrop-blur-sm">
+                        <option>All Ages</option>
+                        <option>Young</option>
+                        <option>Adult</option>
+                        <option>Senior</option>
+                      </select>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Results Count */}
+              <div className="flex items-center justify-between mb-8">
+                <p className="text-gray-600 text-lg">
+                  Showing{' '}
+                  <span className="font-bold text-indigo-600">
+                    {filteredAnimals.length}
+                  </span>{' '}
+                  animals near you
+                </p>
+                <div className="flex items-center gap-2 text-sm text-gray-500 bg-white/60 backdrop-blur-sm px-4 py-2 rounded-2xl">
+                  <span>Last updated: 1 Day ago</span>
+                </div>
+              </div>
+
+              {/* Listings */}
+              {viewMode === 'grid' ? <GridView /> : <ListView />}
+
+              {/* Load More */}
+              <div className="text-center mt-16">
+                <button className="bg-white/80 backdrop-blur-sm text-gray-700 border-2 border-indigo-200 px-10 py-4 rounded-2xl font-bold hover:bg-white hover:border-indigo-400 transition-all duration-300 shadow-lg hover:shadow-xl">
+                  Load More Animals
+                </button>
               </div>
             </div>
-          )}
-        </div>
-
-        {/* Results Count */}
-        <div className="flex items-center justify-between mb-8">
-          <p className="text-gray-600 text-lg">
-            Showing{' '}
-            <span className="font-bold text-indigo-600">
-              {filteredAnimals.length}
-            </span>{' '}
-            animals near you
-          </p>
-          <div className="flex items-center gap-2 text-sm text-gray-500 bg-white/60 backdrop-blur-sm px-4 py-2 rounded-2xl">
-            <span>Last updated: 1 Day ago</span>
           </div>
-        </div>
-
-        {/* Listings */}
-        {viewMode === 'grid' ? <GridView /> : <ListView />}
-
-        {/* Load More */}
-        <div className="text-center mt-16">
-          <button className="bg-white/80 backdrop-blur-sm text-gray-700 border-2 border-indigo-200 px-10 py-4 rounded-2xl font-bold hover:bg-white hover:border-indigo-400 transition-all duration-300 shadow-lg hover:shadow-xl">
-            Load More Animals
-          </button>
-        </div>
-        </div>
-        </div>
         )}
 
         {/* Map */}
         {layoutMode === 'map' && (
           <div className="w-full min-h-screen bg-white p-6">
             <div className="h-[calc(100vh-12rem)] rounded-2xl overflow-hidden shadow-lg">
-              <AdoptionMap 
-                locations={generateMapLocations(filteredAnimals)} 
+              <AdoptionMap
+                locations={generateMapLocations(filteredAnimals)}
                 selectedAnimal={selectedAnimalId}
               />
             </div>
@@ -948,267 +947,267 @@ const StartRescuingPage = () => {
 
       {/* Adoption Modal */}
       {showAdoptionModal && selectedAnimal && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-              {/* Modal Header */}
-              <div className="sticky top-0 bg-white border-b border-gray-200 p-6 rounded-t-3xl">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h2 className="text-3xl font-bold text-gray-900">
-                      Adopt {selectedAnimal.name}
-                    </h2>
-                    <p className="text-gray-600 mt-1">
-                      Fill out this form to express your interest
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="sticky top-0 bg-white border-b border-gray-200 p-6 rounded-t-3xl">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-3xl font-bold text-gray-900">
+                    Adopt {selectedAnimal.name}
+                  </h2>
+                  <p className="text-gray-600 mt-1">
+                    Fill out this form to express your interest
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowAdoptionModal(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors p-2"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6">
+              {/* Animal Summary */}
+              <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-6 mb-8">
+                <div className="flex gap-6">
+                  <img
+                    src={selectedAnimal.image}
+                    alt={selectedAnimal.name}
+                    className="w-32 h-32 object-cover rounded-2xl"
+                  />
+                  <div className="flex-1">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                      {selectedAnimal.name} ({selectedAnimal.type})
+                    </h3>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span className="font-medium">Location:</span>{' '}
+                        {selectedAnimal.location}
+                      </div>
+                      <div>
+                        <span className="font-medium">Age:</span>{' '}
+                        {selectedAnimal.age}
+                      </div>
+                      <div>
+                        <span className="font-medium">Gender:</span>{' '}
+                        {selectedAnimal.gender}
+                      </div>
+                      <div>
+                        <span className="font-medium">Condition:</span>{' '}
+                        {selectedAnimal.condition}
+                      </div>
+                    </div>
+                    <p className="text-gray-600 mt-3">
+                      {selectedAnimal.info}
                     </p>
+                    <div className="mt-3 text-sm text-gray-500">
+                      Posted by{' '}
+                      <span className="font-medium">
+                        {selectedAnimal.rescuer}
+                      </span>
+                    </div>
                   </div>
-                  <button
-                    onClick={() => setShowAdoptionModal(false)}
-                    className="text-gray-400 hover:text-gray-600 transition-colors p-2"
-                  >
-                    <X className="w-6 h-6" />
-                  </button>
                 </div>
               </div>
 
-              <div className="p-6">
-                {/* Animal Summary */}
-                <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-6 mb-8">
-                  <div className="flex gap-6">
-                    <img
-                      src={selectedAnimal.image}
-                      alt={selectedAnimal.name}
-                      className="w-32 h-32 object-cover rounded-2xl"
+              {/* Adoption Form */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Personal Information */}
+                <div className="space-y-4">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4">
+                    Personal Information
+                  </h4>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Full Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={adoptionForm.adopterName}
+                      onChange={e =>
+                        setAdoptionForm({
+                          ...adoptionForm,
+                          adopterName: e.target.value,
+                        })
+                      }
+                      placeholder="Enter your full name"
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                     />
-                    <div className="flex-1">
-                      <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                        {selectedAnimal.name} ({selectedAnimal.type})
-                      </h3>
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <span className="font-medium">Location:</span>{' '}
-                          {selectedAnimal.location}
-                        </div>
-                        <div>
-                          <span className="font-medium">Age:</span>{' '}
-                          {selectedAnimal.age}
-                        </div>
-                        <div>
-                          <span className="font-medium">Gender:</span>{' '}
-                          {selectedAnimal.gender}
-                        </div>
-                        <div>
-                          <span className="font-medium">Condition:</span>{' '}
-                          {selectedAnimal.condition}
-                        </div>
-                      </div>
-                      <p className="text-gray-600 mt-3">
-                        {selectedAnimal.info}
-                      </p>
-                      <div className="mt-3 text-sm text-gray-500">
-                        Posted by{' '}
-                        <span className="font-medium">
-                          {selectedAnimal.rescuer}
-                        </span>
-                      </div>
-                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Email Address *
+                    </label>
+                    <input
+                      type="email"
+                      value={adoptionForm.email}
+                      onChange={e =>
+                        setAdoptionForm({
+                          ...adoptionForm,
+                          email: e.target.value,
+                        })
+                      }
+                      placeholder="your.email@example.com"
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Phone Number *
+                    </label>
+                    <input
+                      type="tel"
+                      value={adoptionForm.phone}
+                      onChange={e =>
+                        setAdoptionForm({
+                          ...adoptionForm,
+                          phone: e.target.value,
+                        })
+                      }
+                      placeholder="+91 98765 43210"
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Address
+                    </label>
+                    <textarea
+                      value={adoptionForm.address}
+                      onChange={e =>
+                        setAdoptionForm({
+                          ...adoptionForm,
+                          address: e.target.value,
+                        })
+                      }
+                      placeholder="Your complete address"
+                      rows={3}
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    />
                   </div>
                 </div>
 
-                {/* Adoption Form */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Personal Information */}
-                  <div className="space-y-4">
-                    <h4 className="text-lg font-semibold text-gray-900 mb-4">
-                      Personal Information
-                    </h4>
+                {/* Adoption Details */}
+                <div className="space-y-4">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4">
+                    Adoption Details
+                  </h4>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Full Name *
-                      </label>
-                      <input
-                        type="text"
-                        value={adoptionForm.adopterName}
-                        onChange={e =>
-                          setAdoptionForm({
-                            ...adoptionForm,
-                            adopterName: e.target.value,
-                          })
-                        }
-                        placeholder="Enter your full name"
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Email Address *
-                      </label>
-                      <input
-                        type="email"
-                        value={adoptionForm.email}
-                        onChange={e =>
-                          setAdoptionForm({
-                            ...adoptionForm,
-                            email: e.target.value,
-                          })
-                        }
-                        placeholder="your.email@example.com"
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Phone Number *
-                      </label>
-                      <input
-                        type="tel"
-                        value={adoptionForm.phone}
-                        onChange={e =>
-                          setAdoptionForm({
-                            ...adoptionForm,
-                            phone: e.target.value,
-                          })
-                        }
-                        placeholder="+91 98765 43210"
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Address
-                      </label>
-                      <textarea
-                        value={adoptionForm.address}
-                        onChange={e =>
-                          setAdoptionForm({
-                            ...adoptionForm,
-                            address: e.target.value,
-                          })
-                        }
-                        placeholder="Your complete address"
-                        rows={3}
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                      />
-                    </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Experience with Animals
+                    </label>
+                    <select
+                      value={adoptionForm.experience}
+                      onChange={e =>
+                        setAdoptionForm({
+                          ...adoptionForm,
+                          experience: e.target.value,
+                        })
+                      }
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    >
+                      <option value="">Select experience level</option>
+                      <option value="first-time">First time owner</option>
+                      <option value="some">Some experience</option>
+                      <option value="experienced">Very experienced</option>
+                    </select>
                   </div>
 
-                  {/* Adoption Details */}
-                  <div className="space-y-4">
-                    <h4 className="text-lg font-semibold text-gray-900 mb-4">
-                      Adoption Details
-                    </h4>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Housing Situation
+                    </label>
+                    <select
+                      value={adoptionForm.housing}
+                      onChange={e =>
+                        setAdoptionForm({
+                          ...adoptionForm,
+                          housing: e.target.value,
+                        })
+                      }
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    >
+                      <option value="">Select housing type</option>
+                      <option value="apartment">Apartment</option>
+                      <option value="house">House with yard</option>
+                      <option value="farm">Farm/Large property</option>
+                    </select>
+                  </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Experience with Animals
-                      </label>
-                      <select
-                        value={adoptionForm.experience}
-                        onChange={e =>
-                          setAdoptionForm({
-                            ...adoptionForm,
-                            experience: e.target.value,
-                          })
-                        }
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                      >
-                        <option value="">Select experience level</option>
-                        <option value="first-time">First time owner</option>
-                        <option value="some">Some experience</option>
-                        <option value="experienced">Very experienced</option>
-                      </select>
-                    </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Why do you want to adopt this animal?
+                    </label>
+                    <textarea
+                      value={adoptionForm.reason}
+                      onChange={e =>
+                        setAdoptionForm({
+                          ...adoptionForm,
+                          reason: e.target.value,
+                        })
+                      }
+                      placeholder="Tell us about your motivation to adopt..."
+                      rows={3}
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    />
+                  </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Housing Situation
-                      </label>
-                      <select
-                        value={adoptionForm.housing}
-                        onChange={e =>
-                          setAdoptionForm({
-                            ...adoptionForm,
-                            housing: e.target.value,
-                          })
-                        }
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                      >
-                        <option value="">Select housing type</option>
-                        <option value="apartment">Apartment</option>
-                        <option value="house">House with yard</option>
-                        <option value="farm">Farm/Large property</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Why do you want to adopt this animal?
-                      </label>
-                      <textarea
-                        value={adoptionForm.reason}
-                        onChange={e =>
-                          setAdoptionForm({
-                            ...adoptionForm,
-                            reason: e.target.value,
-                          })
-                        }
-                        placeholder="Tell us about your motivation to adopt..."
-                        rows={3}
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        When can you pick up the animal?
-                      </label>
-                      <input
-                        type="text"
-                        value={adoptionForm.availability}
-                        onChange={e =>
-                          setAdoptionForm({
-                            ...adoptionForm,
-                            availability: e.target.value,
-                          })
-                        }
-                        placeholder="e.g., Immediately, This weekend, Next week"
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                      />
-                    </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      When can you pick up the animal?
+                    </label>
+                    <input
+                      type="text"
+                      value={adoptionForm.availability}
+                      onChange={e =>
+                        setAdoptionForm({
+                          ...adoptionForm,
+                          availability: e.target.value,
+                        })
+                      }
+                      placeholder="e.g., Immediately, This weekend, Next week"
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    />
                   </div>
                 </div>
+              </div>
 
-                {/* Submit Buttons */}
-                <div className="flex gap-4 mt-8 pt-6 border-t border-gray-200">
-                  <button
-                    onClick={() => setShowAdoptionModal(false)}
-                    className="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-2xl font-medium hover:bg-gray-50 transition-all"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleAdoptionSubmit}
-                    className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-2xl font-bold hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg"
-                  >
-                    Submit Adoption Request
-                  </button>
-                </div>
+              {/* Submit Buttons */}
+              <div className="flex gap-4 mt-8 pt-6 border-t border-gray-200">
+                <button
+                  onClick={() => setShowAdoptionModal(false)}
+                  className="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-2xl font-medium hover:bg-gray-50 transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleAdoptionSubmit}
+                  className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-2xl font-bold hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg"
+                >
+                  Submit Adoption Request
+                </button>
+              </div>
 
-                {/* Contact Info */}
-                <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-2xl">
-                  <p className="text-sm text-yellow-800">
-                    <strong>Note:</strong> Your request will be sent to{' '}
-                    {selectedAnimal.rescuer}. They may contact you directly at{' '}
-                    {selectedAnimal.contact} to discuss the adoption process.
-                  </p>
-                </div>
+              {/* Contact Info */}
+              <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-2xl">
+                <p className="text-sm text-yellow-800">
+                  <strong>Note:</strong> Your request will be sent to{' '}
+                  {selectedAnimal.rescuer}. They may contact you directly at{' '}
+                  {selectedAnimal.contact} to discuss the adoption process.
+                </p>
               </div>
             </div>
           </div>
-        )}
+        </div>
+      )}
     </div>
   )
 }
