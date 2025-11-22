@@ -82,3 +82,8 @@ __pycache__/
 
 # source venv/bin/activate
 # python flash_server.py
+
+*/venv/
+*/venv/*
+venv/
+venv/*
